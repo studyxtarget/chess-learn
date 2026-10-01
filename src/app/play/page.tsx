@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Chess } from "chess.js";
 import Board from "@/components/Board";
 import { botMove } from "@/lib/engine";
-import { bots, countryFlag, styleLabel, styleColor, type Bot } from "@/lib/data";
+import { bots, countryFlag, styleLabel, styleColor, asset, type Bot } from "@/lib/data";
 
 const START = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
@@ -186,7 +186,7 @@ export default function PlayPage() {
             <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={`/bots/${selectedBot.file}`}
+                src={asset(`/bots/${selectedBot.file}`)}
                 alt={selectedBot.name}
                 style={{ width: 64, height: 64, borderRadius: "50%", background: "var(--bg3)" }}
               />
@@ -234,7 +234,7 @@ export default function PlayPage() {
                 }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/bots/${b.file}`} alt={b.name} />
+                <img src={asset(`/bots/${b.file}`)} alt={b.name} />
                 <div className="bname">
                   {b.name} {countryFlag(b.country)}
                 </div>

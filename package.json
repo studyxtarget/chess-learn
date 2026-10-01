@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "build:pages": "NEXT_PUBLIC_BASE_PATH=/chess-learn next build",
+    "preview": "npx --yes serve out",
     "lint": "next lint"
   },
   "dependencies": {

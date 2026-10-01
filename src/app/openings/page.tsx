@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import ReplayBoard from "@/components/ReplayBoard";
 import type { Opening } from "@/lib/data";
+import { asset } from "@/lib/data";
 
 const PAGE = 60;
 
@@ -16,7 +17,7 @@ export default function OpeningsPage() {
   const [limit, setLimit] = useState(PAGE);
 
   useEffect(() => {
-    fetch("/data/openings.json")
+    fetch(asset("/data/openings.json"))
       .then((r) => r.json())
       .then((d: Opening[]) => {
         setAll(d);

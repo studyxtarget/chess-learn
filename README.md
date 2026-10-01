@@ -30,10 +30,34 @@ copied.
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
-npm run build    # production build
-npm start        # serve the build
+npm run dev          # http://localhost:3000
+npm run build        # static export -> ./out
+npm run build:pages  # static export for GitHub Pages (basePath /chess-learn) -> ./out
+npm run preview      # serve ./out locally
 ```
+
+The project uses `output: "export"`, so `npm run build` produces a fully static site in `out/`.
+
+## Deploying to GitHub Pages
+
+The live site is served from the `docs/` folder on the `main` branch at
+**https://studyxtarget.github.io/chess-learn/**.
+
+To redeploy after a change:
+
+```bash
+npm run build:pages
+rm -rf docs && cp -r out docs && touch docs/.nojekyll
+# commit and push docs/
+```
+
+Two things matter for Pages:
+
+1. **`basePath`** — a GitHub Pages *project* site is served under `/<repo>/`, so the build
+   needs `NEXT_PUBLIC_BASE_PATH=/chess-learn` (that is what `build:pages` sets). Without it,
+   the JS/CSS/images 404.
+2. **`.nojekyll`** — Jekyll ignores folders that start with an underscore, which would break
+   Next's `_next/` assets. The empty `docs/.nojekyll` file disables Jekyll.
 
 ## Project layout
 

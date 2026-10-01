@@ -2,6 +2,7 @@
 
 import { Chess } from "chess.js";
 import { useMemo, useState } from "react";
+import { asset } from "@/lib/data";
 
 export type BoardMove = { from: string; to: string; promotion?: string };
 
@@ -117,7 +118,7 @@ export default function Board({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     className="piece"
-                    src={`/pieces/cburnett/${piece.color}${piece.type}.svg`}
+                    src={asset(`/pieces/cburnett/${piece.color}${piece.type}.svg`)}
                     alt={`${piece.color === "w" ? "white" : "black"} ${piece.type}`}
                     draggable={false}
                   />
@@ -148,7 +149,7 @@ export default function Board({
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={`/pieces/cburnett/${turn}${pr}.svg`}
+                    src={asset(`/pieces/cburnett/${turn}${pr}.svg`)}
                     alt={pr}
                     draggable={false}
                   />

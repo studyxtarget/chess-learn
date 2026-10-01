@@ -54,6 +54,11 @@ export const repertoire = repertoireJson as RepertoireLine[];
 export const traps = trapsJson as Trap[];
 export const bots = botsJson as Bot[];
 
+// When the app is exported for GitHub Pages it is served under /chess-learn/,
+// so runtime asset URLs need that prefix. Empty during local development.
+export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+export const asset = (p: string) => `${BASE_PATH}${p}`;
+
 export function countryFlag(code: string | null): string {
   if (!code || code.length !== 2) return "";
   const A = 0x1f1e6;

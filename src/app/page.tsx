@@ -1,7 +1,7 @@
 import Link from "next/link";
 import fs from "fs";
 import path from "path";
-import { bots, repertoire, traps, countryFlag, styleLabel, styleColor } from "@/lib/data";
+import { bots, repertoire, traps, countryFlag, styleLabel, styleColor, asset } from "@/lib/data";
 
 function openingCount(): number {
   try {
@@ -107,7 +107,7 @@ export default function Home() {
           {featured.map((b) => (
             <Link key={b.id} href="/play" className="botcard">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`/bots/${b.file}`} alt={b.name} />
+              <img src={asset(`/bots/${b.file}`)} alt={b.name} />
               <div className="bname">
                 {b.name} {countryFlag(b.country)}
               </div>
