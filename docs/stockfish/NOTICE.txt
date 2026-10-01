@@ -1,0 +1,13 @@
+Stockfish.js 19 — "lite single-threaded" WASM build
+---------------------------------------------------
+Source : npm package "stockfish" v19.0.0  (https://github.com/nmrugg/stockfish.js)
+Files  : stockfish.js  (emscripten loader)
+         stockfish.wasm (engine, ~1.8 MB)
+Author : Stockfish.js (c) 2026, Chess.com, LLC; based on Stockfish by the
+         Stockfish team (https://github.com/official-stockfish/Stockfish).
+License: GNU GPL v3 — see COPYING.txt in this folder.
+
+Stockfish is licensed under GPL-3.0. Distributing this build as part of this
+site means the combined work must comply with GPL-3.0: the license text ships
+alongside the engine (COPYING.txt) and the source is available from the
+repository above.
