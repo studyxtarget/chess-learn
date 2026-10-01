@@ -11,11 +11,14 @@ copied.
 |---|---|
 | `/` | Home / dashboard with data-driven stats and featured bots |
 | `/play` | Play against 34 data-driven bots with personalities, opening books and ratings |
+| `/analyze` | Paste a PGN/FEN, step through the game, and get an engine evaluation + suggested move |
 | `/openings` | Searchable explorer over ~4,700 named opening lines with a move-playback board |
 | `/traps` | 120 traps / mating patterns with variation tabs and playback |
 | `/repertoire` | The bots' 41 opening lines with style weights, tags and cp ceilings |
 
 ## Highlights
+
+- **PGN / FEN import & export** on the Analyze page (merged in from the separate *ChessAnalyzer* project).
 
 - **Real chess logic** via `chess.js`.
 - **Original engine** (`src/lib/engine.ts`): alpha-beta search over material + piece-square

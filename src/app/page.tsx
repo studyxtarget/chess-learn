@@ -63,7 +63,7 @@ export default function Home() {
 
       <section className="section">
         <h2>What you can do</h2>
-        <p className="sub">Four ways in, all driven by the same bundled chess data.</p>
+        <p className="sub">Five ways in, all driven by the same bundled chess data.</p>
         <div className="grid cols-4">
           <Link className="card" href="/play">
             <div className="icon">♞</div>
@@ -71,6 +71,14 @@ export default function Home() {
             <p>
               Face opponents with real personalities — aggressive attackers, solid defenders — each
               opening with its own prepared line.
+            </p>
+          </Link>
+          <Link className="card" href="/analyze">
+            <div className="icon">🔍</div>
+            <h3>Analyze a game</h3>
+            <p>
+              Paste a PGN or FEN, step through the moves, and get an engine evaluation and a
+              suggested move for any position.
             </p>
           </Link>
           <Link className="card" href="/openings">

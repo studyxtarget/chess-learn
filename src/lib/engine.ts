@@ -265,3 +265,38 @@ export function evaluateFen(fen: string): number {
   const game = new Chess(fen);
   return materialAndPst(game);
 }
+
+/**
+ * Neutral, deeper search used by the analysis board (no book, no personality).
+ * Returns the engine's preferred move for the side to move.
+ */
+export function bestMove(fen: string, depth = 3): BotMove | null {
+  const game = new Chess(fen);
+  if (game.isGameOver()) return null;
+  const side = game.turn();
+  const p: Personality = { agg: 0, def: 0, neu: 1 };
+  const legal = game.moves({ verbose: true }) as any[];
+  if (legal.length === 0) return null;
+
+  let best: any = null;
+  let bestScore = -Infinity;
+  let alpha = -Infinity;
+  for (const m of orderMoves(legal)) {
+    game.move(m);
+    const score = -negamax(game, depth - 1, -Infinity, -alpha, side === "w" ? "b" : "w", p);
+    game.undo();
+    if (score > bestScore) {
+      bestScore = score;
+      best = m;
+    }
+    if (bestScore > alpha) alpha = bestScore;
+  }
+  if (!best) return null;
+  return { san: best.san, from: best.from, to: best.to, promotion: best.promotion, source: "engine" };
+}
+
+/** Score of a position in centipawns from White's point of view. */
+export function evaluatePosition(fen: string): number {
+  const game = new Chess(fen);
+  return materialAndPst(game);
+}
