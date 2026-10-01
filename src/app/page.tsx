@@ -1,7 +1,7 @@
 import Link from "next/link";
 import fs from "fs";
 import path from "path";
-import { bots, repertoire, traps, countryFlag, styleLabel, styleColor, asset } from "@/lib/data";
+import { bots, repertoire, traps, countryFlag, asset } from "@/lib/data";
 
 function openingCount(): number {
   try {
@@ -12,49 +12,79 @@ function openingCount(): number {
   }
 }
 
+const areas = [
+  {
+    href: "/play",
+    icon: "♞",
+    title: "Play vs Bot",
+    desc: "Face opponents with real personalities and their own prepared openings.",
+  },
+  {
+    href: "/analyze",
+    icon: "⌕",
+    title: "Analyze",
+    desc: "Paste a PGN and get a full Stockfish review — accuracy and move grades.",
+  },
+  {
+    href: "/openings",
+    icon: "☰",
+    title: "Openings",
+    desc: "Search thousands of named lines and step through them on a board.",
+  },
+  {
+    href: "/traps",
+    icon: "⚑",
+    title: "Traps",
+    desc: "Learn classic traps move by move so you spot them coming.",
+  },
+  {
+    href: "/repertoire",
+    icon: "☷",
+    title: "Repertoire",
+    desc: "The exact opening lines the bots play, with their style weights.",
+  },
+];
+
 export default function Home() {
   const nOpenings = openingCount();
   const featured = bots.filter((b) => b.index && b.index >= 4 && b.index <= 9).slice(0, 4);
 
   return (
     <div className="container">
-      <section className="hero">
+      <section className="hero clean">
+        <span className="eyebrow">Browser chess trainer</span>
         <h1>
           Improve at chess, <span>one pattern at a time.</span>
         </h1>
         <p className="lead">
-          Chess Learn brings a complete chess training experience to the browser: play the
-          data-driven bots, explore thousands of openings, learn real traps, and drill the exact
-          opening repertoire the bots use against you.
+          Play data-driven bots, explore thousands of openings, learn real traps, and review your
+          games with Stockfish.
         </p>
         <div className="hero-cta">
           <Link className="btn primary" href="/play">
             ♟ Play a bot
           </Link>
-          <Link className="btn" href="/openings">
-            Browse openings
-          </Link>
-          <Link className="btn" href="/traps">
-            Learn traps
+          <Link className="btn" href="/analyze">
+            Review a game
           </Link>
         </div>
       </section>
 
       <section className="section">
-        <div className="grid cols-4 stats-grid">
-          <div className="card stat">
+        <div className="stat-strip">
+          <div className="stat">
             <div className="num">{nOpenings.toLocaleString("en-IN")}</div>
-            <div className="lbl">Openings with positions</div>
+            <div className="lbl">Openings</div>
           </div>
-          <div className="card stat">
+          <div className="stat">
             <div className="num">{traps.length}</div>
-            <div className="lbl">Traps &amp; mating patterns</div>
+            <div className="lbl">Traps</div>
           </div>
-          <div className="card stat">
+          <div className="stat">
             <div className="num">{bots.length}</div>
-            <div className="lbl">Computer opponents</div>
+            <div className="lbl">Bots</div>
           </div>
-          <div className="card stat">
+          <div className="stat">
             <div className="num">{repertoire.length}</div>
             <div className="lbl">Repertoire lines</div>
           </div>
@@ -62,55 +92,25 @@ export default function Home() {
       </section>
 
       <section className="section">
-        <h2>What you can do</h2>
+        <h2>Explore</h2>
         <p className="sub">Five ways in, all driven by the same bundled chess data.</p>
-        <div className="grid cols-4 feature-grid">
-          <Link className="card" href="/play">
-            <div className="icon">♞</div>
-            <h3>Play vs Bot</h3>
-            <p>
-              Face opponents with real personalities — aggressive attackers, solid defenders — each
-              opening with its own prepared line.
-            </p>
-          </Link>
-          <Link className="card" href="/analyze">
-            <div className="icon">🔍</div>
-            <h3>Analyze a game</h3>
-            <p>
-              Paste a PGN or FEN, step through the moves, and get an engine evaluation and a
-              suggested move for any position.
-            </p>
-          </Link>
-          <Link className="card" href="/openings">
-            <div className="icon">📖</div>
-            <h3>Openings explorer</h3>
-            <p>
-              Search thousands of named lines, step through the moves on a board, and see how often
-              each side wins.
-            </p>
-          </Link>
-          <Link className="card" href="/traps">
-            <div className="icon">🪤</div>
-            <h3>Traps trainer</h3>
-            <p>
-              Walk through classic traps move by move so you spot them coming — and know how to
-              spring them yourself.
-            </p>
-          </Link>
-          <Link className="card" href="/repertoire">
-            <div className="icon">🗂</div>
-            <h3>Bot repertoire</h3>
-            <p>
-              Inspect the exact opening lines the bots play, with their aggression/defence weights
-              and vetted move-loss ceilings.
-            </p>
-          </Link>
+        <div className="card list-card">
+          {areas.map((a) => (
+            <Link key={a.href} href={a.href} className="list-row">
+              <span className="ic">{a.icon}</span>
+              <span>
+                <span className="tt">{a.title}</span>
+                <span className="dd">{a.desc}</span>
+              </span>
+              <span className="ar">→</span>
+            </Link>
+          ))}
         </div>
       </section>
 
       <section className="section">
         <h2>Meet a few of the bots</h2>
-        <p className="sub">Each bot has an avatar, a rating, a style, and a favourite opening.</p>
+        <p className="sub">Every bot has an avatar, a rating and a favourite opening.</p>
         <div className="grid cols-4 bot-grid">
           {featured.map((b) => (
             <Link key={b.id} href="/play" className="botcard">
@@ -120,9 +120,6 @@ export default function Home() {
                 {b.name} {countryFlag(b.country)}
               </div>
               <div className="brating">{b.rating} Elo</div>
-              <span className="pill" style={{ color: styleColor[b.style], borderColor: styleColor[b.style] }}>
-                {styleLabel[b.style]}
-              </span>
             </Link>
           ))}
         </div>
