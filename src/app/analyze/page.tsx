@@ -245,7 +245,7 @@ export default function AnalyzePage() {
                 <>
                   Evaluation: <strong style={{ color: "var(--text)" }}>{evalLabel}</strong> (White&apos;s view)
                   {analysis?.best && <> · best move <strong style={{ color: "var(--text)" }}>{analysis.best}</strong></>}
-                  {!analysis?.best && <> · no legal moves</>}
+                  {analysis && !analysis.best && <> · no legal moves</>}
                 </>
               )}
             </div>
