@@ -1,8 +1,8 @@
 {
-  "name": "chessis-web",
+  "name": "chess-learn",
   "version": "1.0.0",
   "private": true,
-  "description": "Chessis — a web port of the core Chessis chess-improvement experience (board, bots, openings, traps).",
+  "description": "Chess Learn — a browser chess trainer: play data-driven bots, explore openings, learn traps, and run a full Stockfish game review.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

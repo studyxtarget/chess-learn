@@ -23,7 +23,7 @@ export default function Home() {
           Improve at chess, <span>one pattern at a time.</span>
         </h1>
         <p className="lead">
-          Chessis Web brings the core of the Chessis training experience to the browser: play the
+          Chess Learn brings a complete chess training experience to the browser: play the
           data-driven bots, explore thousands of openings, learn real traps, and drill the exact
           opening repertoire the bots use against you.
         </p>
@@ -41,7 +41,7 @@ export default function Home() {
       </section>
 
       <section className="section">
-        <div className="grid cols-4">
+        <div className="grid cols-4 stats-grid">
           <div className="card stat">
             <div className="num">{nOpenings.toLocaleString("en-IN")}</div>
             <div className="lbl">Openings with positions</div>
@@ -64,7 +64,7 @@ export default function Home() {
       <section className="section">
         <h2>What you can do</h2>
         <p className="sub">Five ways in, all driven by the same bundled chess data.</p>
-        <div className="grid cols-4">
+        <div className="grid cols-4 feature-grid">
           <Link className="card" href="/play">
             <div className="icon">♞</div>
             <h3>Play vs Bot</h3>
@@ -111,7 +111,7 @@ export default function Home() {
       <section className="section">
         <h2>Meet a few of the bots</h2>
         <p className="sub">Each bot has an avatar, a rating, a style, and a favourite opening.</p>
-        <div className="grid cols-4">
+        <div className="grid cols-4 bot-grid">
           {featured.map((b) => (
             <Link key={b.id} href="/play" className="botcard">
               {/* eslint-disable-next-line @next/next/no-img-element */}

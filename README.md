@@ -1,6 +1,6 @@
-# Chessis — Web
+# Chess Learn
 
-A web port of the **core Chessis chess-improvement experience**, built as an original
+A browser chess trainer, built as an original
 Next.js application. It reuses the app's bundled *data* (openings, traps, bot repertoire,
 bot avatars, piece sets) but the code is written from scratch — no decompiled source is
 copied.
@@ -100,7 +100,7 @@ The *cburnett* piece set is by Colin M.L. Burnett (CC BY-SA 3.0 / GPL).
 ## Data provenance
 
 The JSON in `src/data` and `public/data`, the bot avatars in `public/bots`, and the piece
-set in `public/pieces/cburnett` are derived from the Chessis app's bundled assets
+set in `public/pieces/cburnett` are derived from the bundled assets of the original Android chess app
 (`assets/bot_opening_repertoire.txt`, `assets/openings_with_fens.txt`,
 `assets/opening_traps_with_fens.txt`, `assets/bots/`, `assets/pieces/cburnett.zip`).
 

@@ -3,9 +3,9 @@ import "./globals.css";
 import Nav from "@/components/Nav";
 
 export const metadata: Metadata = {
-  title: "Chessis — Web",
+  title: "Chess Learn",
   description:
-    "A web port of the core Chessis chess-improvement experience: play the data-driven bots, explore openings, learn traps, and drill the bot repertoire.",
+    "A browser chess trainer: play the data-driven bots, explore openings, learn traps, and run a full Stockfish game review.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="footer">
           <div className="container">
             <p style={{ margin: 0 }}>
-              Chessis Web — an original web implementation of the Chessis experience. Opening,
+              Chess Learn — an original web implementation. Opening,
               trap, bot and piece data are derived from the app&apos;s bundled assets.
             </p>
           </div>
