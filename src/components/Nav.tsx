@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { asset } from "@/lib/data";
 
 const links = [
   { href: "/", label: "Home" },
@@ -21,8 +22,11 @@ export default function Nav() {
     <header className="nav">
       <div className="container nav-inner">
         <Link href="/" className="brand" onClick={() => setOpen(false)}>
-          <span className="logo">♞</span>
-          Chess Learn
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="logo-img" src={asset("/pieces/cburnett/wn.svg")} alt="" aria-hidden="true" />
+          <span className="brand-txt">
+            Chess <b>Learn</b>
+          </span>
         </Link>
 
         <nav className={`nav-links${open ? " open" : ""}`}>

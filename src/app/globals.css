@@ -351,3 +351,142 @@ html, body { overflow-x: hidden; }
   .list-row .tt { font-size: 14.5px; }
   .list-row .dd { font-size: 12.5px; }
 }
+
+/* ================= app-style home (design reference) ================= */
+
+/* brand: white knight + "Chess Learn" with green "Learn" */
+.brand .logo {
+  width: auto; height: auto; background: none; border-radius: 0;
+  font-size: 23px; line-height: 1; color: #fff;
+}
+.brand-txt b { color: var(--accent); font-weight: 700; }
+
+/* ---- hero ---- */
+.hero3 {
+  position: relative; overflow: hidden;
+  background:
+    radial-gradient(900px 320px at 82% 30%, rgba(106,168,79,.20), transparent 70%),
+    linear-gradient(160deg, #1b231a 0%, #141a16 45%, #0f1216 100%);
+  border-bottom: 1px solid var(--line);
+}
+.hero3-art { position: absolute; inset: 0; pointer-events: none; }
+.art-piece { position: absolute; opacity: .95; filter: drop-shadow(0 18px 30px rgba(0,0,0,.55)); }
+.art-piece.a1 { right: 7%; bottom: -14%; width: 210px; transform: rotate(-7deg); }
+.art-piece.a2 { right: 27%; bottom: 6%; width: 120px; opacity: .45; filter: blur(1px); }
+.art-piece.a3 { right: -1%; bottom: 34%; width: 96px; opacity: .3; filter: blur(2px); }
+
+.hero3-inner { position: relative; z-index: 2; padding: 62px 20px 66px; max-width: 1180px; }
+.hero3 h1 { font-size: 46px; line-height: 1.05; letter-spacing: -1px; margin: 0 0 14px; }
+.hero3 p { font-size: 16.5px; line-height: 1.6; color: #c3cbd6; max-width: 520px; margin: 0 0 24px; }
+
+.cta-pill {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--accent); color: #0b1607; font-weight: 700; font-size: 15px;
+  padding: 13px 22px; border-radius: 999px; border: 1px solid var(--accent2);
+  box-shadow: 0 10px 24px rgba(106,168,79,.28);
+}
+.cta-pill:hover { background: #77b95a; }
+.cta-pill .cta-tri { font-size: 11px; }
+.cta-pill .cta-ar { margin-left: 2px; }
+
+/* ---- section heads ---- */
+.home-sec { padding: 26px 20px; }
+.sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.sec-head h2 { display: flex; align-items: center; gap: 9px; font-size: 17px; margin: 0; }
+.sec-ic {
+  width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center;
+}
+.viewall { display: inline-flex; align-items: center; gap: 3px; color: var(--muted); font-size: 13px; font-weight: 600; }
+.viewall:hover { color: var(--text); }
+
+/* ---- coloured icon tones ---- */
+.green  { background: rgba(63,163,77,.16);  color: #63c072; }
+.blue   { background: rgba(59,130,196,.16); color: #6aa6e0; }
+.orange { background: rgba(217,131,36,.16); color: #e29a48; }
+.red    { background: rgba(209,72,63,.16);  color: #e2685f; }
+.purple { background: rgba(138,99,201,.16); color: #a98ae0; }
+.gold   { background: rgba(212,160,23,.16); color: #d9b64a; }
+
+/* ---- main menu grid ---- */
+.menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.menu-card {
+  display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: start;
+  padding: 15px; background: var(--bg2); border: 1px solid var(--line); border-radius: 14px;
+  color: var(--text);
+}
+.menu-card:hover { background: var(--bg3); border-color: #36404d; }
+.menu-ic { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; }
+.menu-tt { display: block; font-weight: 600; font-size: 15px; }
+.menu-dd { display: block; color: var(--muted); font-size: 12.8px; line-height: 1.45; margin-top: 3px; }
+.menu-ar { color: var(--muted); margin-top: 10px; }
+
+/* ---- stat row ---- */
+.stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.stat-card {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 14px; padding: 14px;
+}
+.stat-ic { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; margin-bottom: 10px; }
+.stat-num { font-size: 22px; font-weight: 700; letter-spacing: -.4px; }
+.stat-lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* ---- continue learning ---- */
+.learn-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.learn-card {
+  background: var(--bg2); border: 1px solid var(--line); border-radius: 14px;
+  overflow: hidden; color: var(--text); display: block;
+}
+.learn-card:hover { border-color: #36404d; }
+.learn-thumb { display: grid; place-items: center; height: 92px; }
+.learn-thumb img { width: 54px; height: 54px; opacity: .95; }
+.learn-body { display: block; padding: 12px 14px 14px; }
+.learn-tt { display: block; font-weight: 600; font-size: 14.5px; }
+.learn-sub { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+
+/* ---- bottom tab bar (mobile) ---- */
+.tabbar { display: none; }
+@media (max-width: 760px) {
+  .tabbar {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 70;
+    background: rgba(18,22,27,.96); backdrop-filter: blur(10px);
+    border-top: 1px solid var(--line); padding: 7px 4px calc(7px + env(safe-area-inset-bottom));
+  }
+  .tab {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 5px 2px; color: var(--muted); font-size: 10.5px; font-weight: 600;
+  }
+  .tab.active { color: var(--accent); }
+  body { padding-bottom: 66px; }
+  .footer { padding-bottom: 78px; }
+}
+
+/* ---- home mobile tuning ---- */
+@media (max-width: 760px) {
+  .hero3-inner { padding: 40px 20px 44px; }
+  .hero3 h1 { font-size: 34px; }
+  .hero3 p { font-size: 15px; margin-bottom: 20px; }
+  .art-piece.a1 { width: 140px; right: 2%; bottom: -10%; opacity: .85; }
+  .art-piece.a2 { width: 80px; right: 30%; bottom: 4%; }
+  .art-piece.a3 { display: none; }
+  .home-sec { padding: 18px 14px; }
+}
+@media (max-width: 560px) {
+  .menu-grid { gap: 10px; }
+  .menu-card { grid-template-columns: 32px 1fr auto; gap: 9px; padding: 12px; }
+  .menu-ic { width: 32px; height: 32px; border-radius: 10px; }
+  .menu-tt { font-size: 14px; }
+  .menu-dd { font-size: 11.8px; }
+  .menu-ar { margin-top: 8px; }
+  .menu-ar svg { width: 13px; height: 13px; }
+  .stat-row { gap: 8px; }
+  .stat-card { padding: 11px 10px; border-radius: 12px; }
+  .stat-ic { width: 26px; height: 26px; border-radius: 8px; margin-bottom: 7px; }
+  .stat-num { font-size: 16px; }
+  .stat-lbl { font-size: 10.5px; }
+  .learn-row { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; }
+  .learn-card { flex: 0 0 74%; scroll-snap-align: start; }
+}
+
+/* brand knight as an SVG piece (reliable across platforms) */
+.logo-img { width: 25px; height: 25px; display: block; flex: none; }
+.brand .logo { display: none; }

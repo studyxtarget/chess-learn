@@ -2,6 +2,7 @@ import Link from "next/link";
 import fs from "fs";
 import path from "path";
 import { bots, repertoire, traps, countryFlag, asset } from "@/lib/data";
+import Icon, { type IconName } from "@/components/Icon";
 
 function openingCount(): number {
   try {
@@ -12,37 +13,21 @@ function openingCount(): number {
   }
 }
 
-const areas = [
-  {
-    href: "/play",
-    icon: "♞",
-    title: "Play vs Bot",
-    desc: "Face opponents with real personalities and their own prepared openings.",
-  },
-  {
-    href: "/analyze",
-    icon: "⌕",
-    title: "Analyze",
-    desc: "Paste a PGN and get a full Stockfish review — accuracy and move grades.",
-  },
-  {
-    href: "/openings",
-    icon: "☰",
-    title: "Openings",
-    desc: "Search thousands of named lines and step through them on a board.",
-  },
-  {
-    href: "/traps",
-    icon: "⚑",
-    title: "Traps",
-    desc: "Learn classic traps move by move so you spot them coming.",
-  },
-  {
-    href: "/repertoire",
-    icon: "☷",
-    title: "Repertoire",
-    desc: "The exact opening lines the bots play, with their style weights.",
-  },
+type Area = { href: string; icon: IconName; tone: string; title: string; desc: string };
+
+const AREAS: Area[] = [
+  { href: "/play", icon: "play", tone: "green", title: "Play vs Bot", desc: "Play with different strength and styles" },
+  { href: "/analyze", icon: "search", tone: "blue", title: "Analyze", desc: "Upload PGN/FEN and get deep analysis" },
+  { href: "/openings", icon: "book", tone: "orange", title: "Openings", desc: "Explore thousands of opening lines" },
+  { href: "/traps", icon: "target", tone: "red", title: "Traps", desc: "Learn common traps and mating patterns" },
+  { href: "/repertoire", icon: "doc", tone: "purple", title: "Repertoire", desc: "Save and study your favourite lines" },
+  { href: "/analyze", icon: "chart", tone: "gold", title: "Game Report", desc: "Accuracy, mistakes, blunders and key moments" },
+];
+
+const CONTINUE: { href: string; piece: string; tone: string; title: string; sub: string }[] = [
+  { href: "/play", piece: "wn", tone: "green", title: "Play vs Bot", sub: "Continue playing" },
+  { href: "/analyze", piece: "bq", tone: "blue", title: "Analyze Game", sub: "Review your last game" },
+  { href: "/openings", piece: "bp", tone: "orange", title: "Sicilian Defense", sub: "Explore this opening" },
 ];
 
 export default function Home() {
@@ -50,67 +35,120 @@ export default function Home() {
   const featured = bots.filter((b) => b.index && b.index >= 4 && b.index <= 9).slice(0, 4);
 
   return (
-    <div className="container">
-      <section className="hero clean">
-        <span className="eyebrow">Browser chess trainer</span>
-        <h1>
-          Improve at chess, <span>one pattern at a time.</span>
-        </h1>
-        <p className="lead">
-          Play data-driven bots, explore thousands of openings, learn real traps, and review your
-          games with Stockfish.
-        </p>
-        <div className="hero-cta">
-          <Link className="btn primary" href="/play">
-            ♟ Play a bot
-          </Link>
-          <Link className="btn" href="/analyze">
-            Review a game
+    <div className="home">
+      {/* ---------- hero ---------- */}
+      <section className="hero3">
+        <div className="hero3-art" aria-hidden="true">
+          <img src={asset("/pieces/cburnett/bn.svg")} alt="" className="art-piece a1" />
+          <img src={asset("/pieces/cburnett/wn.svg")} alt="" className="art-piece a2" />
+          <img src={asset("/pieces/cburnett/bb.svg")} alt="" className="art-piece a3" />
+        </div>
+        <div className="container hero3-inner">
+          <h1>Play. Learn. Improve.</h1>
+          <p>
+            Play against bots, analyze your games, explore openings, learn traps and build your
+            repertoire — all in one place.
+          </p>
+          <Link className="cta-pill" href="/play">
+            <span className="cta-tri" aria-hidden="true">▶</span>
+            Play vs Bot
+            <span className="cta-ar" aria-hidden="true">→</span>
           </Link>
         </div>
       </section>
 
-      <section className="section">
-        <div className="stat-strip">
-          <div className="stat">
-            <div className="num">{nOpenings.toLocaleString("en-IN")}</div>
-            <div className="lbl">Openings</div>
-          </div>
-          <div className="stat">
-            <div className="num">{traps.length}</div>
-            <div className="lbl">Traps</div>
-          </div>
-          <div className="stat">
-            <div className="num">{bots.length}</div>
-            <div className="lbl">Bots</div>
-          </div>
-          <div className="stat">
-            <div className="num">{repertoire.length}</div>
-            <div className="lbl">Repertoire lines</div>
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <h2>Explore</h2>
-        <p className="sub">Five ways in, all driven by the same bundled chess data.</p>
-        <div className="card list-card">
-          {areas.map((a) => (
-            <Link key={a.href} href={a.href} className="list-row">
-              <span className="ic">{a.icon}</span>
-              <span>
-                <span className="tt">{a.title}</span>
-                <span className="dd">{a.desc}</span>
+      {/* ---------- main menu ---------- */}
+      <section className="container home-sec">
+        <div className="menu-grid">
+          {AREAS.map((a) => (
+            <Link key={a.title} href={a.href} className="menu-card">
+              <span className={`menu-ic ${a.tone}`}>
+                <Icon name={a.icon} size={19} />
               </span>
-              <span className="ar">→</span>
+              <span className="menu-body">
+                <span className="menu-tt">{a.title}</span>
+                <span className="menu-dd">{a.desc}</span>
+              </span>
+              <span className="menu-ar" aria-hidden="true">
+                <Icon name="chevron" size={16} />
+              </span>
             </Link>
           ))}
         </div>
       </section>
 
-      <section className="section">
-        <h2>Meet a few of the bots</h2>
-        <p className="sub">Every bot has an avatar, a rating and a favourite opening.</p>
+      {/* ---------- stats ---------- */}
+      <section className="container home-sec">
+        <div className="sec-head">
+          <h2>
+            <span className="sec-ic green"><Icon name="chart" size={15} /></span>
+            At a glance
+          </h2>
+          <Link className="viewall" href="/openings">
+            View all <Icon name="chevron" size={13} />
+          </Link>
+        </div>
+        <div className="stat-row">
+          <div className="stat-card">
+            <span className="stat-ic orange"><Icon name="book" size={17} /></span>
+            <div className="stat-num">{nOpenings.toLocaleString("en-IN")}</div>
+            <div className="stat-lbl">Openings</div>
+          </div>
+          <div className="stat-card">
+            <span className="stat-ic red"><Icon name="target" size={17} /></span>
+            <div className="stat-num">{traps.length}</div>
+            <div className="stat-lbl">Traps</div>
+          </div>
+          <div className="stat-card">
+            <span className="stat-ic green"><Icon name="play" size={17} /></span>
+            <div className="stat-num">{bots.length}</div>
+            <div className="stat-lbl">Bots</div>
+          </div>
+          <div className="stat-card">
+            <span className="stat-ic purple"><Icon name="doc" size={17} /></span>
+            <div className="stat-num">{repertoire.length}</div>
+            <div className="stat-lbl">Repertoire</div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- continue ---------- */}
+      <section className="container home-sec">
+        <div className="sec-head">
+          <h2>
+            <span className="sec-ic green"><Icon name="clock" size={15} /></span>
+            Continue learning
+          </h2>
+          <Link className="viewall" href="/play">
+            View all <Icon name="chevron" size={13} />
+          </Link>
+        </div>
+        <div className="learn-row">
+          {CONTINUE.map((c) => (
+            <Link key={c.title} href={c.href} className="learn-card">
+              <span className={`learn-thumb ${c.tone}`}>
+                <img src={asset(`/pieces/cburnett/${c.piece}.svg`)} alt="" />
+              </span>
+              <span className="learn-body">
+                <span className="learn-tt">{c.title}</span>
+                <span className="learn-sub">{c.sub}</span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ---------- bots ---------- */}
+      <section className="container home-sec">
+        <div className="sec-head">
+          <h2>
+            <span className="sec-ic green"><Icon name="play" size={15} /></span>
+            Meet the bots
+          </h2>
+          <Link className="viewall" href="/play">
+            View all <Icon name="chevron" size={13} />
+          </Link>
+        </div>
         <div className="grid cols-4 bot-grid">
           {featured.map((b) => (
             <Link key={b.id} href="/play" className="botcard">

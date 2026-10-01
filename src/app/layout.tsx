@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Nav from "@/components/Nav";
+import BottomNav from "@/components/BottomNav";
 
 export const metadata: Metadata = {
   title: "Chess Learn",
@@ -14,6 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <Nav />
         <main>{children}</main>
+        <BottomNav />
         <footer className="footer">
           <div className="container">
             <p style={{ margin: 0 }}>
