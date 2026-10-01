@@ -70,6 +70,7 @@ export type MoveReview = {
 export type SideReport = {
   accuracy: number;
   estRating: number;
+  avgCpl: number;
   counts: Record<Classification, number>;
   phases: { opening: number | null; middlegame: number | null; endgame: number | null };
 };
@@ -81,7 +82,7 @@ export type GameReview = {
   evalSeries: number[]; // White POV cp, one per position (length = plies + 1)
   narrative: string;
   engine: EngineKind;
-  depth: number;
+  depthLabel: string;
 };
 
 const MATE_CP = 10000;
@@ -199,9 +200,11 @@ function sideReport(moves: MoveReview[], color: "w" | "b"): SideReport {
     const sub = list.filter((m) => m.phase === ph);
     return sub.length ? sub.reduce((s, m) => s + m.accuracy, 0) / sub.length : null;
   };
+  const avgCpl = list.length ? list.reduce((s, m) => s + m.cpLoss, 0) / list.length : 0;
   return {
     accuracy,
     estRating: estimateRating(accuracy),
+    avgCpl,
     counts,
     phases: { opening: phaseAcc("opening"), middlegame: phaseAcc("middlegame"), endgame: phaseAcc("endgame") },
   };
@@ -213,7 +216,7 @@ export async function reviewGame(
   startFen: string,
   sans: string[],
   evaluate: Evaluator,
-  depth: number,
+  mode: { depth: number | ((fen: string) => number); label: string },
   engine: EngineKind,
   onProgress?: (done: number, total: number) => void,
   shouldStop?: () => boolean
@@ -240,7 +243,8 @@ export async function reviewGame(
   const evals: EngineEval[] = [];
   for (let i = 0; i < fens.length; i++) {
     if (shouldStop?.()) break;
-    evals.push(await evaluate(fens[i], depth));
+    const d = typeof mode.depth === "function" ? mode.depth(fens[i]) : mode.depth;
+    evals.push(await evaluate(fens[i], d));
     onProgress?.(i + 1, fens.length);
   }
 
@@ -331,6 +335,6 @@ export async function reviewGame(
     evalSeries: evals.map(cpOf),
     narrative,
     engine,
-    depth,
+    depthLabel: mode.label,
   };
 }

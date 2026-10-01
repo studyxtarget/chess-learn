@@ -15,6 +15,8 @@ type Props = {
   highlights?: string[];
   arrows?: { from: string; to: string; color?: string }[];
   markers?: { square: string; label: string; color?: string }[];
+  annotateMode?: boolean;
+  onSquareClick?: (sq: string, shift: boolean) => void;
 };
 
 const FILES = "abcdefgh";
@@ -32,6 +34,8 @@ export default function Board({
   highlights = [],
   arrows = [],
   markers = [],
+  annotateMode = false,
+  onSquareClick,
 }: Props) {
   const game = useMemo(() => new Chess(fen), [fen]);
   const [selected, setSelected] = useState<string | null>(null);
@@ -78,7 +82,11 @@ export default function Board({
     return board[r][f];
   }
 
-  function click(sq: string) {
+  function click(sq: string, shift = false) {
+    if (annotateMode) {
+      onSquareClick?.(sq, shift);
+      return;
+    }
     if (!interactive || pending) return;
     const piece = pieceAt(sq);
     if (selected && targets.has(sq)) {
@@ -126,7 +134,7 @@ export default function Board({
                   isHl ? "hl" : "",
                   interactive ? "clickable" : "",
                 ].join(" ")}
-                onClick={() => click(sq)}
+                onClick={(e) => click(sq, e.shiftKey)}
                 aria-label={
                   piece
                     ? `${piece.color === "w" ? "White" : "Black"} ${PIECE_NAME[piece.type]} on ${sq}`

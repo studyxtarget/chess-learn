@@ -1,13 +1,55 @@
 import EvalGraph from "./EvalGraph";
-import { CLASSIFICATIONS, CLASS_META, type GameReview, type SideReport } from "@/lib/review";
+import { CLASSIFICATIONS, CLASS_META, type Classification, type GameReview, type SideReport } from "@/lib/review";
 
 type Props = {
   review: GameReview;
   onSelectPly: (ply: number) => void;
 };
 
+const CLEAN: Classification[] = ["book", "brilliant", "best", "excellent", "good"];
+
 function pct(v: number | null): string {
   return v === null ? "—" : `${v.toFixed(0)}%`;
+}
+
+function Donut({ counts, title }: { counts: Record<Classification, number>; title: string }) {
+  const total = Object.values(counts).reduce((a, b) => a + b, 0) || 1;
+  const R = 34;
+  const C = 2 * Math.PI * R;
+  let off = 0;
+  const segs = CLASSIFICATIONS.filter((c) => counts[c] > 0).map((c) => {
+    const len = (counts[c] / total) * C;
+    const seg = { c, len, off };
+    off += len;
+    return seg;
+  });
+  const clean = CLEAN.reduce((s, c) => s + counts[c], 0);
+
+  return (
+    <div style={{ textAlign: "center" }}>
+      <svg viewBox="0 0 80 80" width="84" height="84" role="img" aria-label={`${title} move quality`}>
+        <circle cx="40" cy="40" r={R} fill="none" stroke="#232a33" strokeWidth="11" />
+        {segs.map((s) => (
+          <circle
+            key={s.c}
+            cx="40"
+            cy="40"
+            r={R}
+            fill="none"
+            stroke={CLASS_META[s.c].color}
+            strokeWidth="11"
+            strokeDasharray={`${s.len} ${C - s.len}`}
+            strokeDashoffset={-s.off}
+            transform="rotate(-90 40 40)"
+          />
+        ))}
+        <text x="40" y="40" textAnchor="middle" dominantBaseline="central" fontSize="16" fontWeight="700" fill="#e6e9ee">
+          {Math.round((clean / total) * 100)}%
+        </text>
+      </svg>
+      <div className="muted small" style={{ marginTop: 2 }}>{title} · clean moves</div>
+    </div>
+  );
 }
 
 function SideCard({ label, icon, report }: { label: string; icon: string; report: SideReport }) {
@@ -21,7 +63,7 @@ function SideCard({ label, icon, report }: { label: string; icon: string; report
         {report.accuracy.toFixed(1)}%
       </div>
       <div className="muted small" style={{ marginTop: 3 }}>
-        accuracy · est. rating {report.estRating}
+        accuracy · est. rating {report.estRating} · avg {(report.avgCpl / 100).toFixed(2)} CPL
       </div>
       <div className="phase-row">
         <span>Opening <b>{pct(report.phases.opening)}</b></span>
@@ -43,7 +85,7 @@ export default function GameReport({ review, onSelectPly }: Props) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
         <h3 style={{ fontSize: 15, margin: 0 }}>Game report</h3>
         <span className="muted small">
-          {review.engine === "stockfish" ? `Stockfish · depth ${review.depth}` : `Built-in engine · depth ${review.depth}`}
+          {review.engine === "stockfish" ? "Stockfish" : "Built-in engine"} · {review.depthLabel}
         </span>
       </div>
 
@@ -56,6 +98,11 @@ export default function GameReport({ review, onSelectPly }: Props) {
       <div className="grid cols-2" style={{ marginTop: 14, gap: 10 }}>
         <SideCard label="White" icon="♔" report={white} />
         <SideCard label="Black" icon="♚" report={black} />
+      </div>
+
+      <div style={{ display: "flex", gap: 20, justifyContent: "center", marginTop: 16 }}>
+        <Donut counts={white.counts} title="White" />
+        <Donut counts={black.counts} title="Black" />
       </div>
 
       <table className="quality-table">

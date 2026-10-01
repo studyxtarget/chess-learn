@@ -1,11 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ReplayBoard from "@/components/ReplayBoard";
+import TrapTrainer from "@/components/TrapTrainer";
 import { traps, type Trap } from "@/lib/data";
+
+const STORE = "chesslearn.trapsTrained";
 
 export default function TrapsPage() {
   const [query, setQuery] = useState("");
+  const [mode, setMode] = useState<"train" | "replay">("train");
+  const [activeName, setActiveName] = useState("");
+  const [variantIdx, setVariantIdx] = useState(0);
+  const [trained, setTrained] = useState<Set<string>>(new Set());
 
   const groups = useMemo(() => {
     const map = new Map<string, Trap[]>();
@@ -16,36 +23,70 @@ export default function TrapsPage() {
     return Array.from(map.entries()).map(([name, variants]) => ({ name, variants }));
   }, []);
 
+  useEffect(() => {
+    setActiveName((g) => g || groups[0]?.name || "");
+    try {
+      const raw = localStorage.getItem(STORE);
+      if (raw) setTrained(new Set(JSON.parse(raw)));
+    } catch {
+      /* ignore */
+    }
+  }, [groups]);
+
+  function markTrained(name: string) {
+    setTrained((prev) => {
+      const next = new Set(prev);
+      next.add(name);
+      try {
+        localStorage.setItem(STORE, JSON.stringify([...next]));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return groups;
-    return groups.filter((g) => g.name.toLowerCase().includes(q));
+    return q ? groups.filter((g) => g.name.toLowerCase().includes(q)) : groups;
   }, [groups, query]);
-
-  const [activeName, setActiveName] = useState(groups[0]?.name ?? "");
-  const [variantIdx, setVariantIdx] = useState(0);
 
   const active = groups.find((g) => g.name === activeName) ?? groups[0];
   const variant = active?.variants[Math.min(variantIdx, (active?.variants.length ?? 1) - 1)];
   const moves = variant ? variant.moves.split(/\s+/).filter(Boolean) : [];
-  const orientation = variant?.side === "black" ? "black" : "white";
+  const userSide: "w" | "b" = variant?.side === "black" ? "b" : "w";
+  const orientation = userSide === "b" ? "black" : "white";
 
   return (
     <div className="container section">
       <h2>Traps trainer</h2>
       <p className="sub">
-        {groups.length} classic traps and mating patterns, {traps.length} variations in all. Step
-        through each line to see how the trap is sprung.
+        {groups.length} classic traps, {traps.length} variations. Train them interactively — play the
+        right move, get feedback, and it counts as learned.
       </p>
+
+      <div className="toolbar">
+        <button className={mode === "train" ? "btn primary" : "btn"} type="button" onClick={() => setMode("train")}>
+          Train
+        </button>
+        <button className={mode === "replay" ? "btn primary" : "btn"} type="button" onClick={() => setMode("replay")}>
+          Replay
+        </button>
+        <span className="muted small" style={{ marginLeft: 6 }}>
+          {trained.size} / {groups.length} learned
+        </span>
+      </div>
 
       <div className="two-col">
         <div>
           {variant && active && (
             <>
               <div className="card" style={{ marginBottom: 14 }}>
-                <h3 style={{ fontSize: 15 }}>{active.name}</h3>
+                <h3 style={{ fontSize: 15 }}>
+                  {active.name} {trained.has(active.name) && <span style={{ color: "var(--accent)" }}>✓</span>}
+                </h3>
                 <div className="muted small" style={{ marginTop: 4 }}>
-                  {variant.variant} · {variant.source}
+                  {variant.variant} · you play {userSide === "w" ? "White" : "Black"} · {variant.source}
                 </div>
                 {active.variants.length > 1 && (
                   <div className="toolbar" style={{ marginTop: 10, marginBottom: 0 }}>
@@ -62,7 +103,18 @@ export default function TrapsPage() {
                   </div>
                 )}
               </div>
-              <ReplayBoard moves={moves} orientation={orientation} />
+
+              {mode === "train" ? (
+                <TrapTrainer
+                  key={`${active.name}-${variantIdx}`}
+                  moves={moves}
+                  userSide={userSide}
+                  orientation={orientation}
+                  onComplete={() => markTrained(active.name)}
+                />
+              ) : (
+                <ReplayBoard moves={moves} orientation={orientation} />
+              )}
             </>
           )}
         </div>
@@ -85,8 +137,12 @@ export default function TrapsPage() {
                 onClick={() => { setActiveName(g.name); setVariantIdx(0); }}
               >
                 <div className="grow">
-                  <div className="rname">{g.name}</div>
-                  <div className="rmeta">{g.variants.length} variation{g.variants.length > 1 ? "s" : ""}</div>
+                  <div className="rname">
+                    {g.name} {trained.has(g.name) && <span style={{ color: "var(--accent)" }}>✓</span>}
+                  </div>
+                  <div className="rmeta">
+                    {g.variants.length} variation{g.variants.length > 1 ? "s" : ""}
+                  </div>
                 </div>
               </button>
             ))}

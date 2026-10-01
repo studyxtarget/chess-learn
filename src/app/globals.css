@@ -500,3 +500,16 @@ html, body { overflow-x: hidden; }
 .quality-table { width: 100%; margin-top: 14px; border-collapse: collapse; font-size: 13px; }
 .quality-table th, .quality-table td { padding: 4px 0; }
 .quality-table tbody tr + tr td { border-top: 1px solid var(--line); }
+
+/* engine lines (multipv) */
+.engine-line { display: flex; gap: 10px; align-items: baseline; padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+.engine-line:last-child { border-bottom: 0; }
+.el-eval { font-weight: 700; color: var(--accent); min-width: 52px; }
+.el-pv { color: var(--muted); font-size: 12.5px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* why? explanation */
+.why { margin: 10px 0 0; font-size: 12.8px; line-height: 1.55; color: #c9d1da; background: var(--bg3); border: 1px solid var(--line); border-radius: 9px; padding: 9px 11px; }
+.why b { color: var(--text); }
+
+/* trap trainer */
+.trainer-bar { display: flex; justify-content: space-between; margin: 10px 0 6px; }
