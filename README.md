@@ -11,13 +11,17 @@ copied.
 |---|---|
 | `/` | Home / dashboard with data-driven stats and featured bots |
 | `/play` | Play against 34 data-driven bots with personalities, opening books and ratings |
-| `/analyze` | Paste a PGN/FEN, step through the game, and get an engine evaluation + suggested move |
+| `/analyze` | Paste a PGN/FEN, step through the game, and run a **full Stockfish review** — accuracy, move classification, evaluation graph |
 | `/openings` | Searchable explorer over ~4,700 named opening lines with a move-playback board |
 | `/traps` | 120 traps / mating patterns with variation tabs and playback |
 | `/repertoire` | The bots' 41 opening lines with style weights, tags and cp ceilings |
 
 ## Highlights
 
+- **Full-game review** on the Analyze page: every position is scored by **Stockfish** (WASM, in a
+  Web Worker), then each move gets a centipawn loss, a win-probability drop, an accuracy figure
+  and a classification (best / excellent / good / inaccuracy / mistake / blunder), plus a game
+  report with per-side accuracy, a counts table and an evaluation graph.
 - **PGN / FEN import & export** on the Analyze page (merged in from the separate *ChessAnalyzer* project).
 
 - **Real chess logic** via `chess.js`.
@@ -66,15 +70,32 @@ Two things matter for Pages:
 
 ```
 src/
-  app/            # App Router pages (home, play, openings, traps, repertoire)
-  components/     # Board, ReplayBoard, Nav
-  lib/            # data.ts (typed loaders), engine.ts (chess engine + bots)
+  app/            # App Router pages (home, play, analyze, openings, traps, repertoire)
+  components/     # Board, ReplayBoard, Nav, EvalGraph, GameReport
+  lib/            # data.ts, engine.ts (bot engine), stockfish.ts (UCI worker), review.ts
   data/           # bots.json, repertoire.json, traps.json  (small, imported)
 public/
-  data/openings.json   # large dataset, fetched at runtime
+  data/openings.json    # large dataset, fetched at runtime
+  stockfish/            # Stockfish 19 WASM (lite, single-threaded) + licence
   pieces/cburnett/*.svg
   bots/*.svg
 ```
+
+## Engine & licensing
+
+The bots use the original in-repo engine (`src/lib/engine.ts`). The Analyze page uses
+**Stockfish 19 (lite, single-threaded WASM)**, vendored under `public/stockfish/` and driven
+from a Web Worker via UCI (`src/lib/stockfish.ts`). The single-threaded build is deliberate:
+it needs no `SharedArrayBuffer`, so no COOP/COEP headers are required and it runs on plain
+GitHub Pages. If the worker fails to load, the review silently falls back to the built-in
+engine.
+
+**Stockfish is GPL-3.0.** Its licence text ships with the binary at
+`public/stockfish/COPYING.txt`, with provenance in `public/stockfish/NOTICE.txt`. Because the
+site distributes Stockfish, the combined work must comply with GPL-3.0 — keep that licence and
+attribution in place if you publish this.
+
+The *cburnett* piece set is by Colin M.L. Burnett (CC BY-SA 3.0 / GPL).
 
 ## Data provenance
 
