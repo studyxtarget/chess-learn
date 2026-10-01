@@ -1,0 +1,607 @@
+[
+ {
+  "id": "bot-01-agg-rex-us",
+  "file": "bot-01-agg-rex-us.svg",
+  "index": 1,
+  "style": "agg",
+  "name": "Rex",
+  "country": "us",
+  "side": "WHITE",
+  "line": "Najdorf English Attack",
+  "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 Be3 e6 f3 b5 Qd2 Bb7 O-O-O Be7 g4 O-O",
+  "maxCpLoss": 88,
+  "tags": [
+   "long_castle",
+   "opposite_castle_plan",
+   "king_attack",
+   "pawn_storm"
+  ],
+  "rating": 890
+ },
+ {
+  "id": "bot-01-def-bea-pt",
+  "file": "bot-01-def-bea-pt.svg",
+  "index": 1,
+  "style": "def",
+  "name": "Bea",
+  "country": "pt",
+  "side": "WHITE",
+  "line": "London quiet setup",
+  "moves": "d4 d5 Nf3 Nf6 Bf4 e6 e3 Bd6 Bd3 O-O O-O c5 c3 Nc6 Nbd2",
+  "maxCpLoss": 45,
+  "tags": [
+   "solid_center",
+   "quick_castle",
+   "piece_preserving"
+  ],
+  "rating": 890
+ },
+ {
+  "id": "bot-01-pip",
+  "file": "bot-01-pip.svg",
+  "index": 1,
+  "style": "neutral",
+  "name": "Pip",
+  "country": null,
+  "side": "WHITE",
+  "line": "Reti Anglo-Slav setup",
+  "moves": "Nf3 d5 c4 e6 g3 Nf6 Bg2 Be7 O-O O-O b3 c6 Bb2",
+  "maxCpLoss": 62,
+  "tags": [
+   "flexible",
+   "quick_castle",
+   "piece_preserving"
+  ],
+  "rating": 890
+ },
+ {
+  "id": "bot-02-agg-pim-th",
+  "file": "bot-02-agg-pim-th.svg",
+  "index": 2,
+  "style": "agg",
+  "name": "Pim",
+  "country": "th",
+  "side": "BLACK",
+  "line": "King's Indian Classical counterattack",
+  "moves": "d4 Nf6 c4 g6 Nc3 Bg7 e4 d6 Nf3 O-O Be2 e5 O-O Nc6 d5 Ne7 Ne1 Nd7 f3 f5",
+  "maxCpLoss": 43,
+  "tags": [
+   "closed_center",
+   "king_attack",
+   "pawn_storm"
+  ],
+  "rating": 980
+ },
+ {
+  "id": "bot-02-def-nils-se",
+  "file": "bot-02-def-nils-se.svg",
+  "index": 2,
+  "style": "def",
+  "name": "Nils",
+  "country": "se",
+  "side": "BLACK",
+  "line": "Queen's Gambit Declined Orthodox",
+  "moves": "d4 d5 c4 e6 Nc3 Nf6 Bg5 Be7 e3 O-O Nf3 Nbd7 Rc1 c6",
+  "maxCpLoss": 30,
+  "tags": [
+   "solid_center",
+   "quick_castle",
+   "piece_preserving"
+  ],
+  "rating": 980
+ },
+ {
+  "id": "bot-02-luna",
+  "file": "bot-02-luna.svg",
+  "index": 2,
+  "style": "neutral",
+  "name": "Luna",
+  "country": null,
+  "side": "BLACK",
+  "line": "Queen's Indian Classical",
+  "moves": "d4 Nf6 c4 e6 Nf3 b6 g3 Bb7 Bg2 Be7 O-O O-O Nc3 d5",
+  "maxCpLoss": 39,
+  "tags": [
+   "flexible",
+   "quick_castle",
+   "piece_preserving"
+  ],
+  "rating": 980
+ },
+ {
+  "id": "bot-03-agg-ivy-ie",
+  "file": "bot-03-agg-ivy-ie.svg",
+  "index": 3,
+  "style": "agg",
+  "name": "Ivy",
+  "country": "ie",
+  "side": "WHITE",
+  "line": "Smith-Morra Gambit",
+  "moves": "e4 c5 d4 cxd4 c3 dxc3 Nxc3 Nc6 Nf3 d6 Bc4 e6 O-O a6 Qe2 b5 Bb3 Ra7",
+  "maxCpLoss": 75,
+  "tags": [
+   "gambit",
+   "king_attack",
+   "quick_castle"
+  ],
+  "rating": 1070
+ },
+ {
+  "id": "bot-03-def-omar-eg",
+  "file": "bot-03-def-omar-eg.svg",
+  "index": 3,
+  "style": "def",
+  "name": "Omar",
+  "country": "eg",
+  "side": "WHITE",
+  "line": "Mieses to King's Indian Attack setup",
+  "moves": "d3 d5 Nf3 Nf6 g3 g6 Bg2 Bg7 O-O O-O Nbd2 c5 e4",
+  "maxCpLoss": 83,
+  "tags": [
+   "closed_center",
+   "quick_castle",
+   "piece_preserving"
+  ],
+  "rating": 1070
+ },
+ {
+  "id": "bot-03-theo",
+  "file": "bot-03-theo.svg",
+  "index": 3,
+  "style": "neutral",
+  "name": "Theo",
+  "country": null,
+  "side": "WHITE",
+  "line": "King's Gambit Kieseritzky",
+  "moves": "e4 e5 f4 exf4 Nf3 g5 h4 g4 Ne5 Nf6 Bc4 d5 exd5 Bd6 d4 O-O O-O",
+  "maxCpLoss": 111,
+  "tags": [
+   "gambit",
+   "king_attack",
+   "quick_castle"
+  ],
+  "rating": 1070
+ },
+ {
+  "id": "bot-04-agg-mateo-es",
+  "file": "bot-04-agg-mateo-es.svg",
+  "index": 4,
+  "style": "agg",
+  "name": "Mateo",
+  "country": "es",
+  "side": "BLACK",
+  "line": "French Winawer Poisoned Pawn",
+  "moves": "e4 e6 d4 d5 Nc3 Bb4 e5 c5 a3 Bxc3+ bxc3 Ne7 Qg4 cxd4 Qxg7 Rg8 Qxh7 Nbc6",
+  "maxCpLoss": 84,
+  "tags": [
+   "king_attack",
+   "queenside_counterplay"
+  ],
+  "rating": 1160
+ },
+ {
+  "id": "bot-04-def-priya-in",
+  "file": "bot-04-def-priya-in.svg",
+  "index": 4,
+  "style": "def",
+  "name": "Priya",
+  "country": "in",
+  "side": "BLACK",
+  "line": "Slav Classical",
+  "moves": "d4 d5 c4 c6 Nf3 Nf6 Nc3 dxc4 a4 Bf5 e3 e6 Bxc4 Bb4 O-O O-O Qe2",
+  "maxCpLoss": 36,
+  "tags": [
+   "solid_center",
+   "quick_castle"
+  ],
+  "rating": 1160
+ },
+ {
+  "id": "bot-04-mara",
+  "file": "bot-04-mara.svg",
+  "index": 4,
+  "style": "neutral",
+  "name": "Mara",
+  "country": null,
+  "side": "BLACK",
+  "line": "Dutch Leningrad setup",
+  "moves": "d4 f5 c4 Nf6 g3 g6 Bg2 Bg7 Nf3 O-O O-O d6 Nc3 Nc6",
+  "maxCpLoss": 68,
+  "tags": [
+   "king_attack",
+   "quick_castle"
+  ],
+  "rating": 1160
+ },
+ {
+  "id": "bot-05-agg-alma-ar",
+  "file": "bot-05-agg-alma-ar.svg",
+  "index": 5,
+  "style": "agg",
+  "name": "Alma",
+  "country": "ar",
+  "side": "WHITE",
+  "line": "Vienna Gambit development",
+  "moves": "e4 e5 Nc3 Nf6 f4 d5 fxe5 Nxe4 d3 Nxc3 bxc3 d4 Nf3 Nc6 Be2 Be7 O-O O-O",
+  "maxCpLoss": 57,
+  "tags": [
+   "gambit",
+   "king_attack",
+   "quick_castle"
+  ],
+  "rating": 1250
+ },
+ {
+  "id": "bot-05-def-arman-am",
+  "file": "bot-05-def-arman-am.svg",
+  "index": 5,
+  "style": "def",
+  "name": "Arman",
+  "country": "am",
+  "side": "WHITE",
+  "line": "Nimzo-Larsen quiet setup",
+  "moves": "b3 d5 Bb2 Nf6 Nf3 e6 e3 Be7 Be2 O-O O-O c5",
+  "maxCpLoss": 91,
+  "tags": [
+   "flexible",
+   "quick_castle",
+   "piece_preserving"
+  ],
+  "rating": 1250
+ },
+ {
+  "id": "bot-05-idris",
+  "file": "bot-05-idris.svg",
+  "index": 5,
+  "style": "neutral",
+  "name": "Idris",
+  "country": null,
+  "side": "WHITE",
+  "line": "Dragon Yugoslav Attack",
+  "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 g6 Be3 Bg7 f3 O-O Qd2 Nc6 O-O-O d5 h4",
+  "maxCpLoss": 74,
+  "tags": [
+   "long_castle",
+   "opposite_castle_plan",
+   "king_attack",
+   "pawn_storm"
+  ],
+  "rating": 1250
+ },
+ {
+  "id": "bot-06-agg-nadia-ro",
+  "file": "bot-06-agg-nadia-ro.svg",
+  "index": 6,
+  "style": "agg",
+  "name": "Nadia",
+  "country": "ro",
+  "side": "BLACK",
+  "line": "Two Knights counterattack",
+  "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 Na5 Bb5+ c6 dxc6 bxc6 Be2 h6 Nf3 e4 Ne5 Bd6",
+  "maxCpLoss": 95,
+  "tags": [
+   "gambit",
+   "king_attack"
+  ],
+  "rating": 1340
+ },
+ {
+  "id": "bot-06-def-bram-nl",
+  "file": "bot-06-def-bram-nl.svg",
+  "index": 6,
+  "style": "def",
+  "name": "Bram",
+  "country": "nl",
+  "side": "BLACK",
+  "line": "Petrov Classical",
+  "moves": "e4 e5 Nf3 Nf6 Nxe5 d6 Nf3 Nxe4 d4 d5 Bd3 Be7 O-O O-O",
+  "maxCpLoss": 30,
+  "tags": [
+   "solid_center",
+   "quick_castle"
+  ],
+  "rating": 1340
+ },
+ {
+  "id": "bot-06-yuki",
+  "file": "bot-06-yuki.svg",
+  "index": 6,
+  "style": "neutral",
+  "name": "Yuki",
+  "country": null,
+  "side": "BLACK",
+  "line": "Caro-Kann Classical development",
+  "moves": "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Bf5 Ng3 Bg6 Nf3 Nd7 Bd3 e6 O-O Ngf6 Re1 Be7 c3 O-O",
+  "maxCpLoss": 32,
+  "tags": [
+   "solid_center",
+   "quick_castle",
+   "piece_preserving"
+  ],
+  "rating": 1340
+ },
+ {
+  "id": "bot-07-agg-vera-cz",
+  "file": "bot-07-agg-vera-cz.svg",
+  "index": 7,
+  "style": "agg",
+  "name": "Vera",
+  "country": "cz",
+  "side": "WHITE",
+  "line": "Richter-Rauzer Attack",
+  "moves": "e4 c5 Nf3 Nc6 d4 cxd4 Nxd4 Nf6 Nc3 d6 Bg5 e6 Qd2 Be7 O-O-O O-O f4",
+  "maxCpLoss": 30,
+  "tags": [
+   "long_castle",
+   "opposite_castle_plan",
+   "king_attack",
+   "pawn_storm"
+  ],
+  "rating": 1430
+ },
+ {
+  "id": "bot-07-dane",
+  "file": "bot-07-dane.svg",
+  "index": 7,
+  "style": "neutral",
+  "name": "Dane",
+  "country": null,
+  "side": "WHITE",
+  "line": "Blackmar-Diemer Gambit development",
+  "moves": "d4 d5 e4 dxe4 Nc3 Nf6 f3 exf3 Nxf3 e6 Bd3 Be7 O-O O-O",
+  "maxCpLoss": 130,
+  "tags": [
+   "gambit",
+   "king_attack",
+   "quick_castle"
+  ],
+  "rating": 1430
+ },
+ {
+  "id": "bot-07-def-elias-fi",
+  "file": "bot-07-def-elias-fi.svg",
+  "index": 7,
+  "style": "def",
+  "name": "Elias",
+  "country": "fi",
+  "side": "WHITE",
+  "line": "Van't Kruijs to Zukertort setup",
+  "moves": "e3 d5 Nf3 Nf6 b3 e6 Bb2 Be7 Be2 O-O O-O c5 d4",
+  "maxCpLoss": 62,
+  "tags": [
+   "flexible",
+   "quick_castle",
+   "piece_preserving"
+  ],
+  "rating": 1430
+ },
+ {
+  "id": "bot-08-agg-delia-mx",
+  "file": "bot-08-agg-delia-mx.svg",
+  "index": 8,
+  "style": "agg",
+  "name": "Delia",
+  "country": "mx",
+  "side": "BLACK",
+  "line": "Sicilian Najdorf English Attack counterplay",
+  "moves": "e4 c5 Nf3 d6 d4 cxd4 Nxd4 Nf6 Nc3 a6 Be3 e6 f3 b5 Qd2 Bb7 O-O-O Be7 g4 O-O",
+  "maxCpLoss": 101,
+  "tags": [
+   "opposite_castle_plan",
+   "queenside_counterplay",
+   "king_attack"
+  ],
+  "rating": 1520
+ },
+ {
+  "id": "bot-08-def-hugo-fr",
+  "file": "bot-08-def-hugo-fr.svg",
+  "index": 8,
+  "style": "def",
+  "name": "Hugo",
+  "country": "fr",
+  "side": "BLACK",
+  "line": "French Classical Burn",
+  "moves": "e4 e6 d4 d5 Nc3 Nf6 Bg5 dxe4 Nxe4 Be7 Bxf6 Bxf6 Nf3 O-O",
+  "maxCpLoss": 28,
+  "tags": [
+   "solid_center",
+   "quick_castle"
+  ],
+  "rating": 1520
+ },
+ {
+  "id": "bot-08-zara",
+  "file": "bot-08-zara.svg",
+  "index": 8,
+  "style": "neutral",
+  "name": "Zara",
+  "country": null,
+  "side": "BLACK",
+  "line": "Philidor solid setup",
+  "moves": "e4 d6 d4 Nf6 Nc3 e5 Nf3 Nbd7 Bc4 Be7 O-O O-O Re1 c6",
+  "maxCpLoss": 46,
+  "tags": [
+   "solid_center",
+   "quick_castle",
+   "piece_preserving"
+  ],
+  "rating": 1520
+ },
+ {
+  "id": "bot-09-agg-regina-de",
+  "file": "bot-09-agg-regina-de.svg",
+  "index": 9,
+  "style": "agg",
+  "name": "Regina",
+  "country": "de",
+  "side": "WHITE",
+  "line": "Scotch Gambit Anderssen Attack",
+  "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 d4 exd4 O-O Nxe4 Re1 d5 Bxd5 Qxd5 Nc3",
+  "maxCpLoss": 61,
+  "tags": [
+   "gambit",
+   "king_attack",
+   "quick_castle"
+  ],
+  "rating": 1610
+ },
+ {
+  "id": "bot-09-anton",
+  "file": "bot-09-anton.svg",
+  "index": 9,
+  "style": "neutral",
+  "name": "Anton",
+  "country": null,
+  "side": "WHITE",
+  "line": "London quiet setup",
+  "moves": "d4 d5 Nf3 Nf6 Bf4 e6 e3 Bd6 Bd3 O-O O-O c5 c3 Nc6 Nbd2",
+  "maxCpLoss": 45,
+  "tags": [
+   "solid_center",
+   "quick_castle",
+   "piece_preserving"
+  ],
+  "rating": 1610
+ },
+ {
+  "id": "bot-09-def-magnus-no",
+  "file": "bot-09-def-magnus-no.svg",
+  "index": 9,
+  "style": "def",
+  "name": "Magnus",
+  "country": "no",
+  "side": "WHITE",
+  "line": "Reti Anglo-Slav setup",
+  "moves": "Nf3 d5 c4 e6 g3 Nf6 Bg2 Be7 O-O O-O b3 c6 Bb2",
+  "maxCpLoss": 62,
+  "tags": [
+   "flexible",
+   "quick_castle",
+   "piece_preserving"
+  ],
+  "rating": 1610
+ },
+ {
+  "id": "bot-10-agg-ottilie-at",
+  "file": "bot-10-agg-ottilie-at.svg",
+  "index": 10,
+  "style": "agg",
+  "name": "Ottilie",
+  "country": "at",
+  "side": "BLACK",
+  "line": "Pirc Austrian counterattack",
+  "moves": "e4 d6 d4 Nf6 Nc3 g6 f4 Bg7 Nf3 O-O e5 Nfd7 h4 c5",
+  "maxCpLoss": 53,
+  "tags": [
+   "king_attack",
+   "queenside_counterplay"
+  ],
+  "rating": 1700
+ },
+ {
+  "id": "bot-10-def-viktor-ua",
+  "file": "bot-10-def-viktor-ua.svg",
+  "index": 10,
+  "style": "def",
+  "name": "Viktor",
+  "country": "ua",
+  "side": "BLACK",
+  "line": "Caro-Kann Classical development",
+  "moves": "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Bf5 Ng3 Bg6 Nf3 Nd7 Bd3 e6 O-O Ngf6 Re1 Be7 c3 O-O",
+  "maxCpLoss": 32,
+  "tags": [
+   "solid_center",
+   "quick_castle",
+   "piece_preserving"
+  ],
+  "rating": 1700
+ },
+ {
+  "id": "bot-10-kasimir",
+  "file": "bot-10-kasimir.svg",
+  "index": 10,
+  "style": "neutral",
+  "name": "Kasimir",
+  "country": null,
+  "side": "BLACK",
+  "line": "Modern Benoni Classical",
+  "moves": "d4 Nf6 c4 c5 d5 e6 Nc3 exd5 cxd5 d6 e4 g6 Nf3 Bg7 Be2 O-O O-O Re8",
+  "maxCpLoss": 54,
+  "tags": [
+   "queenside_counterplay",
+   "quick_castle"
+  ],
+  "rating": 1700
+ },
+ {
+  "id": "bot-10-nikola-rs",
+  "file": "bot-10-nikola-rs.svg",
+  "index": 10,
+  "style": "neutral",
+  "name": "Nikola",
+  "country": "rs",
+  "side": "BLACK",
+  "line": "Pirc Austrian counterattack",
+  "moves": "e4 d6 d4 Nf6 Nc3 g6 f4 Bg7 Nf3 O-O e5 Nfd7 h4 c5",
+  "maxCpLoss": 53,
+  "tags": [
+   "king_attack",
+   "queenside_counterplay"
+  ],
+  "rating": 1700
+ },
+ {
+  "id": "bot-kanya-th",
+  "file": "bot-kanya-th.svg",
+  "index": null,
+  "style": "neutral",
+  "name": "Kanya",
+  "country": "th",
+  "side": "WHITE",
+  "line": "Mieses to King's Indian Attack setup",
+  "moves": "d3 d5 Nf3 Nf6 g3 g6 Bg2 Bg7 O-O O-O Nbd2 c5 e4",
+  "maxCpLoss": 83,
+  "tags": [
+   "closed_center",
+   "quick_castle",
+   "piece_preserving"
+  ],
+  "rating": 3680
+ },
+ {
+  "id": "bot-minjun-kr",
+  "file": "bot-minjun-kr.svg",
+  "index": null,
+  "style": "neutral",
+  "name": "Minjun",
+  "country": "kr",
+  "side": "BLACK",
+  "line": "French Winawer Poisoned Pawn",
+  "moves": "e4 e6 d4 d5 Nc3 Bb4 e5 c5 a3 Bxc3+ bxc3 Ne7 Qg4 cxd4 Qxg7 Rg8 Qxh7 Nbc6",
+  "maxCpLoss": 84,
+  "tags": [
+   "king_attack",
+   "queenside_counterplay"
+  ],
+  "rating": 3770
+ },
+ {
+  "id": "bot-ren-jp",
+  "file": "bot-ren-jp.svg",
+  "index": null,
+  "style": "neutral",
+  "name": "Ren",
+  "country": "jp",
+  "side": "WHITE",
+  "line": "Evans Gambit",
+  "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 b4 Bxb4 c3 Bc5 d4 exd4 O-O d6 cxd4 Bb6 Nc3 Bg4",
+  "maxCpLoss": 68,
+  "tags": [
+   "gambit",
+   "king_attack",
+   "quick_castle"
+  ],
+  "rating": 3860
+ }
+]
