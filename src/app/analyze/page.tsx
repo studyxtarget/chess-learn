@@ -64,7 +64,7 @@ export default function AnalyzePage() {
   const [viewPly, setViewPly] = useState(0);
   const [pgnText, setPgnText] = useState("");
   const [status, setStatus] = useState("Ready — paste a PGN or FEN, or play moves on the board.");
-  const [analysis, setAnalysis] = useState<{ cp: number; best: string | null } | null>(null);
+  const [analysis, setAnalysis] = useState<{ cp: number; best: string | null; from: string; to: string } | null>(null);
   const [thinking, setThinking] = useState(false);
   const [flipped, setFlipped] = useState(false);
 
@@ -110,7 +110,7 @@ export default function AnalyzePage() {
     setThinking(true);
     const t = setTimeout(() => {
       const r = analyzePosition(fen, 3);
-      setAnalysis({ cp: r.cp, best: r.best ? r.best.san : null });
+      setAnalysis({ cp: r.cp, best: r.best ? r.best.san : null, from: r.best?.from ?? "", to: r.best?.to ?? "" });
       setThinking(false);
     }, 140);
     return () => clearTimeout(t);
@@ -207,6 +207,25 @@ export default function AnalyzePage() {
   const whiteFrac = isMate ? (cp > 0 ? 1 : 0) : Math.max(0.03, Math.min(0.97, 0.5 + cp / 1600));
   const evalLabel = isMate ? "#" : `${cp >= 0 ? "+" : ""}${(cp / 100).toFixed(2)}`;
 
+  // Board annotations: engine best-move arrow + a marker on a problem move.
+  const bestUci = selectedReview?.bestUci ?? null;
+  const arrows = bestUci
+    ? [{ from: bestUci.slice(0, 2), to: bestUci.slice(2, 4), color: "#6aa84f" }]
+    : analysis?.from
+    ? [{ from: analysis.from, to: analysis.to, color: "#6aa84f" }]
+    : [];
+  const PROBLEM = ["inaccuracy", "mistake", "blunder", "missed-win"];
+  const markers =
+    selectedReview && PROBLEM.includes(selectedReview.classification)
+      ? [
+          {
+            square: selectedReview.to,
+            label: CLASS_META[selectedReview.classification].badge,
+            color: CLASS_META[selectedReview.classification].color,
+          },
+        ]
+      : [];
+
   return (
     <div className="container section">
       <h2>Analyze</h2>
@@ -234,6 +253,8 @@ export default function AnalyzePage() {
             interactive
             onMove={onMove}
             lastMove={lastMove}
+            arrows={arrows}
+            markers={markers}
           />
 
           <div className="replay-controls" style={{ marginTop: 12 }}>

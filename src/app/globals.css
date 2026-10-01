@@ -490,3 +490,13 @@ html, body { overflow-x: hidden; }
 /* brand knight as an SVG piece (reliable across platforms) */
 .logo-img { width: 25px; height: 25px; display: block; flex: none; }
 .brand .logo { display: none; }
+
+/* board annotation overlay (arrows + move markers) */
+.board-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 6; }
+
+/* game report extras */
+.phase-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; font-size: 11.5px; color: var(--muted); }
+.phase-row b { color: var(--text); font-weight: 600; }
+.quality-table { width: 100%; margin-top: 14px; border-collapse: collapse; font-size: 13px; }
+.quality-table th, .quality-table td { padding: 4px 0; }
+.quality-table tbody tr + tr td { border-top: 1px solid var(--line); }

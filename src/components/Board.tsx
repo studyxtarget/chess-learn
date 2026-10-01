@@ -13,6 +13,8 @@ type Props = {
   onMove?: (m: BoardMove) => void;
   lastMove?: { from: string; to: string } | null;
   highlights?: string[];
+  arrows?: { from: string; to: string; color?: string }[];
+  markers?: { square: string; label: string; color?: string }[];
 };
 
 const FILES = "abcdefgh";
@@ -28,6 +30,8 @@ export default function Board({
   onMove,
   lastMove,
   highlights = [],
+  arrows = [],
+  markers = [],
 }: Props) {
   const game = useMemo(() => new Chess(fen), [fen]);
   const [selected, setSelected] = useState<string | null>(null);
@@ -57,6 +61,15 @@ export default function Board({
     const f = FILES.indexOf(sq[0]);
     const r = parseInt(sq[1], 10);
     return (f + r) % 2 === 0 ? "dark" : "light";
+  }
+
+  // Centre of a square in board units (0..8), respecting orientation.
+  function center(sq: string): [number, number] {
+    const f = FILES.indexOf(sq[0]);
+    const r = parseInt(sq[1], 10);
+    const col = orientation === "white" ? f : 7 - f;
+    const row = orientation === "white" ? 8 - r : r - 1;
+    return [col + 0.5, row + 0.5];
   }
 
   function pieceAt(sq: string) {
@@ -139,6 +152,58 @@ export default function Board({
           })
         )}
       </div>
+
+      {(arrows.length > 0 || markers.length > 0) && (
+        <svg className="board-overlay" viewBox="0 0 8 8" aria-hidden="true">
+          {arrows.map((a, i) => {
+            const [x1, y1] = center(a.from);
+            const [x2, y2] = center(a.to);
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const len = Math.hypot(dx, dy) || 1;
+            const ux = dx / len;
+            const uy = dy / len;
+            const sx = x1 + ux * 0.3;
+            const sy = y1 + uy * 0.3;
+            const ex = x2 - ux * 0.32;
+            const ey = y2 - uy * 0.32;
+            const hw = 0.21;
+            const hl = 0.28;
+            const px = -uy;
+            const py = ux;
+            const col = a.color ?? "#6aa84f";
+            return (
+              <g key={i} opacity="0.9">
+                <line x1={sx} y1={sy} x2={ex} y2={ey} stroke={col} strokeWidth="0.085" strokeLinecap="round" />
+                <polygon
+                  points={`${ex},${ey} ${ex - ux * hl + px * hw},${ey - uy * hl + py * hw} ${ex - ux * hl - px * hw},${ey - uy * hl - py * hw}`}
+                  fill={col}
+                />
+              </g>
+            );
+          })}
+          {markers.map((mk, i) => {
+            const [cx, cy] = center(mk.square);
+            const col = mk.color ?? "#e0554d";
+            return (
+              <g key={i}>
+                <circle cx={cx} cy={cy} r="0.31" fill={col} opacity="0.94" />
+                <text
+                  x={cx}
+                  y={cy}
+                  fontSize="0.42"
+                  fontWeight="700"
+                  fill="#fff"
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                >
+                  {mk.label}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      )}
 
       {pending && (
         <div className="promo-overlay">

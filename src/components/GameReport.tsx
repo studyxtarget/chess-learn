@@ -1,24 +1,42 @@
 import EvalGraph from "./EvalGraph";
-import { CLASSIFICATIONS, CLASS_META, type GameReview } from "@/lib/review";
+import { CLASSIFICATIONS, CLASS_META, type GameReview, type SideReport } from "@/lib/review";
 
 type Props = {
   review: GameReview;
   onSelectPly: (ply: number) => void;
 };
 
-function Accuracy({ value }: { value: number }) {
-  const color = value >= 85 ? "#6aa84f" : value >= 70 ? "#e0c04d" : "#e0554d";
+function pct(v: number | null): string {
+  return v === null ? "—" : `${v.toFixed(0)}%`;
+}
+
+function SideCard({ label, icon, report }: { label: string; icon: string; report: SideReport }) {
+  const color = report.accuracy >= 85 ? "#6aa84f" : report.accuracy >= 70 ? "#e0c04d" : "#e0554d";
   return (
-    <div style={{ textAlign: "center" }}>
-      <div style={{ fontSize: 30, fontWeight: 700, color }}>{value.toFixed(1)}%</div>
-      <div className="muted small">accuracy</div>
+    <div className="card" style={{ padding: 13, background: "var(--bg3)" }}>
+      <div className="small" style={{ fontWeight: 600, marginBottom: 8 }}>
+        {icon} {label}
+      </div>
+      <div style={{ fontSize: 27, fontWeight: 700, color, lineHeight: 1 }}>
+        {report.accuracy.toFixed(1)}%
+      </div>
+      <div className="muted small" style={{ marginTop: 3 }}>
+        accuracy · est. rating {report.estRating}
+      </div>
+      <div className="phase-row">
+        <span>Opening <b>{pct(report.phases.opening)}</b></span>
+        <span>Middlegame <b>{pct(report.phases.middlegame)}</b></span>
+        <span>Endgame <b>{pct(report.phases.endgame)}</b></span>
+      </div>
     </div>
   );
 }
 
 export default function GameReport({ review, onSelectPly }: Props) {
   const { white, black, moves } = review;
-  const rows = CLASSIFICATIONS.filter((c) => c !== "best" || true);
+  const used = CLASSIFICATIONS.filter(
+    (c) => white.counts[c] > 0 || black.counts[c] > 0 || c === "best" || c === "blunder"
+  );
 
   return (
     <div className="card" style={{ marginBottom: 16 }}>
@@ -29,29 +47,29 @@ export default function GameReport({ review, onSelectPly }: Props) {
         </span>
       </div>
 
+      {review.narrative && (
+        <p className="small" style={{ margin: "10px 0 0", lineHeight: 1.6, color: "#c9d1da" }}>
+          {review.narrative}
+        </p>
+      )}
+
       <div className="grid cols-2" style={{ marginTop: 14, gap: 10 }}>
-        <div className="card" style={{ padding: 12, background: "var(--bg3)" }}>
-          <div className="small" style={{ fontWeight: 600, marginBottom: 6 }}>♔ White</div>
-          <Accuracy value={white.accuracy} />
-        </div>
-        <div className="card" style={{ padding: 12, background: "var(--bg3)" }}>
-          <div className="small" style={{ fontWeight: 600, marginBottom: 6 }}>♚ Black</div>
-          <Accuracy value={black.accuracy} />
-        </div>
+        <SideCard label="White" icon="♔" report={white} />
+        <SideCard label="Black" icon="♚" report={black} />
       </div>
 
-      <table style={{ width: "100%", marginTop: 14, borderCollapse: "collapse", fontSize: 13 }}>
+      <table className="quality-table">
         <thead>
           <tr className="muted small">
-            <th style={{ textAlign: "left", padding: "4px 0" }}>Move quality</th>
+            <th style={{ textAlign: "left" }}>Move quality</th>
             <th style={{ textAlign: "right" }}>White</th>
             <th style={{ textAlign: "right" }}>Black</th>
           </tr>
         </thead>
         <tbody>
-          {rows.map((c) => (
+          {used.map((c) => (
             <tr key={c}>
-              <td style={{ padding: "3px 0" }}>
+              <td>
                 <span style={{ color: CLASS_META[c].color, fontWeight: 700 }}>{CLASS_META[c].badge}</span>{" "}
                 {CLASS_META[c].label}
               </td>
@@ -75,12 +93,7 @@ export default function GameReport({ review, onSelectPly }: Props) {
             .slice(0, 5)
             .filter((m) => m.winDrop > 0)
             .map((m) => (
-              <button
-                key={m.ply}
-                type="button"
-                className="row"
-                onClick={() => onSelectPly(m.ply)}
-              >
+              <button key={m.ply} type="button" className="row" onClick={() => onSelectPly(m.ply)}>
                 <div className="grow">
                   <div className="rname">
                     <span style={{ color: CLASS_META[m.classification].color, fontWeight: 700 }}>
