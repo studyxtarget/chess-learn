@@ -1,0 +1,66 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <clipPath id="clipRenJp">
+            <rect width="240" height="240" rx="38" ry="38"/>
+        </clipPath>
+        <linearGradient id="skinRenJp" x1="18%" y1="8%" x2="82%" y2="100%">
+            <stop offset="0%" stop-color="#F1C8A7"/>
+            <stop offset="60%" stop-color="#E2AD87"/>
+            <stop offset="100%" stop-color="#CA8C67"/>
+        </linearGradient>
+        <linearGradient id="hairRenJp" x1="14%" y1="0%" x2="86%" y2="100%">
+            <stop offset="0%" stop-color="#38292D"/>
+            <stop offset="58%" stop-color="#24181C"/>
+            <stop offset="100%" stop-color="#140D10"/>
+        </linearGradient>
+        <linearGradient id="hoodieRenJp" x1="12%" y1="0%" x2="88%" y2="100%">
+            <stop offset="0%" stop-color="#8793C9"/>
+            <stop offset="56%" stop-color="#6876B3"/>
+            <stop offset="100%" stop-color="#4A5790"/>
+        </linearGradient>
+        <radialGradient id="blushRenJp">
+            <stop offset="0%" stop-color="#D77278" stop-opacity="0.27"/>
+            <stop offset="100%" stop-color="#D77278" stop-opacity="0"/>
+        </radialGradient>
+    </defs>
+    <g clip-path="url(#clipRenJp)">
+        <path d="M92 70 C74 81 70 104 75 129 C79 147 89 159 103 166 L137 166 C153 155 163 138 165 115 C167 91 158 72 142 62 Z" fill="url(#hairRenJp)"/>
+        <path d="M102 148 L102 181 Q120 191 138 181 L138 148 Z" fill="#CA8C67"/>
+        <path d="M103 151 Q120 166 137 151 L137 159 Q120 172 103 159 Z" fill="#A96C4D" opacity="0.38"/>
+        <path d="M19 240 C21 198 58 173 103 169 C109 174 114 176 120 176 C126 176 131 174 137 169 C182 173 219 198 221 240 Z" fill="url(#hoodieRenJp)"/>
+        <path d="M19 240 C22 211 45 188 76 179 C68 199 65 220 66 240 Z" fill="#3E497D" opacity="0.38"/>
+        <path d="M102 170 Q120 184 138 170 L151 175 L144 201 Q120 191 96 201 L89 175 Z" fill="#98A4D7"/>
+        <path d="M103 170 Q120 184 137 170 Q134 187 120 190 Q106 187 103 170 Z" fill="#ECE7DD"/>
+        <circle cx="120" cy="196" r="7.5" fill="#D75B62"/>
+        <circle cx="120" cy="196" r="3.1" fill="#F6D9C6"/>
+        <path d="M106 197 C106 207 108 217 109 224 M134 197 C134 207 132 217 131 224" fill="none" stroke="#F1F2F8" stroke-width="3" stroke-linecap="round"/>
+        <path d="M19 240 C21 198 58 173 103 169 M137 169 C182 173 219 198 221 240" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.18"/>
+        <path d="M76 100 C66 99 62 108 64 121 C66 133 74 139 81 132 C84 127 83 108 76 100 Z" fill="url(#skinRenJp)"/>
+        <path d="M164 100 C174 99 178 108 176 121 C174 133 166 139 159 132 C156 127 157 108 164 100 Z" fill="url(#skinRenJp)"/>
+        <path d="M72 115 Q69 122 76 127 M168 115 Q171 122 164 127" fill="none" stroke="#AF7657" stroke-width="2" stroke-linecap="round" opacity="0.54"/>
+        <path d="M120 58 C93 57 76 77 76 109 C76 136 88 156 105 166 C114 171 126 171 135 166 C152 156 164 136 164 109 C164 77 147 57 120 58 Z" fill="url(#skinRenJp)"/>
+        <path d="M143 67 C157 78 162 94 161 113 C160 137 150 155 135 165 C143 148 146 128 145 107 C145 88 142 75 136 65 Z" fill="#AF7455" opacity="0.2"/>
+        <path d="M73 107 C69 83 76 62 94 52 C110 42 132 44 148 53 C165 64 170 84 167 107 C162 91 157 84 148 78 C141 88 133 91 124 82 C119 91 109 94 101 84 C95 92 86 94 79 90 C76 96 74 101 73 107 Z" fill="url(#hairRenJp)"/>
+        <path d="M89 61 C104 48 125 47 142 54 C128 53 113 59 103 70 Z" fill="#4D383C" opacity="0.42"/>
+        <path d="M75 100 C80 92 84 87 89 83 C91 96 86 105 75 111 Z" fill="#2B1B20"/>
+        <path d="M165 100 C160 90 154 83 147 78 C149 93 155 103 165 111 Z" fill="#2B1B20"/>
+        <path d="M91 95 Q101 91 112 95" fill="none" stroke="#554039" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M128 95 Q139 91 149 95" fill="none" stroke="#554039" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M91 109 C97 105 106 105 112 109 C106 113 97 113 91 109 Z" fill="#FFFDFC"/>
+        <circle cx="102" cy="109" r="4.1" fill="#51413A"/>
+        <circle cx="102" cy="109" r="2.3" fill="#1D1815"/>
+        <circle cx="103.4" cy="107.6" r="1.05" fill="#FFFFFF"/>
+        <path d="M91 109 C97 105 106 105 112 109" fill="none" stroke="#594038" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M129 109 C135 105 144 105 150 109 C144 113 135 113 129 109 Z" fill="#FFFDFC"/>
+        <circle cx="140" cy="109" r="4.1" fill="#51413A"/>
+        <circle cx="140" cy="109" r="2.3" fill="#1D1815"/>
+        <circle cx="141.4" cy="107.6" r="1.05" fill="#FFFFFF"/>
+        <path d="M129 109 C135 105 144 105 150 109" fill="none" stroke="#594038" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M119 112 C118 121 115 129 118 134 C121 137 126 135 129 131 C126 133 122 133 121 129 Z" fill="#AD7253" opacity="0.5"/>
+        <path d="M120 114 C119 122 117 128 120 131" fill="none" stroke="#F7D4B9" stroke-width="1.4" stroke-linecap="round" opacity="0.7"/>
+        <ellipse cx="94" cy="131" rx="12" ry="7" fill="url(#blushRenJp)"/>
+        <ellipse cx="146" cy="131" rx="12" ry="7" fill="url(#blushRenJp)"/>
+        <path d="M106 141 C114 148 126 150 134 140 C126 146 115 146 106 141 Z" fill="#8D4C4E"/>
+        <path d="M111 142 Q120 145 129 141" fill="none" stroke="#FFF8F1" stroke-width="1.4" stroke-linecap="round"/>
+    </g>
+</svg>

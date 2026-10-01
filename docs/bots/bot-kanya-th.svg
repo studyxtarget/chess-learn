@@ -1,0 +1,68 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <clipPath id="clipKanyaTh">
+            <rect width="240" height="240" rx="38" ry="38"/>
+        </clipPath>
+        <linearGradient id="skinKanyaTh" x1="18%" y1="8%" x2="82%" y2="100%">
+            <stop offset="0%" stop-color="#E9B07A"/>
+            <stop offset="58%" stop-color="#D99760"/>
+            <stop offset="100%" stop-color="#C77D48"/>
+        </linearGradient>
+        <linearGradient id="hairKanyaTh" x1="15%" y1="0%" x2="85%" y2="100%">
+            <stop offset="0%" stop-color="#332329"/>
+            <stop offset="62%" stop-color="#20151C"/>
+            <stop offset="100%" stop-color="#140D12"/>
+        </linearGradient>
+        <linearGradient id="jacketKanyaTh" x1="12%" y1="0%" x2="88%" y2="100%">
+            <stop offset="0%" stop-color="#FF7658"/>
+            <stop offset="55%" stop-color="#EC4E38"/>
+            <stop offset="100%" stop-color="#C9332D"/>
+        </linearGradient>
+        <radialGradient id="blushKanyaTh">
+            <stop offset="0%" stop-color="#C85155" stop-opacity="0.34"/>
+            <stop offset="100%" stop-color="#C85155" stop-opacity="0"/>
+        </radialGradient>
+    </defs>
+    <g clip-path="url(#clipKanyaTh)">
+        <path d="M154 60 C179 58 193 71 191 91 C190 106 181 117 164 118 C176 104 172 82 153 77 Z" fill="url(#hairKanyaTh)"/>
+        <path d="M168 70 C181 74 186 85 181 99 C177 109 168 114 159 112 C169 101 170 84 161 76 Z" fill="#4A3035" opacity="0.5"/>
+        <path d="M101 148 L101 181 Q120 193 139 181 L139 148 Z" fill="#C77D48"/>
+        <path d="M102 151 Q120 167 138 151 L138 159 Q120 174 102 159 Z" fill="#9D5735" opacity="0.42"/>
+        <path d="M18 240 C20 197 57 172 102 168 C109 173 113 176 120 176 C127 176 131 173 138 168 C183 172 220 197 222 240 Z" fill="url(#jacketKanyaTh)"/>
+        <path d="M18 240 C21 211 44 188 76 178 C67 199 65 220 65 240 Z" fill="#A92328" opacity="0.35"/>
+        <path d="M102 169 Q120 184 138 169 L151 173 L143 199 Q120 190 97 199 L89 173 Z" fill="#FF8C62"/>
+        <path d="M104 170 Q120 184 136 170 Q133 187 120 190 Q107 187 104 170 Z" fill="#F5C34E"/>
+        <path d="M110 176 L120 186 L130 176" fill="none" stroke="#FFF3C9" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M18 240 C20 197 57 172 102 168 M138 168 C183 172 220 197 222 240" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.18"/>
+        <path d="M76 99 C66 98 62 107 64 120 C66 132 73 138 81 132 C85 126 83 108 76 99 Z" fill="url(#skinKanyaTh)"/>
+        <path d="M164 99 C174 98 178 107 176 120 C174 132 167 138 159 132 C155 126 157 108 164 99 Z" fill="url(#skinKanyaTh)"/>
+        <path d="M72 114 Q68 122 76 127 M168 114 Q172 122 164 127" fill="none" stroke="#A8633F" stroke-width="2" stroke-linecap="round" opacity="0.58"/>
+        <path d="M120 55 C91 55 75 76 76 109 C77 137 90 157 106 166 C115 171 125 171 134 166 C150 157 163 137 164 109 C165 76 149 55 120 55 Z" fill="url(#skinKanyaTh)"/>
+        <path d="M143 66 C157 77 162 94 161 113 C159 137 149 155 134 165 C142 148 145 127 144 106 C144 86 141 73 135 63 Z" fill="#A95F3D" opacity="0.21"/>
+        <path d="M75 106 C70 77 86 52 111 48 C141 42 166 63 167 100 C157 84 145 78 130 75 C118 86 97 92 75 92 Z" fill="url(#hairKanyaTh)"/>
+        <path d="M90 63 C103 49 124 47 141 56 C126 55 112 60 103 70 Z" fill="#5A3940" opacity="0.5"/>
+        <path d="M77 99 C83 90 90 84 100 79 C95 91 87 101 77 106 Z" fill="#1B1117"/>
+        <path d="M163 99 C157 88 147 81 132 76 C143 75 155 81 163 91 Z" fill="#1B1117"/>
+        <path d="M88 95 Q100 87 113 92" fill="none" stroke="#4A2925" stroke-width="3.6" stroke-linecap="round"/>
+        <path d="M128 92 Q141 87 152 95" fill="none" stroke="#4A2925" stroke-width="3.6" stroke-linecap="round"/>
+        <path d="M88 109 C96 103 107 103 115 109 C108 116 97 117 88 109 Z" fill="#FFFDFC"/>
+        <circle cx="103" cy="109.5" r="5.2" fill="#4A3425"/>
+        <circle cx="103" cy="109.5" r="2.9" fill="#201712"/>
+        <circle cx="105" cy="107.5" r="1.4" fill="#FFFFFF"/>
+        <path d="M88 109 C96 103 107 103 115 109" fill="none" stroke="#5E332A" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M125 109 C133 103 144 103 152 109 C143 117 132 116 125 109 Z" fill="#FFFDFC"/>
+        <circle cx="138" cy="109.5" r="5.2" fill="#4A3425"/>
+        <circle cx="138" cy="109.5" r="2.9" fill="#201712"/>
+        <circle cx="140" cy="107.5" r="1.4" fill="#FFFFFF"/>
+        <path d="M125 109 C133 103 144 103 152 109" fill="none" stroke="#5E332A" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M119 111 C118 121 114 129 118 134 C121 137 126 135 129 131 C126 133 122 133 121 129 Z" fill="#A96040" opacity="0.54"/>
+        <path d="M120 114 C118 122 117 128 120 131" fill="none" stroke="#F6C99C" stroke-width="1.5" stroke-linecap="round" opacity="0.72"/>
+        <ellipse cx="94" cy="130" rx="13" ry="8" fill="url(#blushKanyaTh)"/>
+        <ellipse cx="146" cy="130" rx="13" ry="8" fill="url(#blushKanyaTh)"/>
+        <path d="M103 140 C113 151 128 153 138 138 C129 146 115 147 103 140 Z" fill="#78373A"/>
+        <path d="M108 140 C116 144 128 144 134 140 C126 142 116 142 108 140 Z" fill="#FFF8F1"/>
+        <path d="M111 147 Q121 151 132 144" fill="none" stroke="#D86B70" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="78" cy="132" r="3.2" fill="#F5C34E"/>
+        <circle cx="162" cy="132" r="3.2" fill="#F5C34E"/>
+    </g>
+</svg>
