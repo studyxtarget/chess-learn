@@ -17,6 +17,9 @@ type Props = {
 
 const FILES = "abcdefgh";
 const RANKS = "87654321";
+const PIECE_NAME: Record<string, string> = {
+  p: "pawn", n: "knight", b: "bishop", r: "rook", q: "queen", k: "king",
+};
 
 export default function Board({
   fen,
@@ -111,7 +114,11 @@ export default function Board({
                   interactive ? "clickable" : "",
                 ].join(" ")}
                 onClick={() => click(sq)}
-                aria-label={sq}
+                aria-label={
+                  piece
+                    ? `${piece.color === "w" ? "White" : "Black"} ${PIECE_NAME[piece.type]} on ${sq}`
+                    : `Empty square ${sq}`
+                }
                 type="button"
               >
                 {piece && (

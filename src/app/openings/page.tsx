@@ -30,7 +30,7 @@ export default function OpeningsPage() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     let list = all.filter((o) => {
-      if (eco !== "all" && o.eco !== eco) return false;
+      if (eco !== "all" && o.ecoGroup !== eco) return false;
       if (q && !o.name.toLowerCase().includes(q) && !o.moves.toLowerCase().includes(q)) return false;
       return true;
     });

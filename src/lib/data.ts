@@ -47,7 +47,12 @@ export type Opening = {
   white: number;
   black: number;
   extra: number;
-  eco: string;
+  /** ECO code, e.g. "C89" — derived from the name (every record has one). */
+  eco: string | null;
+  /** ECO family letter, e.g. "C". */
+  ecoGroup: string | null;
+  /** The raw A/D/N column from the source file (a source grouping, not ECO). */
+  sourceGroup: string;
 };
 
 export const repertoire = repertoireJson as RepertoireLine[];
@@ -77,8 +82,3 @@ export const styleColor: Record<string, string> = {
   def: "#4d90e0",
   neutral: "#8a8f98",
 };
-
-export function ecoGroup(name: string): string {
-  const m = name.match(/^([A-E])\d{2}/);
-  return m ? m[1] : "#";
-}

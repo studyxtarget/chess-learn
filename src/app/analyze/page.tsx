@@ -1,42 +1,52 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Chess } from "chess.js";
 import Board from "@/components/Board";
-import { bestMove, evaluatePosition } from "@/lib/engine";
+import { analyzePosition } from "@/lib/engine";
 
 const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const FEN_RE = /^[rnbqkpRNBQKP1-8/]+ [wb] /;
 
 type Ply = { fen: string; san: string; from: string; to: string };
+type Parsed = { game: Chess; startFen: string };
 
-function parseInput(text: string): Chess | null {
+function parseInput(text: string): Parsed | null {
   const t = text.trim();
   if (!t) return null;
 
   // A raw FEN?
   if (FEN_RE.test(t)) {
     try {
-      return new Chess(t);
+      return { game: new Chess(t), startFen: t };
     } catch {
       return null;
     }
   }
 
-  // Full PGN via chess.js
+  // Full PGN via chess.js (handles headers and a [FEN]/SetUp header).
   try {
     const g = new Chess();
     g.loadPgn(t);
-    if (g.history().length > 0) return g;
+    if (g.history().length > 0) {
+      const headers: any = (g as any).getHeaders?.() ?? {};
+      return { game: g, startFen: headers.FEN || START_FEN };
+    }
   } catch {
     /* fall through to lenient parse */
   }
 
-  // Lenient: strip headers/comments and replay SAN tokens.
-  const body = t.replace(/\[[^\]]*\]/g, " ").replace(/\{[^}]*\}/g, " ").replace(/;[^\n]*/g, " ");
-  const tokens = body
-    .split(/\s+/)
-    .filter((x) => x && !/^\d+\.*$/.test(x) && !/^(1-0|0-1|1\/2-1\/2|\*)$/.test(x));
+  // Lenient: strip headers/comments/variations/NAGs/results and move numbers,
+  // then replay SAN tokens. Handles both "1. e4" and "1.e4".
+  const body = t
+    .replace(/\[[^\]]*\]/g, " ")
+    .replace(/\{[^}]*\}/g, " ")
+    .replace(/;[^\n]*/g, " ")
+    .replace(/\([^()]*\)/g, " ")
+    .replace(/\$\d+/g, " ")
+    .replace(/\d+\.(\.\.)?/g, " ")
+    .replace(/(1-0|0-1|1\/2-1\/2|\*)/g, " ");
+  const tokens = body.split(/\s+/).filter(Boolean);
   const g = new Chess();
   for (const tok of tokens) {
     try {
@@ -45,20 +55,23 @@ function parseInput(text: string): Chess | null {
       break;
     }
   }
-  return g.history().length > 0 ? g : null;
+  return g.history().length > 0 ? { game: g, startFen: START_FEN } : null;
 }
 
 export default function AnalyzePage() {
   const gameRef = useRef(new Chess());
+  const [startFen, setStartFen] = useState(START_FEN);
   const [history, setHistory] = useState<string[]>([]);
   const [viewPly, setViewPly] = useState(0);
   const [pgnText, setPgnText] = useState("");
   const [status, setStatus] = useState("Ready — paste a PGN or FEN, or play moves on the board.");
   const [analysis, setAnalysis] = useState<{ cp: number; best: string | null } | null>(null);
   const [thinking, setThinking] = useState(false);
+  const [flipped, setFlipped] = useState(false);
 
+  // Positions are always replayed from the real starting position (fixes the FEN bug).
   const positions: Ply[] = useMemo(() => {
-    const g = new Chess();
+    const g = new Chess(startFen);
     const list: Ply[] = [{ fen: g.fen(), san: "", from: "", to: "" }];
     for (const san of history) {
       try {
@@ -69,43 +82,58 @@ export default function AnalyzePage() {
       }
     }
     return list;
-  }, [history]);
+  }, [history, startFen]);
+
+  const cur = positions[Math.min(viewPly, positions.length - 1)];
+  const atHead = viewPly >= positions.length - 1;
+  const lastMove = viewPly > 0 ? { from: positions[viewPly].from, to: positions[viewPly].to } : null;
 
   function sync(msg?: string) {
-    setHistory(gameRef.current.history() as string[]);
-    setViewPly(gameRef.current.history().length);
-    setAnalysis(null);
+    const h = gameRef.current.history() as string[];
+    setHistory(h);
+    setViewPly(h.length);
     if (msg) setStatus(msg);
   }
 
-  const atHead = viewPly >= positions.length - 1;
-  const cur = positions[Math.min(viewPly, positions.length - 1)];
-  const lastMove = viewPly > 0 ? { from: positions[viewPly].from, to: positions[viewPly].to } : null;
+  // Auto-analyse the position currently on the board (tied to the viewed move).
+  useEffect(() => {
+    const fen = cur.fen;
+    setThinking(true);
+    const t = setTimeout(() => {
+      const r = analyzePosition(fen, 3);
+      setAnalysis({ cp: r.cp, best: r.best ? r.best.san : null });
+      setThinking(false);
+    }, 140);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cur.fen]);
 
   function onMove(m: { from: string; to: string; promotion?: string }) {
-    if (!atHead) {
-      setStatus("Jump to the latest move before playing a new one.");
-      return;
-    }
+    // Rebuild from the start position up to the viewed ply, then play — so a move
+    // from an earlier position truncates the line instead of doing nothing.
+    const g = new Chess(startFen);
+    for (const san of history.slice(0, viewPly)) g.move(san);
     try {
-      gameRef.current.move({ from: m.from, to: m.to, promotion: m.promotion || "q" });
+      g.move({ from: m.from, to: m.to, promotion: m.promotion || "q" });
     } catch {
       return;
     }
+    gameRef.current = g;
     sync();
   }
 
   function load() {
-    const g = parseInput(pgnText);
-    if (!g) {
+    const parsed = parseInput(pgnText);
+    if (!parsed) {
       setStatus("Could not parse that PGN / FEN.");
       return;
     }
-    gameRef.current = g;
-    setHistory(g.history() as string[]);
-    setViewPly(g.history().length);
+    gameRef.current = parsed.game;
+    setStartFen(parsed.startFen);
+    setHistory(parsed.game.history() as string[]);
+    setViewPly(parsed.game.history().length);
     setAnalysis(null);
-    setStatus(`Loaded · ${g.history().length} plies`);
+    setStatus(`Loaded · ${parsed.game.history().length} plies`);
   }
 
   function copyPgn() {
@@ -121,20 +149,9 @@ export default function AnalyzePage() {
     }
   }
 
-  function analyze() {
-    const fen = cur.fen;
-    setThinking(true);
-    setTimeout(() => {
-      const cp = evaluatePosition(fen);
-      const best = bestMove(fen, 3);
-      setAnalysis({ cp, best: best ? best.san : null });
-      setThinking(false);
-      setStatus(best ? `Engine suggestion: ${best.san}` : "No legal moves.");
-    }, 30);
-  }
-
   function newGame() {
     gameRef.current = new Chess();
+    setStartFen(START_FEN);
     setHistory([]);
     setViewPly(0);
     setAnalysis(null);
@@ -142,8 +159,14 @@ export default function AnalyzePage() {
     setStatus("New game.");
   }
 
-  const evalPawns = analysis ? analysis.cp / 100 : 0;
-  const evalPct = analysis ? Math.max(2, Math.min(98, 50 + evalPawns * 3)) : 50;
+  const cp = analysis?.cp ?? 0;
+  const isMate = !!analysis && Math.abs(cp) >= 9000;
+  const whiteFrac = isMate
+    ? cp > 0
+      ? 1
+      : 0
+    : Math.max(0.03, Math.min(0.97, 0.5 + cp / 1600));
+  const evalLabel = isMate ? (cp > 0 ? "#" : "#") : `${cp >= 0 ? "+" : ""}${(cp / 100).toFixed(2)}`;
 
   return (
     <div className="container section">
@@ -160,28 +183,37 @@ export default function AnalyzePage() {
             <span>{status}</span>
           </div>
 
+          <div className="evalbar" title="Evaluation (White's point of view)">
+            <div className="evalbar-white" style={{ width: `${whiteFrac * 100}%` }} />
+            <div className="evalbar-black" />
+            <span className="evalbar-label">{evalLabel}</span>
+          </div>
           <Board
             fen={cur.fen}
-            orientation="white"
-            interactive={atHead}
+            orientation={flipped ? "black" : "white"}
+            interactive
             onMove={onMove}
             lastMove={lastMove}
           />
 
           <div className="replay-controls" style={{ marginTop: 12 }}>
-            <button type="button" onClick={() => setViewPly(0)} aria-label="Start">⏮</button>
+            <button type="button" onClick={() => setViewPly(0)} aria-label="First">⏮</button>
             <button type="button" onClick={() => setViewPly((p) => Math.max(0, p - 1))} aria-label="Previous">◀</button>
             <button type="button" onClick={() => setViewPly((p) => Math.min(positions.length - 1, p + 1))} aria-label="Next">▶</button>
-            <button type="button" onClick={() => setViewPly(positions.length - 1)} aria-label="End">⏭</button>
+            <button type="button" onClick={() => setViewPly(positions.length - 1)} aria-label="Last">⏭</button>
           </div>
 
           <div className="toolbar" style={{ marginTop: 12 }}>
             <button className="btn primary" type="button" onClick={newGame}>New game</button>
             <button className="btn" type="button" onClick={copyPgn}>Copy PGN</button>
-            <button className="btn" type="button" onClick={analyze} disabled={thinking}>
-              {thinking ? "Analysing…" : "Analyze position"}
-            </button>
+            <button className="btn" type="button" onClick={() => setFlipped((v) => !v)}>Flip board</button>
           </div>
+          {!atHead && (
+            <p className="small muted" style={{ marginTop: 8 }}>
+              Viewing move {viewPly} of {positions.length - 1}. Play a move to branch from here — the
+              rest of the line is truncated.
+            </p>
+          )}
         </div>
 
         <div>
@@ -206,28 +238,21 @@ export default function AnalyzePage() {
 
           <div className="card" style={{ marginBottom: 16 }}>
             <h3 style={{ fontSize: 14 }}>Engine</h3>
-            {analysis ? (
-              <>
-                <div className="muted small" style={{ margin: "6px 0 8px" }}>
-                  Evaluation: <strong style={{ color: "var(--text)" }}>
-                    {evalPawns >= 0 ? "+" : ""}{evalPawns.toFixed(2)}
-                  </strong> (White's view)
-                  {analysis.best && <> · best move <strong style={{ color: "var(--text)" }}>{analysis.best}</strong></>}
-                </div>
-                <div style={{ display: "flex", height: 10, borderRadius: 6, overflow: "hidden", border: "1px solid var(--line)" }}>
-                  <div style={{ width: `${evalPct}%`, background: "#e8ebef" }} />
-                  <div style={{ flex: 1, background: "#2b3038" }} />
-                </div>
-                <p className="small muted" style={{ marginTop: 8, marginBottom: 0 }}>
-                  Material + piece-square evaluation from the built-in engine (depth 3 search).
-                </p>
-              </>
-            ) : (
-              <p className="small muted" style={{ margin: "6px 0 0" }}>
-                Press “Analyze position” to get an evaluation and a suggested move for the current
-                position.
-              </p>
-            )}
+            <div className="muted small" style={{ margin: "6px 0 8px" }}>
+              {thinking && !analysis ? (
+                <span><span className="spinner" /> Analysing…</span>
+              ) : (
+                <>
+                  Evaluation: <strong style={{ color: "var(--text)" }}>{evalLabel}</strong> (White&apos;s view)
+                  {analysis?.best && <> · best move <strong style={{ color: "var(--text)" }}>{analysis.best}</strong></>}
+                  {!analysis?.best && <> · no legal moves</>}
+                </>
+              )}
+            </div>
+            <p className="small muted" style={{ margin: 0 }}>
+              Built-in engine: alpha-beta search (depth 3) over material + piece-square tables. The
+              evaluation and the suggested move come from the same search, so they always agree.
+            </p>
           </div>
 
           <div className="card">

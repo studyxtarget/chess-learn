@@ -266,17 +266,20 @@ export function evaluateFen(fen: string): number {
   return materialAndPst(game);
 }
 
+export type PositionAnalysis = { best: BotMove | null; cp: number };
+
 /**
- * Neutral, deeper search used by the analysis board (no book, no personality).
- * Returns the engine's preferred move for the side to move.
+ * Neutral search used by the analysis board. Returns the engine's preferred move
+ * AND the score of the position (centipawns, White's point of view) from the
+ * same search, so the displayed evaluation and the suggested move always agree.
  */
-export function bestMove(fen: string, depth = 3): BotMove | null {
+export function analyzePosition(fen: string, depth = 3): PositionAnalysis {
   const game = new Chess(fen);
-  if (game.isGameOver()) return null;
+  if (game.isGameOver()) return { best: null, cp: materialAndPst(game) };
   const side = game.turn();
   const p: Personality = { agg: 0, def: 0, neu: 1 };
   const legal = game.moves({ verbose: true }) as any[];
-  if (legal.length === 0) return null;
+  if (legal.length === 0) return { best: null, cp: materialAndPst(game) };
 
   let best: any = null;
   let bestScore = -Infinity;
@@ -291,12 +294,11 @@ export function bestMove(fen: string, depth = 3): BotMove | null {
     }
     if (bestScore > alpha) alpha = bestScore;
   }
-  if (!best) return null;
-  return { san: best.san, from: best.from, to: best.to, promotion: best.promotion, source: "engine" };
-}
-
-/** Score of a position in centipawns from White's point of view. */
-export function evaluatePosition(fen: string): number {
-  const game = new Chess(fen);
-  return materialAndPst(game);
+  const cp = side === "w" ? bestScore : -bestScore;
+  return {
+    best: best
+      ? { san: best.san, from: best.from, to: best.to, promotion: best.promotion, source: "engine" }
+      : null,
+    cp: Math.round(cp),
+  };
 }
