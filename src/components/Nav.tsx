@@ -8,6 +8,7 @@ import { asset } from "@/lib/data";
 const links = [
   { href: "/", label: "Home" },
   { href: "/play", label: "Play vs Bot" },
+  { href: "/puzzles", label: "Puzzles" },
   { href: "/analyze", label: "Analyze" },
   { href: "/openings", label: "Openings" },
   { href: "/traps", label: "Traps" },

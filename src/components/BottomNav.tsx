@@ -7,9 +7,9 @@ import Icon, { type IconName } from "./Icon";
 const items: { href: string; label: string; icon: IconName }[] = [
   { href: "/", label: "Home", icon: "home" },
   { href: "/play", label: "Play", icon: "play" },
+  { href: "/puzzles", label: "Puzzles", icon: "target" },
   { href: "/analyze", label: "Analyze", icon: "search" },
   { href: "/openings", label: "Openings", icon: "book" },
-  { href: "/traps", label: "Traps", icon: "target" },
 ];
 
 export default function BottomNav() {
