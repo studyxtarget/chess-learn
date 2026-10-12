@@ -6,7 +6,10 @@ import Board from "@/components/Board";
 import GameReport from "@/components/GameReport";
 import { analyzePosition } from "@/lib/engine";
 import { makeEvaluator, type EngineLine } from "@/lib/stockfish";
-import { reviewGame, CLASS_META, type GameReview } from "@/lib/review";
+import {
+  reviewGame, CLASS_META, CLASSIFICATIONS, norm, getOpeningIndex,
+  type GameReview, type Classification,
+} from "@/lib/review";
 
 const START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const FEN_RE = /^[rnbqkpRNBQKP1-8/]+ [wb] /;
@@ -17,6 +20,7 @@ type Parsed = { game: Chess; startFen: string };
 type Recent = { label: string; pgn: string };
 type AnnArrow = { from: string; to: string; color?: string };
 type AnnCircle = { square: string; label: string; color?: string };
+type Names = { white: string; black: string; whiteElo: string; blackElo: string };
 
 function parseInput(text: string): Parsed | null {
   const t = text.trim();
@@ -58,15 +62,17 @@ function parseInput(text: string): Parsed | null {
   return g.history().length > 0 ? { game: g, startFen: START_FEN } : null;
 }
 
-function labelFor(pgn: string, fallback: string): string {
-  const w = /\[White "([^"]*)"\]/.exec(pgn)?.[1];
-  const b = /\[Black "([^"]*)"\]/.exec(pgn)?.[1];
-  if (w && b) return `${w} vs ${b}`;
-  const ev = /\[Event "([^"]*)"\]/.exec(pgn)?.[1];
-  return ev || fallback;
+function namesFrom(pgn: string): Names {
+  const get = (k: string) => new RegExp(`\\[${k} "([^"]*)"\\]`).exec(pgn)?.[1] ?? "";
+  return {
+    white: get("White") || "White",
+    black: get("Black") || "Black",
+    whiteElo: get("WhiteElo"),
+    blackElo: get("BlackElo"),
+  };
 }
 
-function pvToSan(fen: string, pv: string[], n = 8): string {
+function pvToSan(fen: string, pv: string[], n = 10): string {
   try {
     const g = new Chess(fen);
     const out: string[] = [];
@@ -105,19 +111,23 @@ export default function AnalyzePage() {
   const [history, setHistory] = useState<string[]>([]);
   const [viewPly, setViewPly] = useState(0);
   const [pgnText, setPgnText] = useState("");
-  const [status, setStatus] = useState("Ready — paste a PGN or FEN, or play moves on the board.");
+  const [status, setStatus] = useState("Paste or upload a PGN, then run a report.");
   const [analysis, setAnalysis] = useState<{ cp: number; best: string | null; from: string; to: string } | null>(null);
-  const [thinking, setThinking] = useState(false);
   const [flipped, setFlipped] = useState(false);
+  const [names, setNames] = useState<Names>({ white: "White", black: "Black", whiteElo: "", blackElo: "" });
 
   const [review, setReview] = useState<GameReview | null>(null);
   const [reviewing, setReviewing] = useState(false);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [mode, setMode] = useState<"quick" | "deep" | "smart">("quick");
+  const [showReport, setShowReport] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [autoPlay, setAutoPlay] = useState(false);
   const stopRef = useRef(false);
 
   const [lines, setLines] = useState<EngineLine[] | null>(null);
   const [linesLoading, setLinesLoading] = useState(false);
+  const [openIdx, setOpenIdx] = useState<Map<string, string> | null>(null);
 
   const [annotate, setAnnotate] = useState(false);
   const [userArrows, setUserArrows] = useState<AnnArrow[]>([]);
@@ -152,12 +162,31 @@ export default function AnalyzePage() {
     } catch {
       /* ignore */
     }
+    getOpeningIndex().then(setOpenIdx).catch(() => {});
   }, []);
+
+  // auto-scroll the move ribbon to the active move
+  useEffect(() => {
+    const el = document.querySelector(".mvchip.active");
+    if (el) (el as HTMLElement).scrollIntoView({ inline: "center", block: "nearest" });
+  }, [viewPly]);
+
+  useEffect(() => {
+    if (!autoPlay) return;
+    if (viewPly >= positions.length - 1) {
+      setAutoPlay(false);
+      return;
+    }
+    const t = setTimeout(() => setViewPly((p) => p + 1), 900);
+    return () => clearTimeout(t);
+  }, [autoPlay, viewPly, positions.length]);
 
   function pushRecent(pgn: string) {
     if (!pgn.trim()) return;
     setRecent((prev) => {
-      const next = [{ label: labelFor(pgn, `Game ${prev.length + 1}`), pgn }, ...prev.filter((r) => r.pgn !== pgn)].slice(0, 8);
+      const label = namesFrom(pgn);
+      const nm = label.white !== "White" ? `${label.white} vs ${label.black}` : `Game ${prev.length + 1}`;
+      const next = [{ label: nm, pgn }, ...prev.filter((r) => r.pgn !== pgn)].slice(0, 8);
       try {
         localStorage.setItem(RECENT_KEY, JSON.stringify(next));
       } catch {
@@ -175,17 +204,12 @@ export default function AnalyzePage() {
   }
 
   useEffect(() => {
-    if (review) {
-      setThinking(false);
-      return;
-    }
+    if (review) return;
     const fen = cur.fen;
-    setThinking(true);
     const t = setTimeout(() => {
       const r = analyzePosition(fen, 3);
       setAnalysis({ cp: r.cp, best: r.best ? r.best.san : null, from: r.best?.from ?? "", to: r.best?.to ?? "" });
-      setThinking(false);
-    }, 140);
+    }, 120);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cur.fen, review]);
@@ -215,8 +239,12 @@ export default function AnalyzePage() {
     setUserArrows([]);
     setUserCircles([]);
     setPendingFrom(null);
+    setShowReport(false);
     setStatus(`Loaded · ${parsed.game.history().length} plies`);
-    if (remember) pushRecent(remember);
+    if (remember) {
+      pushRecent(remember);
+      setNames(namesFrom(remember));
+    }
   }
 
   function load() {
@@ -247,63 +275,38 @@ export default function AnalyzePage() {
     e.target.value = "";
   }
 
-  function copyPgn() {
-    const text = gameRef.current.pgn();
+  function copyText(text: string, what: string) {
     if (navigator.clipboard?.writeText) {
       navigator.clipboard.writeText(text).then(
-        () => setStatus("PGN copied to clipboard."),
+        () => setStatus(`${what} copied.`),
         () => setStatus("Clipboard blocked by the browser.")
       );
     } else {
-      setPgnText(text);
-      setStatus("PGN placed in the box below.");
+      setStatus(`Copy not supported here.`);
     }
   }
 
-  function newGame() {
-    gameRef.current = new Chess();
-    setStartFen(START_FEN);
-    setHistory([]);
-    setViewPly(0);
-    setAnalysis(null);
-    setReview(null);
-    setLines(null);
-    setPgnText("");
-    setUserArrows([]);
-    setUserCircles([]);
-    setStatus("New game.");
-  }
-
-  async function runReview() {
+  async function runReview(m: "quick" | "deep" | "smart" = mode, open = true) {
     if (history.length === 0) {
       setStatus("Load or play a game first.");
       return;
     }
+    setMode(m);
     setReviewing(true);
     setReview(null);
+    setShowReport(false);
     stopRef.current = false;
-    const modeCfg =
-      mode === "deep"
-        ? { depth: 14, label: "depth 14" }
-        : mode === "smart"
-        ? { depth: smartDepth, label: "smart depth" }
-        : { depth: 10, label: "depth 10" };
+    const cfg =
+      m === "deep" ? { depth: 14, label: "depth 14" } : m === "smart" ? { depth: smartDepth, label: "smart depth" } : { depth: 10, label: "depth 10" };
     setProgress({ done: 0, total: history.length + 1 });
     setStatus("Booting engine…");
     try {
       const { evaluate, kind } = await makeEvaluator();
-      setStatus(kind === "stockfish" ? "Stockfish ready — reviewing…" : "Stockfish unavailable — using the built-in engine…");
-      const r = await reviewGame(
-        startFen,
-        history,
-        evaluate,
-        modeCfg,
-        kind,
-        (done, total) => setProgress({ done, total }),
-        () => stopRef.current
-      );
+      setStatus(kind === "stockfish" ? "Analysing…" : "Using the built-in engine…");
+      const r = await reviewGame(startFen, history, evaluate, cfg, kind, (d, t) => setProgress({ done: d, total: t }), () => stopRef.current);
       setReview(r);
-      setStatus(`Review complete · ${r.moves.length} moves analysed.`);
+      setStatus(`Report ready · ${r.moves.length} moves.`);
+      if (open) setShowReport(true);
     } catch (e) {
       setStatus("Review failed: " + (e as Error).message);
     } finally {
@@ -314,7 +317,6 @@ export default function AnalyzePage() {
 
   async function showLines() {
     setLinesLoading(true);
-    setStatus("Getting engine lines…");
     try {
       const { evaluate } = await makeEvaluator();
       const depth = mode === "deep" ? 14 : mode === "smart" ? smartDepth(cur.fen) : 10;
@@ -334,23 +336,12 @@ export default function AnalyzePage() {
       return;
     }
     if (pendingFrom === sq) {
-      setUserCircles((cs) =>
-        cs.some((c) => c.square === sq) ? cs.filter((c) => c.square !== sq) : [...cs, { square: sq, label: "", color: "#4d90e0" }]
-      );
+      setUserCircles((cs) => (cs.some((c) => c.square === sq) ? cs.filter((c) => c.square !== sq) : [...cs, { square: sq, label: "", color: "#4d90e0" }]));
       setPendingFrom(null);
       return;
     }
     const from = pendingFrom;
-    setUserArrows((as) => [
-      ...as.filter((a) => !(a.from === from && a.to === sq)),
-      { from, to: sq, color: shift ? "#e0554d" : "#4d90e0" },
-    ]);
-    setPendingFrom(null);
-  }
-
-  function clearAnnotations() {
-    setUserArrows([]);
-    setUserCircles([]);
+    setUserArrows((as) => [...as.filter((a) => !(a.from === from && a.to === sq)), { from, to: sq, color: shift ? "#e0554d" : "#4d90e0" }]);
     setPendingFrom(null);
   }
 
@@ -358,6 +349,19 @@ export default function AnalyzePage() {
   const isMate = Math.abs(cp) >= 9000;
   const whiteFrac = isMate ? (cp > 0 ? 1 : 0) : Math.max(0.03, Math.min(0.97, 0.5 + cp / 1600));
   const evalLabel = isMate ? "#" : `${cp >= 0 ? "+" : ""}${(cp / 100).toFixed(2)}`;
+  const depthShown = review?.depthLabel ?? (mode === "deep" ? "depth 14" : mode === "smart" ? "smart" : "depth 10");
+
+  const opening = useMemo(() => {
+    if (!openIdx) return null;
+    let best: string | null = null;
+    let acc: string[] = [];
+    for (let i = 0; i < Math.min(viewPly, history.length); i++) {
+      acc = [...acc, norm(history[i])];
+      const n = openIdx.get(acc.join(" "));
+      if (n) best = n;
+    }
+    return best;
+  }, [openIdx, history, viewPly]);
 
   const bestUci = selectedReview?.bestUci ?? null;
   const autoArrows = bestUci
@@ -365,41 +369,62 @@ export default function AnalyzePage() {
     : analysis?.from
     ? [{ from: analysis.from, to: analysis.to, color: "#6aa84f" }]
     : [];
-  const PROBLEM = ["inaccuracy", "mistake", "blunder", "missed-win"];
+  const PROBLEM: Classification[] = ["inaccuracy", "mistake", "blunder", "missed-win"];
   const autoMarkers =
     selectedReview && PROBLEM.includes(selectedReview.classification)
-      ? [
-          {
-            square: selectedReview.to,
-            label: CLASS_META[selectedReview.classification].badge,
-            color: CLASS_META[selectedReview.classification].color,
-          },
-        ]
+      ? [{ square: selectedReview.to, label: CLASS_META[selectedReview.classification].badge, color: CLASS_META[selectedReview.classification].color }]
       : [];
-
   const boardArrows = annotate || userArrows.length ? userArrows : autoArrows;
-  const boardMarkers = [
-    ...autoMarkers,
-    ...userCircles,
-    ...(pendingFrom ? [{ square: pendingFrom, label: "•", color: "#4d90e0" }] : []),
-  ];
+  const boardMarkers = [...autoMarkers, ...userCircles, ...(pendingFrom ? [{ square: pendingFrom, label: "•", color: "#4d90e0" }] : [])];
+
+  const pvText = lines?.[0] ? pvToSan(cur.fen, lines[0].pv) : selectedReview?.bestSan ? selectedReview.bestSan : analysis?.best ?? "";
+
+  const topName = flipped ? names.white : names.black;
+  const topElo = flipped ? names.whiteElo : names.blackElo;
+  const botName = flipped ? names.black : names.white;
+  const botElo = flipped ? names.blackElo : names.whiteElo;
+
+  const totals = useMemo(() => {
+    const t = {} as Record<Classification, number>;
+    for (const c of CLASSIFICATIONS) t[c] = (review?.white.counts[c] ?? 0) + (review?.black.counts[c] ?? 0);
+    return t;
+  }, [review]);
 
   return (
-    <div className="container section">
-      <h2>Analyze</h2>
-      <p className="sub">
-        Paste or upload a PGN, step through the game, run a full Stockfish review, and annotate the
-        board yourself.
-      </p>
+    <div className="an">
+      {/* ---------- move ribbon ---------- */}
+      <div className="move-ribbon">
+        {positions.slice(1).map((p, i) => {
+          const r = review?.moves[i];
+          const color = r ? CLASS_META[r.classification].color : undefined;
+          return (
+            <button
+              key={i}
+              type="button"
+              className={`mvchip${viewPly === i + 1 ? " active" : ""}`}
+              style={color ? { borderColor: color, color } : undefined}
+              onClick={() => setViewPly(i + 1)}
+            >
+              {i % 2 === 0 && <span className="mvn">{Math.floor(i / 2) + 1}.</span>}
+              {p.san}
+              {r && r.classification !== "best" && <span className="mvb">{CLASS_META[r.classification].badge}</span>}
+            </button>
+          );
+        })}
+        {positions.length <= 1 && <span className="muted small" style={{ padding: "8px 4px" }}>No moves yet</span>}
+        <button type="button" className="ribbon-add" onClick={() => fileRef.current?.click()} title="Load a PGN">＋</button>
+      </div>
 
-      <div className="two-col">
-        <div>
-          <div className="statusbar">
-            <span className="dot-status" />
-            <span>{status}</span>
+      <div className="container an-grid">
+        {/* ---------- board column ---------- */}
+        <div className="an-boardcol">
+          <div className="player-bar">
+            <span className="pb-name">{topName}</span>
+            {topElo && <span className="pb-elo">({topElo})</span>}
+            <button type="button" className="pb-toggle" onClick={() => setFlipped((v) => !v)} title="Flip board">⇅</button>
           </div>
 
-          <div className="evalbar" title="Evaluation (White's point of view)">
+          <div className="evalbar">
             <div className="evalbar-white" style={{ width: `${whiteFrac * 100}%` }} />
             <div className="evalbar-black" />
             <span className="evalbar-label">{evalLabel}</span>
@@ -417,132 +442,128 @@ export default function AnalyzePage() {
             onSquareClick={onSquareClick}
           />
 
-          <div className="replay-controls" style={{ marginTop: 12 }}>
-            <button type="button" onClick={() => setViewPly(0)} aria-label="First">⏮</button>
-            <button type="button" onClick={() => setViewPly((p) => Math.max(0, p - 1))} aria-label="Previous">◀</button>
-            <button type="button" onClick={() => setViewPly((p) => Math.min(positions.length - 1, p + 1))} aria-label="Next">▶</button>
-            <button type="button" onClick={() => setViewPly(positions.length - 1)} aria-label="Last">⏭</button>
-          </div>
-
-          <div className="toolbar" style={{ marginTop: 12 }}>
-            <button className="btn primary" type="button" onClick={newGame}>New game</button>
-            <button className="btn" type="button" onClick={copyPgn}>Copy PGN</button>
-            <button className="btn" type="button" onClick={() => fileRef.current?.click()}>Upload PGN</button>
-            <input ref={fileRef} type="file" accept=".pgn,.txt" onChange={onFile} style={{ display: "none" }} />
-            <button className="btn" type="button" onClick={() => setFlipped((v) => !v)}>Flip</button>
-          </div>
-
-          <div className="toolbar">
-            <button
-              className={annotate ? "btn primary" : "btn"}
-              type="button"
-              onClick={() => { setAnnotate((v) => !v); setPendingFrom(null); }}
-            >
-              {annotate ? "Annotating…" : "Annotate"}
+          <div className="player-bar bottom">
+            <span className="pb-name">{botName}</span>
+            {botElo && <span className="pb-elo">({botElo})</span>}
+            <span className="pb-spacer" />
+            <button type="button" className="pb-toggle" onClick={() => setAutoPlay((v) => !v)} title="Auto-play">
+              {autoPlay ? "❚❚" : "▶"}
             </button>
-            <button className="btn" type="button" onClick={clearAnnotations} disabled={!userArrows.length && !userCircles.length}>
-              Clear
-            </button>
-            {annotate && (
-              <span className="muted small">Click two squares for an arrow · click a square twice for a circle · Shift = red</span>
-            )}
           </div>
 
-          {!atHead && (
-            <p className="small muted" style={{ marginTop: 8 }}>
-              Viewing move {viewPly} of {positions.length - 1}. Play a move to branch from here — the
-              rest of the line is truncated.
-            </p>
-          )}
+          <div className="engine-strip">
+            <span className="es-eval">{evalLabel}</span>
+            <span className="es-depth">({depthShown})</span>
+            <span className="es-pv mono">{pvText || "—"}</span>
+          </div>
+
+          <div className="ctrl-bar">
+            <button type="button" onClick={() => { setAutoPlay(false); setViewPly(0); }} aria-label="First">⏮</button>
+            <button type="button" onClick={() => { setAutoPlay(false); setViewPly((p) => Math.max(0, p - 1)); }} aria-label="Previous">◀</button>
+            <button type="button" onClick={() => { setAutoPlay(false); setViewPly((p) => Math.min(positions.length - 1, p + 1)); }} aria-label="Next">▶</button>
+            <button type="button" onClick={() => { setAutoPlay(false); setViewPly(positions.length - 1); }} aria-label="Last">⏭</button>
+            <span className="cb-spacer" />
+            <button type="button" onClick={() => setFlipped((v) => !v)} aria-label="Flip">⇅</button>
+            <button type="button" onClick={() => setMenuOpen(true)} aria-label="More">⋯</button>
+          </div>
         </div>
 
-        <div>
-          <div className="card" style={{ marginBottom: 16 }}>
+        {/* ---------- panels ---------- */}
+        <div className="an-panels">
+          <div className="report-pills">
+            <button className="pillbtn primary" type="button" onClick={() => runReview("quick")} disabled={reviewing}>
+              <span>⚡</span> Quick Report
+            </button>
+            <button className="pillbtn" type="button" onClick={() => runReview("deep")} disabled={reviewing}>
+              <span>⛶</span> Deep Report
+            </button>
+            <button
+              className={`pillbtn icon${mode === "smart" ? " on" : ""}`}
+              type="button"
+              onClick={() => setMode((m) => (m === "smart" ? "quick" : "smart"))}
+              title="Smart analysis (adaptive depth)"
+            >
+              ⚙
+            </button>
+          </div>
+
+          {progress && (
+            <div className="card" style={{ padding: 12 }}>
+              <div className="wtrack" style={{ height: 8 }}>
+                <div className="wfill" style={{ width: `${(progress.done / progress.total) * 100}%`, background: "var(--accent)" }} />
+              </div>
+              <div className="muted small" style={{ marginTop: 4 }}>
+                {reviewing ? "Analysing" : "Done"} · {progress.done}/{progress.total} positions · {mode}
+                {reviewing && (
+                  <button className="btn" style={{ marginLeft: 8, padding: "2px 10px" }} type="button" onClick={() => { stopRef.current = true; }}>
+                    Stop
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {review && (
+            <div className="stats-strip">
+              {CLASSIFICATIONS.filter((c) => totals[c] > 0).map((c) => (
+                <div className="stat-ico" key={c} title={CLASS_META[c].label}>
+                  <span className="si-badge" style={{ background: CLASS_META[c].color }}>{CLASS_META[c].badge}</span>
+                  <span className="si-n">{totals[c]}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {opening && <div className="opening-bar">Opening: {opening}</div>}
+
+          {review && (
+            <button className="btn" type="button" style={{ width: "100%" }} onClick={() => setShowReport(true)}>
+              Show game report
+            </button>
+          )}
+
+          <div className="card">
             <h3 style={{ fontSize: 14 }}>PGN / FEN</h3>
             <textarea
               value={pgnText}
               onChange={(e) => setPgnText(e.target.value)}
-              placeholder={'[Event "Game"]\n1. e4 e5 2. Nf3 Nc6 ...\n\n(or a FEN like rnbqkbnr/pppppppp/8/8/... w KQkq - 0 1)'}
-              rows={5}
-              style={{
-                width: "100%", marginTop: 8, background: "var(--bg3)", color: "var(--text)",
-                border: "1px solid var(--line)", borderRadius: 9, padding: 10,
-                fontFamily: "ui-monospace, monospace", fontSize: 13, resize: "vertical",
-              }}
+              placeholder={'[Event "Game"]\n1. e4 e5 2. Nf3 Nc6 ...'}
+              rows={4}
+              className="pgn-area"
             />
             <div className="toolbar" style={{ marginTop: 10, marginBottom: 0 }}>
               <button className="btn primary" type="button" onClick={load}>Load</button>
-              <button className="btn" type="button" onClick={() => setPgnText(gameRef.current.pgn())}>Fill from board</button>
+              <button className="btn" type="button" onClick={() => fileRef.current?.click()}>Upload</button>
+              <button className="btn" type="button" onClick={() => setPgnText(gameRef.current.pgn())}>Fill</button>
             </div>
+            <input ref={fileRef} type="file" accept=".pgn,.txt" onChange={onFile} style={{ display: "none" }} />
             {recent.length > 0 && (
-              <div style={{ marginTop: 12 }}>
-                <div className="muted small" style={{ marginBottom: 6 }}>Recent games</div>
-                <div className="rows">
-                  {recent.map((r, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      className="row"
-                      onClick={() => {
-                        setPgnText(r.pgn);
-                        const parsed = parseInput(r.pgn);
-                        if (parsed) applyParsed(parsed);
-                      }}
-                    >
-                      <div className="grow">
-                        <div className="rname">{r.label}</div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
+              <div className="rows" style={{ marginTop: 12 }}>
+                {recent.map((r, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    className="row"
+                    onClick={() => {
+                      setPgnText(r.pgn);
+                      const parsed = parseInput(r.pgn);
+                      if (parsed) applyParsed(parsed);
+                    }}
+                  >
+                    <div className="grow"><div className="rname">{r.label}</div></div>
+                  </button>
+                ))}
               </div>
             )}
           </div>
 
-          <div className="card" style={{ marginBottom: 16 }}>
-            <h3 style={{ fontSize: 14 }}>Full-game review</h3>
-            <p className="small muted" style={{ margin: "6px 0 10px" }}>
-              Stockfish scores every position. {history.length} moves to analyse.
-            </p>
-            <div className="toolbar" style={{ marginBottom: 10 }}>
-              <button className={mode === "quick" ? "btn primary" : "btn"} type="button" onClick={() => setMode("quick")}>
-                Quick
-              </button>
-              <button className={mode === "deep" ? "btn primary" : "btn"} type="button" onClick={() => setMode("deep")}>
-                Deep
-              </button>
-              <button className={mode === "smart" ? "btn primary" : "btn"} type="button" onClick={() => setMode("smart")}>
-                Smart
-              </button>
-            </div>
-            <div className="toolbar" style={{ marginBottom: 0 }}>
-              <button className="btn primary" type="button" onClick={runReview} disabled={reviewing || history.length === 0}>
-                {reviewing ? "Reviewing…" : "Review game"}
-              </button>
-              <button className="btn" type="button" onClick={showLines} disabled={linesLoading}>
-                {linesLoading ? "…" : "Engine lines"}
-              </button>
-              {reviewing && (
-                <button className="btn" type="button" onClick={() => { stopRef.current = true; }}>Stop</button>
-              )}
-            </div>
-            <p className="small muted" style={{ margin: "8px 0 0" }}>
-              Quick = depth 10 · Deep = depth 14 · Smart = depth adapts to how complex each position is.
-            </p>
-            {progress && (
+          <div className="card">
+            <h3 style={{ fontSize: 14 }}>Engine lines</h3>
+            <button className="btn" type="button" onClick={showLines} disabled={linesLoading} style={{ marginTop: 6 }}>
+              {linesLoading ? "…" : "Show top 3 lines"}
+            </button>
+            {lines && lines.length > 0 && (
               <div style={{ marginTop: 10 }}>
-                <div className="wtrack" style={{ height: 8 }}>
-                  <div className="wfill" style={{ width: `${(progress.done / progress.total) * 100}%`, background: "var(--accent)" }} />
-                </div>
-                <div className="muted small" style={{ marginTop: 4 }}>{progress.done} / {progress.total} positions</div>
-              </div>
-            )}
-          </div>
-
-          {lines && lines.length > 0 && (
-            <div className="card" style={{ marginBottom: 16 }}>
-              <h3 style={{ fontSize: 14 }}>Engine lines</h3>
-              <div style={{ marginTop: 8 }}>
                 {lines.map((l) => (
                   <div key={l.multipv} className="engine-line">
                     <span className="el-eval">{fmtCp(l.cp)}</span>
@@ -550,11 +571,11 @@ export default function AnalyzePage() {
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          {selectedReview ? (
-            <div className="card" style={{ marginBottom: 16 }}>
+          {selectedReview && (
+            <div className="card">
               <h3 style={{ fontSize: 14 }}>Move detail</h3>
               <div style={{ marginTop: 6 }}>
                 <span style={{ color: CLASS_META[selectedReview.classification].color, fontWeight: 700 }}>
@@ -576,63 +597,57 @@ export default function AnalyzePage() {
               </table>
               <p className="why">
                 <b>Why?</b>{" "}
-                {selectedReview.bestSan
-                  ? `Best was ${selectedReview.bestSan}, keeping the evaluation at ${fmtCp(selectedReview.evalBeforeCp)}. `
-                  : ""}
-                {selectedReview.san} gave away {(selectedReview.cpLoss / 100).toFixed(2)} pawns (
-                {fmtCp(selectedReview.evalBeforeCp)} → {fmtCp(selectedReview.evalAfterCp)}).
-              </p>
-            </div>
-          ) : (
-            <div className="card" style={{ marginBottom: 16 }}>
-              <h3 style={{ fontSize: 14 }}>Engine</h3>
-              <div className="muted small" style={{ margin: "6px 0 8px" }}>
-                {thinking && !analysis ? (
-                  <span><span className="spinner" /> Analysing…</span>
-                ) : (
-                  <>
-                    Evaluation: <strong style={{ color: "var(--text)" }}>{evalLabel}</strong> (White&apos;s view)
-                    {analysis?.best && <> · best move <strong style={{ color: "var(--text)" }}>{analysis.best}</strong></>}
-                    {analysis && !analysis.best && <> · no legal moves</>}
-                  </>
-                )}
-              </div>
-              <p className="small muted" style={{ margin: 0 }}>
-                Quick position read from the built-in engine. Run a full-game review for Stockfish
-                accuracy and move classification.
+                {selectedReview.bestSan ? `Best was ${selectedReview.bestSan} (${fmtCp(selectedReview.evalBeforeCp)}). ` : ""}
+                {selectedReview.san} gave away {(selectedReview.cpLoss / 100).toFixed(2)} pawns ({fmtCp(selectedReview.evalBeforeCp)} → {fmtCp(selectedReview.evalAfterCp)}).
               </p>
             </div>
           )}
 
-          {review && <GameReport review={review} onSelectPly={(p) => setViewPly(p)} />}
-
-          <div className="card">
-            <h3 style={{ fontSize: 14 }}>Moves</h3>
-            <div className="movelist" style={{ marginTop: 8 }}>
-              {positions.length <= 1 && <span className="muted small">No moves yet.</span>}
-              {positions.slice(1).map((p, i) => {
-                const r = review?.moves[i];
-                return (
-                  <button
-                    key={i}
-                    type="button"
-                    className={viewPly === i + 1 ? "mv active" : "mv"}
-                    onClick={() => setViewPly(i + 1)}
-                  >
-                    {i % 2 === 0 && <span className="mvno">{Math.floor(i / 2) + 1}.</span>}
-                    {p.san}
-                    {r && r.classification !== "best" && (
-                      <span style={{ color: CLASS_META[r.classification].color, marginLeft: 3, fontWeight: 700 }}>
-                        {CLASS_META[r.classification].badge}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+          <div className="toolbar">
+            <button
+              className={annotate ? "btn primary" : "btn"}
+              type="button"
+              onClick={() => { setAnnotate((v) => !v); setPendingFrom(null); }}
+            >
+              {annotate ? "Annotating…" : "Annotate"}
+            </button>
+            <button className="btn" type="button" onClick={() => { setUserArrows([]); setUserCircles([]); setPendingFrom(null); }} disabled={!userArrows.length && !userCircles.length}>
+              Clear
+            </button>
           </div>
+          {annotate && <p className="small muted" style={{ margin: 0 }}>Two squares = arrow · same square twice = circle · Shift = red</p>}
         </div>
       </div>
+
+      {/* ---------- game report overlay ---------- */}
+      {showReport && review && (
+        <div className="report-overlay">
+          <div className="report-head">
+            <h3>Game Report</h3>
+            <button type="button" onClick={() => setShowReport(false)} aria-label="Close">✕</button>
+          </div>
+          <div className="report-body">
+            <GameReport review={review} onSelectPly={(p) => { setViewPly(p); setShowReport(false); }} />
+          </div>
+        </div>
+      )}
+
+      {/* ---------- more sheet ---------- */}
+      {menuOpen && (
+        <div className="sheet-backdrop" onClick={() => setMenuOpen(false)}>
+          <div className="sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="sheet-head">
+              <span className="sheet-handle" />
+              <button type="button" onClick={() => setMenuOpen(false)} aria-label="Close">✕</button>
+            </div>
+            <button type="button" onClick={() => { setMenuOpen(false); setAutoPlay(false); }}>⏱ Play from here</button>
+            <button type="button" onClick={() => { setMenuOpen(false); runReview(mode, true); }}>↻ Analyze again</button>
+            <button type="button" onClick={() => { setMenuOpen(false); review ? setShowReport(true) : runReview(mode, true); }}>👁 Show game report</button>
+            <button type="button" onClick={() => { setMenuOpen(false); copyText(gameRef.current.pgn(), "PGN"); }}>↗ Copy PGN</button>
+            <button type="button" onClick={() => { setMenuOpen(false); copyText(cur.fen, "FEN"); }}>↗ Copy current FEN</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

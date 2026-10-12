@@ -129,7 +129,7 @@ export function uciToSan(fen: string, uci: string | null): string | null {
 
 let bookPromise: Promise<Set<string>> | null = null;
 
-function norm(s: string): string {
+export function norm(s: string): string {
   return s.replace(/[+#!?]/g, "").replace(/0/g, "O");
 }
 
@@ -153,6 +153,31 @@ function getBookSet(): Promise<Set<string>> {
       .catch(() => new Set<string>());
   }
   return bookPromise;
+}
+
+let openIndex: Promise<Map<string, string>> | null = null;
+
+/** Map of normalised move-prefix -> opening name, from the bundled lines. */
+export function getOpeningIndex(): Promise<Map<string, string>> {
+  if (!openIndex) {
+    openIndex = fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/data/openings.json`)
+      .then((r) => r.json())
+      .then((rows: { moves: string; name: string }[]) => {
+        const m = new Map<string, string>();
+        for (const row of rows) {
+          const toks = row.moves.split(/\s+/).slice(0, 20);
+          let acc: string[] = [];
+          for (const t of toks) {
+            acc = [...acc, norm(t)];
+            const k = acc.join(" ");
+            if (!m.has(k)) m.set(k, row.name);
+          }
+        }
+        return m;
+      })
+      .catch(() => new Map<string, string>());
+  }
+  return openIndex;
 }
 
 /* ---------------- phases ---------------- */
