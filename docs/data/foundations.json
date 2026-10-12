@@ -1,0 +1,716 @@
+{
+ "levels": [
+  {
+   "level": 1,
+   "name": "Pawn",
+   "goal": "Learn how every piece moves and the basic rules of the game.",
+   "sections": [
+    {
+     "title": "Meet the Pieces",
+     "blurb": "Every piece moves in its own special way.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "The Pawn",
+       "explanation": "A pawn moves straight forward one square at a time. On its very first move, a pawn may move two squares forward if you want. A pawn captures one square diagonally in front of it, not straight ahead. Pawns can never move backwards, so every step is a commitment.",
+       "fen": "4k3/pppppppp/8/8/8/8/PPPPPPPP/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "e2",
+         "to": "e4"
+        }
+       ],
+       "comment": "The white pawn on e2 can jump two squares to e4 on its first move."
+      },
+      {
+       "type": "lesson",
+       "name": "The Knight",
+       "explanation": "A knight moves in an L shape: two squares in one direction and then one square to the side. It is the only piece that can jump over other pieces. Because of its odd jump, a knight always lands on a different colour square. Knights are strongest in the middle of the board where they reach many squares.",
+       "fen": "4k3/8/8/8/8/8/8/4K1N1 w - - 0 1",
+       "arrows": [
+        {
+         "from": "g1",
+         "to": "f3"
+        },
+        {
+         "from": "g1",
+         "to": "h3"
+        }
+       ],
+       "comment": "From g1 the knight can leap to f3 or h3, jumping over any pieces in its way."
+      },
+      {
+       "type": "lesson",
+       "name": "The Bishop",
+       "explanation": "A bishop moves any number of squares along a diagonal. It slides until it hits a piece, and it captures the first enemy piece in its path. A bishop stays on the same colour of square its whole life. Each side begins with one light-squared and one dark-squared bishop, so together they cover both colours.",
+       "fen": "4k3/8/8/8/8/8/8/2B1K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "c1",
+         "to": "g5"
+        },
+        {
+         "from": "c1",
+         "to": "a3"
+        }
+       ],
+       "comment": "The bishop on c1 can sweep a long way along the dark diagonals to g5 or a3."
+      },
+      {
+       "type": "lesson",
+       "name": "The Rook",
+       "explanation": "A rook moves any number of squares in a straight line, either along its file or along its rank. It cannot jump over pieces, so it needs open lines to be powerful. Rooks are worth a lot, so try not to leave them where they can be taken. Two rooks working on the same open file are very strong.",
+       "fen": "4k3/8/8/8/4K3/8/8/R7 w - - 0 1",
+       "arrows": [
+        {
+         "from": "a1",
+         "to": "a8"
+        },
+        {
+         "from": "a1",
+         "to": "h1"
+        }
+       ],
+       "comment": "The rook on a1 can travel all the way up the a-file or across the first rank to h1."
+      },
+      {
+       "type": "lesson",
+       "name": "The Queen",
+       "explanation": "The queen moves like a rook and a bishop combined. She can slide any number of squares in a straight line or along a diagonal. This makes her by far the most powerful piece on the board. Because she is so valuable, keep her safe and do not rush her out too early.",
+       "fen": "4k3/8/8/8/8/8/8/3QK3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "d1",
+         "to": "d8"
+        },
+        {
+         "from": "d1",
+         "to": "h5"
+        }
+       ],
+       "comment": "The queen on d1 reaches far in every direction, for example up the d-file or out to h5."
+      }
+     ]
+    },
+    {
+     "title": "The King and the Rules",
+     "blurb": "Learn the special rules that decide the game.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "The King",
+       "explanation": "The king moves just one square in any direction. He is the most important piece because the whole game is about keeping him safe. Kings may never move onto a square where the enemy could capture them. When few pieces are left, the king becomes a strong fighter and should march into the action.",
+       "fen": "4k3/8/8/8/4K3/8/8/8 w - - 0 1",
+       "arrows": [
+        {
+         "from": "e4",
+         "to": "e5"
+        },
+        {
+         "from": "e4",
+         "to": "d5"
+        }
+       ],
+       "comment": "The king on e4 can step to e5 or d5, but only to squares where no enemy piece attacks him."
+      },
+      {
+       "type": "lesson",
+       "name": "Check",
+       "explanation": "Check means an enemy piece is attacking your king right now. When you are in check, you must deal with it at once. You can move the king away, block the attack with another piece, or capture the piece that is giving check. If you cannot do any of these things, the game is over.",
+       "fen": "4k3/8/8/8/8/8/8/K3R3 b - - 0 1",
+       "arrows": [
+        {
+         "from": "e1",
+         "to": "e8"
+        }
+       ],
+       "comment": "The white rook on e1 is checking the black king, so Black must answer the threat at once."
+      },
+      {
+       "type": "lesson",
+       "name": "Checkmate",
+       "explanation": "Checkmate happens when a king is in check and has no legal way out. He cannot move to safety, nothing can block the attack, and nothing can capture the attacker. The game ends the moment checkmate appears. This is the goal of every game you play.",
+       "fen": "R5k1/5ppp/8/8/8/8/8/6K1 b - - 0 1",
+       "arrows": [
+        {
+         "from": "a8",
+         "to": "g8"
+        }
+       ],
+       "comment": "The rook on a8 checks the king, and his own pawns block every escape, so this is checkmate."
+      },
+      {
+       "type": "lesson",
+       "name": "Castling",
+       "explanation": "Castling is a special move that moves your king and a rook at the same time. The king slides two squares toward a rook, and that rook jumps to the square on the king's other side. You may only castle if neither piece has moved, the squares between them are empty, and the king is not in check or passing through a checked square.",
+       "fen": "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1",
+       "arrows": [
+        {
+         "from": "e1",
+         "to": "g1"
+        }
+       ],
+       "comment": "White can castle kingside by moving the king to g1 and the rook to f1."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "name": "Knight",
+   "goal": "Win pieces by capturing well and by not losing your own.",
+   "sections": [
+    {
+     "title": "Capturing and Value",
+     "blurb": "Take pieces when it helps and know what each one is worth.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "How Captures Work",
+       "explanation": "To capture a piece, you move your piece onto its square and remove it from the board. Every piece captures the same way it normally moves. A pawn is the one exception: it moves straight but captures diagonally. Always check that the square you are capturing on is safe before you take.",
+       "fen": "4k3/8/8/3p4/4P3/8/8/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "e4",
+         "to": "d5"
+        }
+       ],
+       "comment": "The white pawn on e4 can capture the black pawn on d5 by moving one square diagonally."
+      },
+      {
+       "type": "lesson",
+       "name": "Piece Values",
+       "explanation": "It helps to give each piece a rough value. A pawn is worth about one point, a knight or bishop about three, a rook about five, and the queen about nine. The king has no value because he can never be captured. These numbers help you decide whether a trade is good or bad.",
+       "fen": "rnbqkbnr/8/8/8/8/8/8/RNBQKBNR w - - 0 1",
+       "arrows": [
+        {
+         "from": "d1",
+         "to": "d4"
+        }
+       ],
+       "comment": "Both sides start with the same army, so the values begin perfectly level."
+      },
+      {
+       "type": "practice",
+       "name": "Trading",
+       "explanation": "A trade is when both sides capture a piece of similar value. You should trade when it leaves you with a better position, for example when you are ahead in material. Trading pieces also makes the board simpler, which helps when you are winning. Count the values before every trade to make sure you come out ahead.",
+       "fen": "4k3/8/8/2n5/4N3/8/8/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "e4",
+         "to": "c5"
+        }
+       ],
+       "comment": "The white knight on e4 can capture the black knight, swapping two pieces of equal value."
+      }
+     ]
+    },
+    {
+     "title": "Hanging Pieces",
+     "blurb": "The fastest way to win is to take pieces that are left unguarded.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "Don't Leave Pieces Hanging",
+       "explanation": "A piece is hanging when it is attacked and not defended by anything. If you leave a piece hanging, your opponent can simply take it for free. Before you finish your move, look at every one of your pieces and ask if it can be captured. This one habit will save you many games.",
+       "fen": "4k3/8/3p4/4N3/8/8/8/4K3 b - - 0 1",
+       "arrows": [
+        {
+         "from": "d6",
+         "to": "e5"
+        }
+       ],
+       "comment": "The white knight on e5 is not defended, so Black can win it with the pawn on d6."
+      },
+      {
+       "type": "lesson",
+       "name": "Attack the Undefended",
+       "explanation": "Look for enemy pieces that have no protection and attack them. A piece that is attacked and cannot be saved will usually be lost. Even a simple threat can force your opponent to spend a move defending. The player who spots undefended pieces first usually wins the material battle.",
+       "fen": "4k3/8/8/2b5/8/3N4/8/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "d3",
+         "to": "c5"
+        }
+       ],
+       "comment": "The black bishop on c5 has no defender, and the white knight on d3 can attack it."
+      },
+      {
+       "type": "lesson",
+       "name": "Defending a Piece",
+       "explanation": "To defend a piece, keep another piece ready to capture anything that takes it. A defended piece is much harder to win, because your opponent would have to give up something to grab it. Watch out, though: a defender that is pinned or overloaded may not really be helping. Always make sure your defenders are doing their job.",
+       "fen": "4k3/8/8/4N3/3P4/8/8/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "d4",
+         "to": "e5"
+        }
+       ],
+       "comment": "The pawn on d4 guards the knight on e5, so the knight is safe for now."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "name": "Bishop",
+   "goal": "Spot simple tactics that win material.",
+   "sections": [
+    {
+     "title": "Simple Tactics",
+     "blurb": "Tactics are short forcing moves that win pieces.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "The Fork",
+       "explanation": "A fork is one move that attacks two or more enemy pieces at once. Your opponent can only save one of them, so you win the other. Knights are famous for forks because their L-shaped jump is hard to see coming. Always look for a square where one of your pieces can hit two targets.",
+       "fen": "k3r3/8/N7/8/8/8/8/6K1 w - - 0 1",
+       "arrows": [
+        {
+         "from": "a6",
+         "to": "c7"
+        }
+       ],
+       "comment": "The knight jumps to c7, attacking the king on a8 and the rook on e8 at the same time."
+      },
+      {
+       "type": "lesson",
+       "name": "The Pin",
+       "explanation": "A pin happens when a piece cannot move because doing so would expose a more valuable piece behind it. If the piece is pinned to the king, it is not allowed to move at all. A pinned piece is a great target, so pile more attackers onto it. Pins often win material because the trapped piece cannot run away.",
+       "fen": "4k3/8/2n5/1B6/8/8/8/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "b5",
+         "to": "c6"
+        },
+        {
+         "from": "b5",
+         "to": "e8"
+        }
+       ],
+       "comment": "The bishop on b5 pins the knight on c6, because moving the knight would expose the king on e8."
+      },
+      {
+       "type": "lesson",
+       "name": "The Skewer",
+       "explanation": "A skewer is like a pin turned around. You attack a valuable piece, and when it moves away, you capture the piece hiding behind it. The king and the queen are favourite targets because they must move when attacked. Look for enemy pieces lined up on the same line, ready to be split apart.",
+       "fen": "7q/6k1/8/8/8/8/1B6/4K3 b - - 0 1",
+       "arrows": [
+        {
+         "from": "b2",
+         "to": "g7"
+        },
+        {
+         "from": "b2",
+         "to": "h8"
+        }
+       ],
+       "comment": "The bishop checks the king on g7, and once the king moves the bishop can take the queen on h8."
+      },
+      {
+       "type": "lesson",
+       "name": "Discovered Attack",
+       "explanation": "A discovered attack happens when you move one piece out of the way and reveal an attack from a piece behind it. The moving piece can also make a threat of its own, so your opponent has two problems at once. These double threats are very hard to meet. Moving a piece off a line to the enemy king is especially powerful.",
+       "fen": "4k3/8/8/8/4N3/8/8/4R1K1 w - - 0 1",
+       "arrows": [
+        {
+         "from": "e4",
+         "to": "g5"
+        },
+        {
+         "from": "e1",
+         "to": "e8"
+        }
+       ],
+       "comment": "When the knight steps aside to g5, the rook on e1 suddenly checks the king on e8."
+      }
+     ]
+    },
+    {
+     "title": "Using Tactics",
+     "blurb": "Turn tactics into real material and real mates.",
+     "lessons": [
+      {
+       "type": "practice",
+       "name": "Winning Material with a Fork",
+       "explanation": "The simplest way to win a piece is to fork a king and another piece. Because the king must escape check first, you get to grab the other piece next move. Knights and queens make the best forking pieces. Scan for squares where one move hits both the king and something valuable.",
+       "fen": "2r1k3/8/8/5N2/8/8/8/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "f5",
+         "to": "d6"
+        }
+       ],
+       "comment": "The knight jumps to d6, forking the rook on c8 and the king on e8."
+      },
+      {
+       "type": "lesson",
+       "name": "The Back-Rank Mate",
+       "explanation": "A back-rank mate happens when a rook or queen attacks along the last rank. The enemy king is trapped there by his own pawns, which block his escape. This is one of the most common mates in chess. Always watch your back rank, and think about giving your king an escape square.",
+       "fen": "6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1",
+       "arrows": [
+        {
+         "from": "a1",
+         "to": "a8"
+        }
+       ],
+       "comment": "The rook slides to a8 and mates, because the pawns on f7, g7 and h7 trap their own king."
+      },
+      {
+       "type": "practice",
+       "name": "Removing the Defender",
+       "explanation": "Sometimes a piece is hard to capture because another piece is guarding it. The answer is to capture the defender first. Once the guard is gone, the piece behind it falls. This idea works for winning material and for breaking through to checkmate.",
+       "fen": "4k3/5p2/5n2/6B1/8/3Q4/8/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "g5",
+         "to": "f6"
+        },
+        {
+         "from": "d3",
+         "to": "h7"
+        }
+       ],
+       "comment": "The bishop takes the knight on f6, removing the only defender of the pawn on h7."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": 4,
+   "name": "Rook",
+   "goal": "Start games well by developing your pieces and keeping your king safe.",
+   "sections": [
+    {
+     "title": "Opening Basics",
+     "blurb": "Good openings follow a few simple rules.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "Control the Center",
+       "explanation": "The center of the board is the group of squares in the middle, especially d4, e4, d5 and e5. Pieces placed in the center control more squares and can reach both sides of the board quickly. Try to occupy the center with pawns and support them with your pieces. A player who controls the center usually gets the better game.",
+       "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 4 3",
+       "arrows": [
+        {
+         "from": "d2",
+         "to": "d4"
+        }
+       ],
+       "comment": "Both sides have claimed a central square, and White can push another pawn to the middle with d4."
+      },
+      {
+       "type": "lesson",
+       "name": "Develop Your Pieces",
+       "explanation": "To develop means to move your pieces off their starting squares toward useful spots. Bring out your knights and bishops first, aiming them at the center. Try not to move the same piece twice in the opening unless you have a good reason. Fast development gets your army ready before the fighting starts.",
+       "fen": "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 4 3",
+       "arrows": [
+        {
+         "from": "f1",
+         "to": "c4"
+        },
+        {
+         "from": "f1",
+         "to": "b5"
+        }
+       ],
+       "comment": "The bishop can develop to c4 or b5, pointing at the enemy side of the board."
+      },
+      {
+       "type": "lesson",
+       "name": "King Safety",
+       "explanation": "Your king is safest behind a wall of pawns, usually after castling. Castling tucks the king in a corner and brings a rook toward the center. Try to castle early, before the board opens up. A king left in the middle is easy to attack and often gets mated.",
+       "fen": "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 6 5",
+       "arrows": [
+        {
+         "from": "e1",
+         "to": "g1"
+        }
+       ],
+       "comment": "White is ready to castle kingside, hiding the king safely behind the pawns."
+      }
+     ]
+    },
+    {
+     "title": "Opening Ideas",
+     "blurb": "Avoid traps and finish your opening setup.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "The Scholar's Mate Threat",
+       "explanation": "A quick attack on the f7 square is called the Scholar's Mate threat. The queen and bishop team up to hit f7, the weakest point near the enemy king. If the defender is careless, this can end in an early checkmate. Learn the pattern so you can use it and, just as important, stop it.",
+       "fen": "r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 3",
+       "arrows": [
+        {
+         "from": "h5",
+         "to": "f7"
+        },
+        {
+         "from": "c4",
+         "to": "f7"
+        }
+       ],
+       "comment": "The queen on h5 and the bishop on c4 both aim at f7, threatening mate."
+      },
+      {
+       "type": "lesson",
+       "name": "Don't Bring the Queen Out Early",
+       "explanation": "The queen is powerful but also a big target. If you send her out early, enemy pieces can chase her while developing themselves. Each time she runs, your opponent gets a free move. Keep the queen back until the smaller pieces are active.",
+       "fen": "r1bqkbnr/pppp1p1p/2n3p1/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 0 4",
+       "arrows": [
+        {
+         "from": "g6",
+         "to": "h5"
+        }
+       ],
+       "comment": "The pawn on g6 attacks the white queen, forcing her to move again and lose time."
+      },
+      {
+       "type": "lesson",
+       "name": "Connect Your Rooks",
+       "explanation": "Your two rooks start in the corners and are not doing much. Once your pieces are developed and you have castled, the rooks can guard each other along the back rank. This is a sign that your opening has gone well. Connected rooks are ready to join the attack on any open file.",
+       "fen": "4k3/pp3ppp/8/8/8/8/PP3PPP/R2R2K1 w - - 0 1",
+       "arrows": [
+        {
+         "from": "a1",
+         "to": "d1"
+        }
+       ],
+       "comment": "With the back rank clear, the two white rooks now defend each other."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": 5,
+   "name": "Queen",
+   "goal": "Understand pawn structure and simple middlegame plans.",
+   "sections": [
+    {
+     "title": "Pawn Play",
+     "blurb": "Pawns shape the whole board, so use them wisely.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "Pawn Chains",
+       "explanation": "A pawn chain is a line of pawns that protect each other, each one guarding the next. Chains are strong because the pawns defend one another and are hard to break. Attack a chain at its base, the rearmost pawn, if you want to weaken it. A healthy chain gives your pieces room to move behind it.",
+       "fen": "4k3/8/4p3/3pP3/3P4/8/8/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "d4",
+         "to": "e5"
+        }
+       ],
+       "comment": "The white pawns on d4 and e5 form a little chain, with d4 guarding e5."
+      },
+      {
+       "type": "lesson",
+       "name": "Doubled Pawns",
+       "explanation": "Doubled pawns are two pawns of the same colour on the same file. They cannot defend each other, which makes them a bit weaker than normal pawns. On the other hand, doubled pawns can open a file for your rooks. Whether they help or hurt depends on the rest of the position.",
+       "fen": "4k3/8/8/8/8/2P5/2P5/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "c3",
+         "to": "c4"
+        }
+       ],
+       "comment": "The two white pawns on the c-file are doubled, so they can never protect one another."
+      },
+      {
+       "type": "lesson",
+       "name": "Passed Pawns",
+       "explanation": "A passed pawn has no enemy pawns left in front of it on its own file or the files beside it. Nothing can stop it except the enemy king or pieces. Passed pawns are valuable because they can march toward promotion. Support a passed pawn and push it forward.",
+       "fen": "4k3/8/8/3P4/8/8/8/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "d5",
+         "to": "d6"
+        },
+        {
+         "from": "d5",
+         "to": "d8"
+        }
+       ],
+       "comment": "The white pawn on d5 is passed, with a clear road toward the promotion square on d8."
+      },
+      {
+       "type": "practice",
+       "name": "The Pawn Break",
+       "explanation": "A pawn break is a pawn move that challenges the enemy pawn structure. It usually opens lines and creates weaknesses to attack. Choose the right moment, when your pieces are ready to follow up. A well-timed break can turn a quiet position into a winning attack.",
+       "fen": "4k3/8/8/3p4/2P5/8/8/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "c4",
+         "to": "c5"
+        }
+       ],
+       "comment": "The push c4-c5 challenges the black pawn and opens lines on the queenside."
+      }
+     ]
+    },
+    {
+     "title": "Simple Plans",
+     "blurb": "Good players always have a small plan in mind.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "Attack the Weak Square",
+       "explanation": "A weak square is one that cannot easily be defended by pawns. If you can plant a knight on a weak square, it becomes a powerful outpost. Aim your pieces at these squares and take them when you can. A knight on a strong outpost can dominate the whole board.",
+       "fen": "4k3/8/8/3p4/8/5N2/8/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "f3",
+         "to": "e5"
+        }
+       ],
+       "comment": "The knight jumps to e5, a fine outpost in front of the black pawn on d5."
+      },
+      {
+       "type": "lesson",
+       "name": "Improve Your Worst Piece",
+       "explanation": "When there is no forcing move to play, look for your least useful piece. Find a better square for it, where it attacks more or defends more. Improving one piece at a time slowly builds a winning position. This quiet skill separates strong players from beginners.",
+       "fen": "4k3/8/8/8/8/8/8/R5K1 w - - 0 1",
+       "arrows": [
+        {
+         "from": "a1",
+         "to": "e1"
+        }
+       ],
+       "comment": "The rook on a1 is doing little, so it swings over to the e-file where it can see more of the board."
+      },
+      {
+       "type": "lesson",
+       "name": "The Plan",
+       "explanation": "A plan is a short answer to the question, what should I do next? It might be to attack on one side, to trade into a good endgame, or simply to improve your pieces. Pick a plan that fits your position, then make moves that help it. Having even a small plan is better than moving without a reason.",
+       "fen": "4k3/pp3ppp/8/8/8/8/PPPPPPPP/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "e2",
+         "to": "e4"
+        }
+       ],
+       "comment": "With the center still open, a simple plan is to claim it by pushing the e-pawn to e4."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": 6,
+   "name": "King",
+   "goal": "Learn key mating patterns and how to think like a player.",
+   "sections": [
+    {
+     "title": "Mating Patterns",
+     "blurb": "Recognising mates lets you finish games quickly.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "Back-Rank Mate",
+       "explanation": "The back-rank mate uses the edge of the board as a trap. A rook or queen checks along the last rank, and the king's own pawns block his escape. It often appears suddenly, even in quiet positions. Give your king a little air with a spare pawn move to stay safe.",
+       "fen": "6k1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+       "arrows": [
+        {
+         "from": "a1",
+         "to": "a8"
+        }
+       ],
+       "comment": "The rook swings to a8 for mate, since the black pawns leave the king no way out."
+      },
+      {
+       "type": "lesson",
+       "name": "Smothered Mate",
+       "explanation": "A smothered mate is a checkmate given by a knight, where the king is surrounded by his own pieces. Because the king is boxed in by his own army, he cannot escape. The knight's jump makes this mate especially surprising. Look for a king hemmed in by his own pieces.",
+       "fen": "6rk/5Npp/8/8/8/8/8/6K1 b - - 0 1",
+       "arrows": [
+        {
+         "from": "f7",
+         "to": "h8"
+        }
+       ],
+       "comment": "The knight on f7 mates the king on h8, who is smothered by his own rook and pawns."
+      },
+      {
+       "type": "lesson",
+       "name": "Two Rooks Mate",
+       "explanation": "Two rooks can force mate on their own by taking turns. One rook cuts off the king along a rank, and the other checks him. The king is pushed step by step to the edge of the board. This simple pattern works because the rooks cover each other.",
+       "fen": "1R5k/R7/8/8/8/8/8/6K1 b - - 0 1",
+       "arrows": [
+        {
+         "from": "b8",
+         "to": "g8"
+        },
+        {
+         "from": "a7",
+         "to": "h7"
+        }
+       ],
+       "comment": "One rook checks on b8 while the other covers the seventh rank, leaving the king with nowhere to go."
+      },
+      {
+       "type": "lesson",
+       "name": "Queen and King Mate",
+       "explanation": "With just a queen and king you can always mate a lone king. The queen takes away escape squares while your king moves in to help. Keep your king close to the enemy king to finish the job. Be careful not to accidentally stalemate the king instead.",
+       "fen": "7k/8/5KQ1/8/8/8/8/8 w - - 0 1",
+       "arrows": [
+        {
+         "from": "g6",
+         "to": "g7"
+        }
+       ],
+       "comment": "The queen moves to g7 for mate, protected by the king on f6."
+      }
+     ]
+    },
+    {
+     "title": "Thinking Like a Player",
+     "blurb": "A few habits will improve every move you make.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "Look for Checks, Captures, Threats",
+       "explanation": "Before every move, look at checks, captures and threats for both players. This simple scan helps you find strong moves and avoid blunders. A check or capture is forcing, so it is often the best candidate. Train yourself to run this checklist on every turn.",
+       "fen": "4k3/8/8/8/8/8/8/R3K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "a1",
+         "to": "a8"
+        }
+       ],
+       "comment": "The rook can give check by sliding to a8, hitting the king along the eighth rank."
+      },
+      {
+       "type": "practice",
+       "name": "Count the Material",
+       "explanation": "Counting material means adding up the value of the pieces each side has. If you are ahead, you usually want to trade pieces and head for a simpler endgame. If you are behind, keep the pieces on and look for chances to attack. Knowing who is ahead helps you choose the right plan.",
+       "fen": "4k3/8/8/8/8/8/4P3/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "e2",
+         "to": "e4"
+        }
+       ],
+       "comment": "White is ahead by one pawn, so a simple plan is to push it and trade toward an endgame."
+      },
+      {
+       "type": "lesson",
+       "name": "The Plan",
+       "explanation": "Every strong player asks what their position needs. Maybe you should attack, defend, or improve a piece before doing anything. A plan turns random moves into a clear path. Even a small plan is better than moving without a reason.",
+       "fen": "6k1/pp3ppp/8/8/8/8/PPPPPPPP/6K1 w - - 0 1",
+       "arrows": [
+        {
+         "from": "e2",
+         "to": "e4"
+        }
+       ],
+       "comment": "The position is balanced, so the plan is simply to develop and fight for the center."
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
