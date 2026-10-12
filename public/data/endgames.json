@@ -1,0 +1,622 @@
+{
+ "levels": [
+  {
+   "level": 1,
+   "name": "Pawn",
+   "goal": "Learn the simplest endings with only kings and pawns.",
+   "sections": [
+    {
+     "title": "The Lone King",
+     "blurb": "What happens when one side has nothing but a king.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "King vs King",
+       "explanation": "With only the two kings left, nobody can win. A king can never be captured or checkmated by another lone king. Games like this are declared a draw. Knowing this saves you from worrying when you trade down to bare kings.",
+       "fen": "8/8/4k3/8/8/4K3/8/8 w - - 0 1",
+       "arrows": [
+        {
+         "from": "e3",
+         "to": "e4"
+        }
+       ],
+       "comment": "The two kings can only shuffle around, because neither can ever force a win."
+      },
+      {
+       "type": "lesson",
+       "name": "King and Queen vs King",
+       "explanation": "A queen and king can always beat a lone king. The queen alone is not enough, because she cannot mate without help. Use the king to support the queen and drive the enemy king to the edge. Then the queen delivers mate with the king guarding her.",
+       "fen": "8/8/8/4k3/8/8/8/3QK3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "d1",
+         "to": "h5"
+        },
+        {
+         "from": "e1",
+         "to": "e2"
+        }
+       ],
+       "comment": "The queen and king work as a team, squeezing the enemy king toward the side of the board."
+      },
+      {
+       "type": "lesson",
+       "name": "King and Rook vs King",
+       "explanation": "A rook and king also beat a lone king. The rook drives the king to the edge while your king follows. Use the rook to cut off squares, not to chase the king around. Once the kings face each other, the rook lands the mate.",
+       "fen": "8/8/8/4k3/8/8/8/R3K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "a1",
+         "to": "a5"
+        },
+        {
+         "from": "e1",
+         "to": "e2"
+        }
+       ],
+       "comment": "The rook can check along the fifth rank while the white king comes up to help."
+      }
+     ]
+    },
+    {
+     "title": "Pawn Basics",
+     "blurb": "A single pawn can decide the whole game.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "The Pawn's Dream",
+       "explanation": "A pawn that reaches the last rank becomes a queen or another piece. This is called promotion, and it can win a game instantly. Push your pawns forward in the endgame to make a new queen. Guard the square in front of your pawn so it can keep marching.",
+       "fen": "8/4P3/8/4k3/8/4K3/8/8 w - - 0 1",
+       "arrows": [
+        {
+         "from": "e7",
+         "to": "e8"
+        }
+       ],
+       "comment": "The white pawn is one step from promotion and can become a queen on e8."
+      },
+      {
+       "type": "lesson",
+       "name": "King in Front of the Pawn",
+       "explanation": "When you push a pawn to promote, your king should lead the way. The king protects the pawn and clears a path for it. If the king hides behind the pawn, the pawn may get stuck. March the king forward first, then bring the pawn along.",
+       "fen": "4k3/8/8/4K3/4P3/8/8/8 w - - 0 1",
+       "arrows": [
+        {
+         "from": "e5",
+         "to": "e6"
+        },
+        {
+         "from": "e4",
+         "to": "e5"
+        }
+       ],
+       "comment": "The white king stands in front of the pawn, ready to protect it as it advances."
+      },
+      {
+       "type": "lesson",
+       "name": "The Square Rule",
+       "explanation": "You can often tell if a king can catch a running pawn by drawing a square. From the pawn's square, count the same number of squares toward its promotion square. If the enemy king is inside that square, it catches the pawn. If it is outside, the pawn runs home.",
+       "fen": "8/8/4k3/8/4P3/8/8/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "e4",
+         "to": "e5"
+        }
+       ],
+       "comment": "The black king is close, so it can step into the pawn's square and stop it."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": 2,
+   "name": "Knight",
+   "goal": "Use your king well and understand the opposition.",
+   "sections": [
+    {
+     "title": "Opposition",
+     "blurb": "The battle of the kings decides many pawn endings.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "The Opposition",
+       "explanation": "The opposition is a duel between the two kings. When they face each other with one square between them, the side that must move has to give way. Whoever can force the other king to step aside has the opposition. This little idea wins countless king and pawn endings.",
+       "fen": "8/8/4k3/8/4K3/8/8/8 b - - 0 1",
+       "arrows": [
+        {
+         "from": "e6",
+         "to": "d6"
+        }
+       ],
+       "comment": "The kings face off with a single square between them, and the side to move must give ground."
+      },
+      {
+       "type": "lesson",
+       "name": "Winning the Opposition",
+       "explanation": "To win the opposition, you want your opponent to run out of moves first. Step your king to a square that forces the enemy king to give way. Then you can advance your own king and pawn. Timing your king moves correctly is the whole secret.",
+       "fen": "8/8/3k4/8/3K4/8/8/8 b - - 0 1",
+       "arrows": [
+        {
+         "from": "d6",
+         "to": "e6"
+        }
+       ],
+       "comment": "Black must step aside, letting the white king gain ground and take the opposition."
+      },
+      {
+       "type": "lesson",
+       "name": "Key Squares",
+       "explanation": "Key squares are squares that, if your king reaches them, guarantee your pawn will promote. For a pawn on the fourth rank, the key squares are two ranks ahead of it. If your king stands on a key square, nothing can stop the pawn. Aim your king at these squares early.",
+       "fen": "7k/8/8/8/8/8/4P3/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "e2",
+         "to": "e4"
+        }
+       ],
+       "comment": "The white king will head for a key square ahead of the pawn so it can safely promote."
+      }
+     ]
+    },
+    {
+     "title": "Pawn Races",
+     "blurb": "When both sides run for promotion, counting matters.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "The Passed Pawn",
+       "explanation": "In the endgame, a passed pawn is often the most important piece on the board. It forces the enemy king or rook to watch it forever. Use your other pieces to help it advance. Even a single extra pawn can be enough to win.",
+       "fen": "8/8/8/4k3/8/4P3/8/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "e3",
+         "to": "e4"
+        }
+       ],
+       "comment": "The white pawn has a free path and can start running toward promotion."
+      },
+      {
+       "type": "lesson",
+       "name": "Outside Passed Pawn",
+       "explanation": "An outside passed pawn is one far away from the main action. It acts as a decoy, dragging the enemy king to the far side of the board. While the enemy king is busy, your king wins the pawns on the other side. This is a classic winning plan in pawn endings.",
+       "fen": "4k3/8/8/8/8/8/P7/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "a2",
+         "to": "a4"
+        }
+       ],
+       "comment": "The pawn on a2 is far from the kings and can pull the black king away from the center."
+      },
+      {
+       "type": "practice",
+       "name": "Protected Passed Pawn",
+       "explanation": "A protected passed pawn is guarded by another pawn, so it cannot be captured. It ties down enemy pieces and often decides the game. Push it when the time is right. Even if it never promotes, it keeps the enemy busy.",
+       "fen": "8/1k6/8/4P3/3P4/8/8/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "d4",
+         "to": "e5"
+        }
+       ],
+       "comment": "The pawn on d4 protects the passed pawn on e5, making it very hard to stop."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": 3,
+   "name": "Bishop",
+   "goal": "Learn endings with bishops and knights.",
+   "sections": [
+    {
+     "title": "Bishop Endings",
+     "blurb": "Bishops need open diagonals to shine.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "Bishop and Pawn vs King",
+       "explanation": "A bishop and a pawn can win if the bishop controls the squares the pawn needs. The bishop works from a distance while the king escorts the pawn. Move the king up first, then bring the pawn behind it. The bishop should be free to roam, not stuck defending.",
+       "fen": "4k3/8/8/8/8/4P3/4K3/2B5 w - - 0 1",
+       "arrows": [
+        {
+         "from": "e3",
+         "to": "e4"
+        }
+       ],
+       "comment": "The bishop on c1 and the king on e2 together help the pawn on e3 advance."
+      },
+      {
+       "type": "lesson",
+       "name": "Wrong-Coloured Bishop",
+       "explanation": "Sometimes your bishop is on the wrong colour to help your pawn promote. The bishop cannot control the promotion square, so the pawn gets stuck. With a rook's pawn and a wrong-coloured bishop, the game is a draw. Choose your pawn pushes with the bishop's colour in mind.",
+       "fen": "k7/P7/8/8/8/8/8/2B1K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "a7",
+         "to": "a8"
+        }
+       ],
+       "comment": "The pawn wants to promote on a8, but the bishop on the dark square c1 can never control that light square."
+      },
+      {
+       "type": "lesson",
+       "name": "Bishops of Opposite Colors",
+       "explanation": "When each side has a bishop on a different colour, attacks rarely work. Each bishop controls squares the other cannot touch. Such endings are often drawn, even when one side is a pawn up. Push your pawns on the colour of your bishop to make progress.",
+       "fen": "8/8/4k3/8/8/8/2B5/2b1K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "c2",
+         "to": "d3"
+        }
+       ],
+       "comment": "The two bishops never meet, each ruling only the squares of its own colour."
+      }
+     ]
+    },
+    {
+     "title": "Knight Endings",
+     "blurb": "Knights are tricky but slow in the endgame.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "Knight vs King",
+       "explanation": "A lone knight cannot mate a king, because it cannot control enough squares. A knight and king together still cannot force a mate against a lone king. That is why a single knight is only worth drawing when there are no pawns left. You need a pawn or a second piece to win.",
+       "fen": "8/8/8/4k3/8/8/8/1N2K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "b1",
+         "to": "c3"
+        }
+       ],
+       "comment": "The knight can hop around all day, but it can never checkmate the black king on its own."
+      },
+      {
+       "type": "lesson",
+       "name": "Knight and Pawn vs King",
+       "explanation": "A knight and pawn can win, but the knight often cannot lose a single tempo. Bring the king forward to support the pawn and control key squares. The knight should guard the pawn's path from a safe spot. Be patient and improve your king before pushing.",
+       "fen": "8/8/8/4k3/8/4P3/8/1N2K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "e3",
+         "to": "e4"
+        }
+       ],
+       "comment": "The knight on b1 and the king on e1 both help the pawn on e3 move up the board."
+      },
+      {
+       "type": "practice",
+       "name": "Knight vs Pawn",
+       "explanation": "A lone knight can often stop an enemy pawn by catching it in time. The knight is slow, so it must head for the pawn right away. If the pawn is far advanced and supported, the knight may not make it. Count the moves carefully before you commit.",
+       "fen": "7k/8/8/8/4p3/2N5/8/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "c3",
+         "to": "e4"
+        }
+       ],
+       "comment": "The knight on c3 attacks the black pawn on e4 and can stop it in its tracks."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": 4,
+   "name": "Rook",
+   "goal": "Master the most important endgame pieces.",
+   "sections": [
+    {
+     "title": "Rook and Pawn",
+     "blurb": "Rook endings are the most common of all.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "Rook vs Pawn",
+       "explanation": "A rook can stop a lone pawn by getting behind it or in front of it. The rook is fast and can check the enemy king from far away. If the pawn is supported by its king, the rook must be careful. Keep your rook active and give checks when you can.",
+       "fen": "R7/8/8/8/8/8/p7/4K2k w - - 0 1",
+       "arrows": [
+        {
+         "from": "a8",
+         "to": "a2"
+        }
+       ],
+       "comment": "The rook slides down the a-file and captures the dangerous pawn on a2."
+      },
+      {
+       "type": "lesson",
+       "name": "The Lucena Position",
+       "explanation": "The Lucena position is the most famous winning rook ending. One side has a pawn ready to promote and a rook, but the king is trapped by checks. The winning method is to build a bridge with the rook. The rook blocks the checks so the king can step out and let the pawn promote.",
+       "fen": "1K6/1P2k3/8/8/8/8/r7/6R1 w - - 0 1",
+       "arrows": [
+        {
+         "from": "g1",
+         "to": "g4"
+        }
+       ],
+       "comment": "The rook heads to the fourth rank to build the bridge that will block the enemy checks."
+      },
+      {
+       "type": "lesson",
+       "name": "The Philidor Position",
+       "explanation": "The Philidor position is the drawing method against a rook and pawn. The defender keeps the rook on the third rank, stopping the enemy king from advancing. When the pawn finally moves, the rook checks from behind. This plan holds the draw in many otherwise lost positions.",
+       "fen": "8/4k3/r7/4K3/4P3/8/8/8 b - - 0 1",
+       "arrows": [
+        {
+         "from": "a6",
+         "to": "e6"
+        }
+       ],
+       "comment": "The rook holds the sixth rank, keeping the white king back and ready to give checks from behind."
+      }
+     ]
+    },
+    {
+     "title": "Rook Activity",
+     "blurb": "An active rook is worth a pawn or more.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "Active Rook",
+       "explanation": "A rook with open lines and targets is called active. An active rook can attack pawns and give checks from far away. A passive rook that only defends is usually losing. Always look for the most active square for your rook.",
+       "fen": "4k3/R7/8/8/8/8/8/4K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "a7",
+         "to": "e7"
+        }
+       ],
+       "comment": "The rook swings to the seventh rank, where it can attack pawns and cut off the king."
+      },
+      {
+       "type": "lesson",
+       "name": "Cutting Off the King",
+       "explanation": "A rook can cut an enemy king off from the action by standing on the right file or rank. The king cannot cross the rook's line, so he is kept away. Meanwhile your own king goes to work on the other side. This is a key skill in rook endings.",
+       "fen": "8/8/8/4k3/1P6/8/1K6/3R4 w - - 0 1",
+       "arrows": [
+        {
+         "from": "d1",
+         "to": "d4"
+        }
+       ],
+       "comment": "By taking the fourth rank, the rook cuts the black king off from the white pawn."
+      },
+      {
+       "type": "practice",
+       "name": "The Skewer in Endgames",
+       "explanation": "A skewer works in the endgame just as it does earlier. Line up your rook with the enemy king and another piece behind it. When the king moves away, you capture the piece behind. Rooks are perfect for skewers because they attack along long open lines.",
+       "fen": "4r3/8/8/8/4k3/8/8/4R1K1 b - - 0 1",
+       "arrows": [
+        {
+         "from": "e1",
+         "to": "e4"
+        },
+        {
+         "from": "e1",
+         "to": "e8"
+        }
+       ],
+       "comment": "The rook checks the king on e4, and when he steps aside the rook can take the one on e8."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": 5,
+   "name": "Queen",
+   "goal": "Handle queen endings and defensive tricks.",
+   "sections": [
+    {
+     "title": "Queen and Pawn",
+     "blurb": "A queen can stop almost any pawn.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "Queen vs Pawn on the Seventh",
+       "explanation": "A lone queen usually beats a pawn that is about to promote. The queen gives checks and gains time to bring her king closer. Only a rook's pawn or bishop's pawn with the king close can draw. Learn the trick of checking until your own king arrives.",
+       "fen": "7K/8/8/3Q4/8/8/pk6/8 w - - 0 1",
+       "arrows": [
+        {
+         "from": "d5",
+         "to": "b5"
+        }
+       ],
+       "comment": "The queen gives check from b5 and keeps checking until the white king can help stop the pawn."
+      },
+      {
+       "type": "lesson",
+       "name": "Queen and King Mate",
+       "explanation": "Mating with a queen and king is one of the first skills to learn. Use the queen to shrink the enemy king's space, then bring your king up. When the kings are close, the queen can deliver the final blow. Watch out for stalemate when the enemy king is nearly trapped.",
+       "fen": "7k/8/5KQ1/8/8/8/8/8 w - - 0 1",
+       "arrows": [
+        {
+         "from": "g6",
+         "to": "g7"
+        }
+       ],
+       "comment": "The queen moves to g7 for mate, protected by the king on f6."
+      },
+      {
+       "type": "lesson",
+       "name": "The Drawing Exception",
+       "explanation": "Not every queen-versus-pawn ending is a win. With a rook's pawn on the seventh rank and the enemy king stuck in the corner, the defender can hold. The queen cannot take the pawn because the king guards it, and the attacking king is too far away. This surprising result saves many lost games.",
+       "fen": "k7/P7/8/8/3Q4/8/8/7K w - - 0 1",
+       "arrows": [
+        {
+         "from": "d4",
+         "to": "d8"
+        }
+       ],
+       "comment": "Even with a queen, White cannot win here, because the rook's pawn and the corner save Black."
+      }
+     ]
+    },
+    {
+     "title": "Stalemate and Tricks",
+     "blurb": "When you are losing, look for a saving trick.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "Stalemate Defense",
+       "explanation": "Stalemate happens when a player has no legal move but is not in check. The game is then a draw, even if that player was losing badly. A clever defender can sometimes force stalemate to escape defeat. Always check that your opponent has a legal move before you expect to win.",
+       "fen": "k7/8/KQ6/8/8/8/8/8 b - - 0 1",
+       "arrows": [
+        {
+         "from": "b6",
+         "to": "b7"
+        },
+        {
+         "from": "b6",
+         "to": "a7"
+        }
+       ],
+       "comment": "Black has no legal move and is not in check, so this is stalemate and a draw."
+      },
+      {
+       "type": "lesson",
+       "name": "Perpetual Check",
+       "explanation": "Perpetual check is when you keep giving checks that the enemy king cannot escape. It repeats forever, so the game ends in a draw. A player who is losing can often save the game this way. Look for a square where your queen or rook can check again and again.",
+       "fen": "6k1/8/6Q1/8/8/8/8/6K1 b - - 0 1",
+       "arrows": [
+        {
+         "from": "g6",
+         "to": "h6"
+        },
+        {
+         "from": "g6",
+         "to": "g8"
+        }
+       ],
+       "comment": "The queen checks the king on g8, and after he moves she can check him again and again."
+      },
+      {
+       "type": "lesson",
+       "name": "Not Enough to Win",
+       "explanation": "Some pieces simply cannot force a mate on their own. A lone bishop or a lone knight can never beat a bare king. Endings with only these pieces are always a draw. Knowing which pieces can mate saves you from chasing impossible wins.",
+       "fen": "8/8/8/4k3/8/8/8/2B1K3 w - - 0 1",
+       "arrows": [
+        {
+         "from": "c1",
+         "to": "g5"
+        }
+       ],
+       "comment": "A single bishop can never trap the king, so this ending is a draw."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "level": 6,
+   "name": "King",
+   "goal": "Finish games with clean mating technique.",
+   "sections": [
+    {
+     "title": "Basic Mates",
+     "blurb": "Learn the mates you will use most often.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "Two Rooks Mate",
+       "explanation": "Two rooks can mate a lone king without any help from the king. They move in steps, one rook cutting off a rank and the other checking. The king is driven to the edge of the board. Because the rooks guard each other, the enemy king cannot capture them.",
+       "fen": "1R5k/R7/8/8/8/8/8/6K1 b - - 0 1",
+       "arrows": [
+        {
+         "from": "b8",
+         "to": "g8"
+        },
+        {
+         "from": "a7",
+         "to": "h7"
+        }
+       ],
+       "comment": "One rook checks along the eighth rank while the other seals the seventh, and it is mate."
+      },
+      {
+       "type": "lesson",
+       "name": "Queen Mate",
+       "explanation": "The queen mates a lone king with a little help from her own king. First push the enemy king to the edge, then close in with your king. The queen takes away escape squares until the king has none. This is the mate you will use most often in practice.",
+       "fen": "7k/6Q1/5K2/8/8/8/8/8 b - - 0 1",
+       "arrows": [
+        {
+         "from": "g7",
+         "to": "h8"
+        }
+       ],
+       "comment": "The queen on g7 mates the king on h8, safely defended by the king on f6."
+      },
+      {
+       "type": "lesson",
+       "name": "Rook Mate",
+       "explanation": "A rook needs its king to help deliver mate. The king takes away the escape squares next to the enemy king. Then the rook checks along the edge of the board. This mate is a little slower than the queen mate but just as reliable.",
+       "fen": "7k/8/6K1/8/8/8/8/R7 w - - 0 1",
+       "arrows": [
+        {
+         "from": "a1",
+         "to": "a8"
+        }
+       ],
+       "comment": "The rook slides to a8 and mates, since the white king on g6 guards every escape square."
+      }
+     ]
+    },
+    {
+     "title": "Piece Coordination",
+     "blurb": "Make your pieces work together to finish the job.",
+     "lessons": [
+      {
+       "type": "lesson",
+       "name": "King Helps the Mate",
+       "explanation": "Your king is a fighting piece in the endgame, not just something to protect. Bring him close to the enemy king to take away escape squares. The pieces then deliver the mate together. Never leave your king at home when you are attacking in the endgame.",
+       "fen": "7k/8/5K2/8/8/8/8/R7 w - - 0 1",
+       "arrows": [
+        {
+         "from": "f6",
+         "to": "g6"
+        },
+        {
+         "from": "a1",
+         "to": "a8"
+        }
+       ],
+       "comment": "The white king steps closer to g6 so the rook can mate on the back rank."
+      },
+      {
+       "type": "lesson",
+       "name": "The Staircase Mate",
+       "explanation": "The staircase mate uses two rooks or a rook and queen to push the king down the board. Each check drives the king one rank closer to the edge. The pieces take turns, always staying safe. Step by step, the king runs out of squares.",
+       "fen": "7k/R7/8/8/8/8/8/1R4K1 w - - 0 1",
+       "arrows": [
+        {
+         "from": "b1",
+         "to": "b8"
+        }
+       ],
+       "comment": "With one rook already on the seventh rank, the other delivers mate on b8."
+      },
+      {
+       "type": "practice",
+       "name": "Bishop and Knight Mate",
+       "explanation": "A bishop and a knight can mate a lone king, but it is the hardest basic mate. The two pieces drive the king into a corner of the bishop's colour. The king must help by taking away squares. With careful play the mate can always be forced, though it takes many moves.",
+       "fen": "k7/8/1K6/8/8/8/8/2N2B2 w - - 0 1",
+       "arrows": [
+        {
+         "from": "c1",
+         "to": "a2"
+        },
+        {
+         "from": "f1",
+         "to": "c4"
+        }
+       ],
+       "comment": "The knight and bishop begin steering the black king toward the corner where the mate will happen."
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

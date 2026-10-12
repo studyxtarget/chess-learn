@@ -13,6 +13,8 @@ const links = [
   { href: "/puzzles", label: "Puzzles" },
   { href: "/analyze", label: "Analyze" },
   { href: "/openings", label: "Openings" },
+  { href: "/foundations", label: "Foundations" },
+  { href: "/endgames", label: "Endgames" },
   { href: "/traps", label: "Traps" },
   { href: "/repertoire", label: "Repertoire" },
 ];
@@ -41,7 +43,8 @@ export default function Nav() {
   }, []);
 
   return (
-    <header className="nav">
+    <>
+      <header className="nav">
       <div className="container nav-inner">
         <Link href="/" className="brand" onClick={() => setOpen(false)}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -98,7 +101,9 @@ export default function Nav() {
         </button>
       </div>
 
+      </header>
+
       <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
-    </header>
+    </>
   );
 }

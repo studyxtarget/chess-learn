@@ -45,6 +45,9 @@ export default function TrapTrainer({
   const [revealed, setRevealed] = useState(false);
   const wrongRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Clear the wrong-move flash if we unmount mid-flash.
+  useEffect(() => () => { if (wrongRef.current) clearTimeout(wrongRef.current); }, []);
+
   const cur = positions[Math.min(ply, positions.length - 1)];
   const turn = useMemo(() => new Chess(cur.fen).turn(), [cur.fen]);
   const expected = positions[ply + 1];

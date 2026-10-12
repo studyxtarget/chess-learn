@@ -20,6 +20,10 @@ export default function ReplayBoard({
   const [ply, setPly] = useState(0);
   const [playing, setPlaying] = useState(autoPlay);
 
+  // Stable content key: parents rebuild the array every render, so array identity
+  // must not be used as a dependency (it bounced the board back to ply 0).
+  const movesKey = moves.join(" ");
+
   // Recompute every position once per line.
   const positions = useMemo(() => {
     const game = new Chess(startFen);
@@ -35,12 +39,13 @@ export default function ReplayBoard({
       }
     }
     return list;
-  }, [moves, startFen]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [movesKey, startFen]);
 
   useEffect(() => {
     setPly(0);
     setPlaying(autoPlay);
-  }, [moves, autoPlay]);
+  }, [movesKey, autoPlay]);
 
   useEffect(() => {
     if (!playing) return;

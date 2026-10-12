@@ -7,7 +7,9 @@ export type IconName =
   | "chart"
   | "clock"
   | "home"
-  | "chevron";
+  | "chevron"
+  | "pawn"
+  | "crown";
 
 const PATHS: Record<IconName, React.ReactNode> = {
   play: (
@@ -57,6 +59,19 @@ const PATHS: Record<IconName, React.ReactNode> = {
     <>
       <path d="M3.5 11 12 4l8.5 7" />
       <path d="M6 9.8V20h12V9.8" />
+    </>
+  ),
+  pawn: (
+    <>
+      <circle cx="12" cy="6.6" r="2.7" />
+      <path d="M12 9.3c2 1 3.2 2.9 3.2 5.2H8.8c0-2.3 1.2-4.2 3.2-5.2z" />
+      <path d="M7.4 18.4h9.2" />
+    </>
+  ),
+  crown: (
+    <>
+      <path d="M4 17.6 5.9 7.2l4.1 3.5L12 5.6l2 5.1 4.1-3.5L20 17.6z" />
+      <path d="M5 20.4h14" />
     </>
   ),
   chevron: <path d="M9 5l7 7-7 7" />,

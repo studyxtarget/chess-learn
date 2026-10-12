@@ -158,6 +158,26 @@ export default function AnalyzePage() {
   const [recent, setRecent] = useState<Recent[]>([]);
   const [warning, setWarning] = useState<string | null>(null);
   const [engineKind, setEngineKind] = useState<"stockfish" | "builtin" | null>(null);
+  const reportCloseRef = useRef<HTMLButtonElement | null>(null);
+  const sheetCloseRef = useRef<HTMLButtonElement | null>(null);
+
+  // Move focus into an overlay when it opens and let Escape close it, so keyboard
+  // and screen-reader users are not left tabbing through the page behind it.
+  useEffect(() => {
+    if (!showReport) return;
+    reportCloseRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setShowReport(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showReport]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    sheetCloseRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setMenuOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
 
   const positions: Ply[] = useMemo(() => {
     const g = new Chess(startFen);
@@ -327,7 +347,9 @@ export default function AnalyzePage() {
     stopRef.current = false;
     const cfg =
       m === "deep" ? { depth: 14, label: "depth 14" } : m === "smart" ? { depth: smartDepth, label: "smart depth" } : { depth: 10, label: "depth 10" };
-    const cacheKey = `${startFen}|${history.join(" ")}|${cfg.label}|${engineKind ?? "?"}`;
+    // Key on the inputs only — engineKind is resolved during boot, so including it
+    // meant the first run stored under "?" and every re-run missed the cache.
+    const cacheKey = `${startFen}|${history.join(" ")}|${cfg.label}`;
     const cached = reviewCache.get(cacheKey);
     if (cached) {
       setReview(cached);
@@ -697,10 +719,10 @@ export default function AnalyzePage() {
 
       {/* ---------- game report overlay ---------- */}
       {showReport && review && (
-        <div className="report-overlay">
+        <div className="report-overlay" role="dialog" aria-modal="true" aria-label="Game report">
           <div className="report-head">
             <h3>Game Report</h3>
-            <button type="button" onClick={() => setShowReport(false)} aria-label="Close">✕</button>
+            <button ref={reportCloseRef} type="button" onClick={() => setShowReport(false)} aria-label="Close game report">✕</button>
           </div>
           <div className="report-body">
             <GameReport review={review} currentPly={viewPly} onSelectPly={(p) => { setViewPly(p); setShowReport(false); }} />
@@ -711,10 +733,10 @@ export default function AnalyzePage() {
       {/* ---------- more sheet ---------- */}
       {menuOpen && (
         <div className="sheet-backdrop" onClick={() => setMenuOpen(false)}>
-          <div className="sheet" onClick={(e) => e.stopPropagation()}>
+          <div className="sheet" role="dialog" aria-modal="true" aria-label="More actions" onClick={(e) => e.stopPropagation()}>
             <div className="sheet-head">
               <span className="sheet-handle" />
-              <button type="button" onClick={() => setMenuOpen(false)} aria-label="Close">✕</button>
+              <button ref={sheetCloseRef} type="button" onClick={() => setMenuOpen(false)} aria-label="Close menu">✕</button>
             </div>
             <button type="button" onClick={() => { setMenuOpen(false); setAutoPlay(true); }}>▶ Auto-play from here</button>
             <button type="button" onClick={() => { setMenuOpen(false); runReview(mode, true); }}>↻ Analyze again</button>

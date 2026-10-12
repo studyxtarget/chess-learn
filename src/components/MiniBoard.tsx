@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { asset } from "@/lib/data";
 import {
   getStoredPieceSetId,
@@ -35,7 +35,7 @@ function parseFen(fen: string): (string | null)[][] {
   return grid.slice(0, 8);
 }
 
-export default function MiniBoard({
+function MiniBoard({
   fen,
   size = 48,
   className = "",
@@ -57,7 +57,9 @@ export default function MiniBoard({
   }, []);
 
   const theme = getTheme(themeId);
-  const grid = parseFen(fen);
+  // Parsing 64 squares on every keystroke of a search box is the main cost on the
+  // list pages, so keep it tied to the FEN.
+  const grid = useMemo(() => parseFen(fen), [fen]);
   const cell = size / 8;
 
   return (
@@ -86,6 +88,8 @@ export default function MiniBoard({
               {pc && (
                 <img
                   alt=""
+                  loading="lazy"
+                  decoding="async"
                   src={asset(
                     piecePath(setId, pc === pc.toUpperCase() ? "w" : "b", pc.toLowerCase()),
                   )}
@@ -99,3 +103,5 @@ export default function MiniBoard({
     </div>
   );
 }
+
+export default memo(MiniBoard);

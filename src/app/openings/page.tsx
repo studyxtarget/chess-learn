@@ -184,8 +184,9 @@ export default function OpeningsPage() {
   );
 
   const selectedMoves = selected ? selected.moves.split(/\s+/).filter(Boolean) : [];
+  // Even plies => White is to move next; odd => Black.
   const selectedSide = selected
-    ? selectedMoves.length % 2 === 1
+    ? selectedMoves.length % 2 === 0
       ? "White"
       : "Black"
     : "";

@@ -231,7 +231,13 @@ export default function PuzzlesPage() {
   function onMove(mv: { from: string; to: string; promotion?: string }) {
     if (!cur || !userTurn) return;
     const u = cur.m[step];
-    if (mv.from === u.slice(0, 2) && mv.to === u.slice(2, 4)) {
+    const needPromo = u.length === 5 ? u[4] : null;
+    const playedPromo = (mv.promotion ?? "q").toLowerCase();
+    if (
+      mv.from === u.slice(0, 2) &&
+      mv.to === u.slice(2, 4) &&
+      (needPromo === null || playedPromo === needPromo)
+    ) {
       setStep((s) => s + 1);
     } else {
       setWrong(mv.to);
@@ -327,14 +333,13 @@ export default function PuzzlesPage() {
         <div className="ranktrack">
           <span className="chev" aria-hidden="true">‹</span>
           {RANKS.map((r, i) => (
-            <button
+            <span
               key={r.name}
-              type="button"
               className={`node ${i < rank.index ? "done" : i === rank.index ? "cur" : ""}`}
               title={`${r.name} — from ${r.min}`}
             >
               {r.min}
-            </button>
+            </span>
           ))}
           <span className="chev" aria-hidden="true">›</span>
         </div>

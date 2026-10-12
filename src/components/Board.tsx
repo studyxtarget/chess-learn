@@ -90,7 +90,7 @@ export default function Board({
   function squareColor(sq: string): "light" | "dark" {
     const f = FILES.indexOf(sq[0]);
     const r = parseInt(sq[1], 10);
-    return (f + r) % 2 === 0 ? "dark" : "light";
+    return (f + r) % 2 === 0 ? "light" : "dark";
   }
 
   // Centre of a square in board units (0..8), respecting orientation.

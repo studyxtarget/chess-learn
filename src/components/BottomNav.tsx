@@ -4,14 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Icon, { type IconName } from "./Icon";
 
+// The five primary tabs from the reference app. "Games" is our game-review
+// surface (/analyze); Play, Traps and Repertoire stay in the top navigation.
 const items: { href: string; label: string; icon: IconName }[] = [
-  { href: "/", label: "Home", icon: "home" },
-  { href: "/play", label: "Play", icon: "play" },
-  { href: "/puzzles", label: "Puzzles", icon: "target" },
-  { href: "/analyze", label: "Analyze", icon: "search" },
   { href: "/openings", label: "Openings", icon: "book" },
-  { href: "/traps", label: "Traps", icon: "target" },
-  { href: "/repertoire", label: "Repertoire", icon: "doc" },
+  { href: "/foundations", label: "Foundations", icon: "pawn" },
+  { href: "/endgames", label: "Endgames", icon: "crown" },
+  { href: "/analyze", label: "Games", icon: "search" },
+  { href: "/puzzles", label: "Puzzles", icon: "target" },
 ];
 
 function isActive(path: string, href: string): boolean {

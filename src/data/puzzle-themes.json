@@ -1,0 +1,148 @@
+{
+  "themes": [
+    {
+      "id": "advanced_pawn",
+      "name": "Advanced pawn",
+      "blurb": "A pawn pushed deep into enemy ground",
+      "explanation": "An advanced pawn is one that has marched far up the board, usually to the fifth rank or beyond. You spot it by looking for a friendly pawn sitting close to the enemy's back rank, often protected by another pawn or a piece. Because it is only a step or two from promoting, the opponent must spend moves to stop it, which ties down defenders. Very often it either forces a defender to abandon its post or simply queens and decides the game."
+    },
+    {
+      "id": "bishop_endgame",
+      "name": "Bishop endgame",
+      "blurb": "Endgame where only bishops and pawns remain",
+      "explanation": "This is the closing phase where each side has a bishop, often with a few pawns. You recognise it once the queens and rooks are gone and a long-range piece is the only officer left. A bishop can control squares from far away but only ever touches one colour of square, so pawns on the opposite colour can be hard to attack. The usual aim is to shepherd a passed pawn or trap the enemy king in a corner where a lone bishop cannot force mate."
+    },
+    {
+      "id": "capturing_defender",
+      "name": "Capturing defender",
+      "blurb": "Remove the piece guarding your target",
+      "explanation": "Here you win by taking out the piece that protects something you want to capture or attack. You spot it by counting guards: your target looks safe only because one piece is holding it together. If you can eliminate that defender, even at a fair price, the target falls next move. It commonly nets a clean pawn or a whole piece because the recapture no longer works."
+    },
+    {
+      "id": "clearance",
+      "name": "Clearance",
+      "blurb": "Move your own piece out of the way",
+      "explanation": "A clearance play frees a square, file or diagonal that your own piece is blocking. You look for a line or square you need but cannot use because one of your own men sits there. By shifting, sacrificing or even capturing with that piece, you open the path for a heavier threat behind it. The payoff is often a decisive check or a promotion that the blocked piece had been hiding."
+    },
+    {
+      "id": "deflection",
+      "name": "Deflection",
+      "blurb": "Lure a defender away from its duty",
+      "explanation": "Deflection means forcing an enemy piece to leave the square or line it is guarding. You spot it when one defender is holding two jobs at once and cannot do both. A sacrifice or a check on the other duty pulls it away, and your real target is suddenly undefended. It typically wins material outright or opens the door to mate."
+    },
+    {
+      "id": "discovered_attack",
+      "name": "Discovered attack",
+      "blurb": "Move one piece, unleash the one behind",
+      "explanation": "A discovered attack happens when you move a piece and thereby reveal a line of attack from a friendly piece that was hidden behind it. You look for two of your pieces stacked on the same line toward something valuable. Moving the front piece creates the threat, and that front piece can often make a threat of its own at the same time. The classic version wins a piece or the queen because the opponent can only answer one of the two attacks."
+    },
+    {
+      "id": "double_check",
+      "name": "Double check",
+      "blurb": "Two pieces give check at once",
+      "explanation": "A double check is a position where two of your pieces attack the enemy king at the same moment. It appears when one move uncovers a check while the moving piece also gives check. Because the king must move and no single block or capture can stop both lines, the defence is extremely limited. It is a favourite gateway to a forcing mating sequence."
+    },
+    {
+      "id": "exposed_king",
+      "name": "Exposed king",
+      "blurb": "Enemy king caught out in the open",
+      "explanation": "An exposed king has lost its pawn shield or sits on an open file, easy to attack. You notice it when the pawns around it have moved away or been traded off, leaving long open lines to it. Attacking such a king usually means bringing rooks and queens onto those lines or throwing pawns at the gaps. The result is often a quick mate, since the king has nowhere safe to run."
+    },
+    {
+      "id": "fork",
+      "name": "Fork",
+      "blurb": "One piece attacks two targets at once",
+      "explanation": "A fork is a single move by one piece that attacks two or more enemy pieces simultaneously. Knights are the classic forkers because their jump is hard to see, but pawns, queens and others do it too. You spot it by scanning for enemy pieces standing a knight's-move apart or sharing a line through one square. The opponent can only save one target, so you win the other."
+    },
+    {
+      "id": "intermezzo",
+      "name": "Intermezzo",
+      "blurb": "A sneaky in-between move before recapturing",
+      "explanation": "An intermezzo, or in-between move, is a move you slip in before doing what the position seems to demand. You spot the chance when you are about to recapture or retreat but first have a check or a bigger threat available. Playing that move first forces the opponent to react, and only then do you complete your original plan. It often turns a losing exchange into a winning one by grabbing an extra piece or tempo."
+    },
+    {
+      "id": "kingside_attack",
+      "name": "Kingside attack",
+      "blurb": "Assault aimed at the enemy king's flank",
+      "explanation": "A kingside attack throws pieces and pawns at the half of the board where the enemy king lives. You recognise the moment when you have more attackers near that king than the opponent has defenders. The plan is to open lines with a pawn push or sacrifice, then pour rooks and the queen in. Done well it ends in mate; done carelessly it just loses material, so timing matters."
+    },
+    {
+      "id": "knight_endgame",
+      "name": "Knight endgame",
+      "blurb": "Endgame with only knights and pawns left",
+      "explanation": "This is the phase where the only pieces left are knights, usually with pawns on the board. You reach it once queens, rooks and bishops have been traded. A knight is short-ranged and awkward, so it needs a stable outpost near the action to be useful. Play usually revolves around winning a pawn or steering a pawn to promotion while the enemy knight struggles to reach the right square in time."
+    },
+    {
+      "id": "mate",
+      "name": "Mate",
+      "blurb": "Check the king with no escape",
+      "explanation": "Mate is the finish: the enemy king is in check and has no legal way out. You look for it by checking every escape square, every block and every capture of the checking piece. A mating move is one the opponent cannot answer by any means, so the game ends at once. Most tactics in a puzzle exist to force exactly this position, even from a quiet start."
+    },
+    {
+      "id": "pawn_endgame",
+      "name": "Pawn endgame",
+      "blurb": "Endgame decided by pawns alone",
+      "explanation": "A pawn endgame is the bare phase where only kings and pawns remain. You know you are in it when every piece has been traded off. Everything then depends on king activity and pawn structure, because the king becomes a strong fighting piece. A single spare tempo or a passed pawn can be enough to queen and win, so precise counting of moves is vital."
+    },
+    {
+      "id": "pin",
+      "name": "Pin",
+      "blurb": "Piece held in place on a line",
+      "explanation": "A pin freezes an enemy piece because moving it would expose something more valuable behind it. You spot it when three things line up: your attacking piece, an enemy piece, and a bigger enemy target such as the king or queen. The pinned piece cannot run without losing the prize, so it is effectively stuck. You then pile on with more attackers, since the defender can barely add help."
+    },
+    {
+      "id": "queen_endgame",
+      "name": "Queen endgame",
+      "blurb": "Endgame where queens are the main pieces",
+      "explanation": "This is the phase where queens are on the board but most other pieces are gone. It often arises after the rooks and minor pieces have been traded. The queen's great mobility means a single check can win loose pawns or force the enemy king into a corner. Care is needed because the enemy queen is just as dangerous, so perpetual checks and stalemate traps are constant worries."
+    },
+    {
+      "id": "queen_rook_endgame",
+      "name": "Queen rook endgame",
+      "blurb": "Endgame with queen and rook on the board",
+      "explanation": "This is a late phase where a queen and a rook remain, usually with a few pawns. It comes about when the minor pieces are gone but the heavy pieces are still fighting. With so much firepower, the attacking side can often force mate or win material with a short forcing sequence. Defence is hard because the two pieces cover so many lines at once."
+    },
+    {
+      "id": "quiet_move",
+      "name": "Quiet move",
+      "blurb": "A calm move that sets up a threat",
+      "explanation": "A quiet move is a still, non-forcing move that nonetheless creates an unstoppable threat. You find it when every check and capture fails but a small repositioning move would leave the opponent helpless. Because it gives no check and takes nothing, it is easy to overlook in a puzzle. The opponent cannot meet the coming threat, so the next move wins."
+    },
+    {
+      "id": "rook_endgame",
+      "name": "Rook endgame",
+      "blurb": "Endgame with rooks and pawns only",
+      "explanation": "This is the phase where rooks are the only pieces, supported by pawns. It appears once queens and minor pieces have been exchanged. Rooks love open files and the seventh rank, where they can raid pawns from behind. The side with the more active rook usually wins, and passed pawns supported by a rook often decide the result."
+    },
+    {
+      "id": "sacrifice",
+      "name": "Sacrifice",
+      "blurb": "Give up material for a bigger gain",
+      "explanation": "A sacrifice means handing over a piece or pawn to gain something greater, such as a forced mate or a winning attack. You spot it by seeing that ordinary play is too slow but giving material opens a decisive line or square. The point is that the opponent cannot simply keep the extra material and survive. Puzzles use it to test whether you can look past the material count."
+    },
+    {
+      "id": "skewer",
+      "name": "Skewer",
+      "blurb": "Attack through a piece to hit the one behind",
+      "explanation": "A skewer is the reverse of a pin: your piece attacks an enemy piece, and when it moves, you capture the more valuable piece behind it. You spot it when two enemy pieces sit on one line with the more valuable one at the back. A check is the most forcing version, since the king must step aside and reveal what stands behind. It usually wins a clean piece or pawn."
+    },
+    {
+      "id": "smothered_mate",
+      "name": "Smothered mate",
+      "blurb": "Mate by a knight to a boxed-in king",
+      "explanation": "A smothered mate is a checkmate delivered by a knight to a king that is hemmed in by its own pieces. You recognise it when the enemy king is walled in by its own pawns and men, leaving it no square to flee. The knight jumps in and checks from a square no other piece can cover. It is a striking pattern because the king is trapped by friends, not foes."
+    },
+    {
+      "id": "trapping_piece",
+      "name": "Trapping piece",
+      "blurb": "Trap an enemy piece with no escape",
+      "explanation": "Trapping a piece means cutting off every square an enemy piece could use to run or be saved. You spot it when a piece has wandered forward with few retreat squares and weak support. By blocking its exits or attacking it with something it cannot trade off, you win it outright. Unlike a normal capture, the piece simply has nowhere to go and is lost for free."
+    },
+    {
+      "id": "zugzwang",
+      "name": "Zugzwang",
+      "blurb": "A position where any move makes things worse",
+      "explanation": "Zugzwang is a situation where a player would rather pass, because every legal move weakens their position. You look for it in endings where pieces are few and each side has only waiting moves left. The trick is to spend your own spare moves so that the opponent must move first and spoil their own setup. It typically wins a pawn or the whole game without any direct attack."
+    }
+  ]
+}
