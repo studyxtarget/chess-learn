@@ -3,6 +3,7 @@
 import { Chess } from "chess.js";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Board from "@/components/Board";
+import MiniBoard from "@/components/MiniBoard";
 import {
   DEFAULT_PROGRESS,
   loadProgress,
@@ -20,8 +21,40 @@ const BANDS: { label: string; lo: number; hi: number }[] = [
 ];
 
 const PROGRESS_KEY = "chesslearn.puzzleProgress";
+const THEMES_KEY = "chesslearn.puzzleThemes";
 /** Dropdown value that selects the adaptive (rating-driven) mode. */
 const ADAPTIVE = "adaptive";
+
+/** Rating ladder — each rank starts where the previous one ends. */
+const RANKS: { name: string; min: number }[] = [
+  { name: "Beginner", min: 800 },
+  { name: "Novice", min: 1000 },
+  { name: "Apprentice", min: 1200 },
+  { name: "Intermediate", min: 1400 },
+  { name: "Advanced", min: 1600 },
+  { name: "Expert", min: 1900 },
+];
+
+/** "advanced_pawn" -> "Advanced pawn" — theme ids are snake_case in the data. */
+function prettyTheme(t: string): string {
+  const s = t.replace(/_/g, " ");
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function rankOf(rating: number) {
+  let i = 0;
+  for (let k = 0; k < RANKS.length; k++) if (rating >= RANKS[k].min) i = k;
+  return { index: i, current: RANKS[i], next: RANKS[i + 1] ?? null };
+}
+
+function readThemeCounts(): Record<string, number> {
+  try {
+    const raw = typeof window !== "undefined" ? window.localStorage.getItem(THEMES_KEY) : null;
+    return raw ? (JSON.parse(raw) as Record<string, number>) : {};
+  } catch {
+    return {};
+  }
+}
 
 function fenAfter(startFen: string, moves: string[], n: number): string {
   const g = new Chess(startFen);
@@ -54,10 +87,26 @@ export default function PuzzlesPage() {
   const wrongRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [progress, setProgress] = useState<PuzzleProgress>({ ...DEFAULT_PROGRESS });
   const [seen, setSeen] = useState<Set<string>>(new Set());
+  const [themeCounts, setThemeCounts] = useState<Record<string, number>>({});
+  /** "types" shows the theme grid; "solve" shows the board. */
+  const [view, setView] = useState<"types" | "solve">("types");
 
   const themes = useMemo(() => Array.from(new Set(all.map((p) => p.t))).sort(), [all]);
 
+  /** First puzzle of each theme — its start position is the card thumbnail. */
+  const themeCards = useMemo(() => {
+    const first: Record<string, Puzzle> = {};
+    const total: Record<string, number> = {};
+    for (const p of all) {
+      if (!first[p.t]) first[p.t] = p;
+      total[p.t] = (total[p.t] ?? 0) + 1;
+    }
+    return themes.map((t) => ({ theme: t, fen: first[t]?.f ?? "", total: total[t] ?? 0 }));
+  }, [all, themes]);
+
   useEffect(() => {
+    setProgress(loadProgress(typeof window !== "undefined" ? localStorage.getItem(PROGRESS_KEY) : null));
+    setThemeCounts(readThemeCounts());
     fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/data/puzzles.json`)
       .then((r) => r.json())
       .then((d: { items: Puzzle[] }) => {
@@ -77,12 +126,6 @@ export default function PuzzlesPage() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-    // Stored JSON is never trusted — loadProgress merges defaults and coerces to Number.
-    try {
-      setProgress(loadProgress(localStorage.getItem(PROGRESS_KEY)));
-    } catch {
-      /* ignore */
-    }
   }, []);
 
   const pool = useMemo(
@@ -96,7 +139,7 @@ export default function PuzzlesPage() {
         }
         return true;
       }),
-    [all, theme, mode]
+    [all, theme, mode],
   );
 
   const next = useCallback(() => {
@@ -124,9 +167,9 @@ export default function PuzzlesPage() {
   }, [pool, seen, mode, progress.rating]);
 
   useEffect(() => {
-    if (!loading && pool.length > 0 && !cur) next();
+    if (view === "solve" && !loading && pool.length > 0 && !cur) next();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, pool.length, cur]);
+  }, [loading, pool.length, cur, view]);
 
   useEffect(() => () => {
     if (revealRef.current) clearInterval(revealRef.current);
@@ -140,8 +183,7 @@ export default function PuzzlesPage() {
     if (step % 2 === 1) {
       const t = setTimeout(() => {
         setStep((s) => s + 1);
-        setMsg("Find the best move.");
-      }, 550);
+      }, 420);
       return () => clearTimeout(t);
     }
   }, [step, cur, revealing]);
@@ -165,6 +207,14 @@ export default function PuzzlesPage() {
         try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(nxt)); } catch { /* ignore */ }
         return nxt;
       });
+      if (clean) {
+        // Count the solve against the theme it came from, for the type cards.
+        setThemeCounts((prev) => {
+          const nxt = { ...prev, [cur.t]: (prev[cur.t] ?? 0) + 1 };
+          try { localStorage.setItem(THEMES_KEY, JSON.stringify(nxt)); } catch { /* ignore */ }
+          return nxt;
+        });
+      }
       if (revealed) {
         setMsg("Solution shown — try the next one.");
       } else {
@@ -180,16 +230,12 @@ export default function PuzzlesPage() {
 
   function onMove(mv: { from: string; to: string; promotion?: string }) {
     if (!cur || !userTurn) return;
-    const expected = cur.m[step];
-    const got = `${mv.from}${mv.to}${mv.promotion ?? ""}`;
-    if (got === expected) {
-      setWrong(null);
-      setHint(false);
+    const u = cur.m[step];
+    if (mv.from === u.slice(0, 2) && mv.to === u.slice(2, 4)) {
       setStep((s) => s + 1);
-      setMsg("✓ Correct");
     } else {
       setWrong(mv.to);
-      setMsg("✗ Wrong move — try again");
+      setMsg("Not the best move — try again.");
       if (wrongRef.current) clearTimeout(wrongRef.current);
       wrongRef.current = setTimeout(() => setWrong(null), 1100);
     }
@@ -220,6 +266,12 @@ export default function PuzzlesPage() {
     next();
   }
 
+  function startTheme(t: string) {
+    setTheme(t);
+    setCur(null);
+    setView("solve");
+  }
+
   const markers = [
     ...(hint && cur && step < cur.m.length ? [{ square: cur.m[step].slice(0, 2), label: "?", color: "#e0c04d" }] : []),
     ...(wrong ? [{ square: wrong, label: "✗", color: "#e0554d" }] : []),
@@ -229,92 +281,209 @@ export default function PuzzlesPage() {
   const userColor: "white" | "black" = cur?.f.split(" ")[1] === "b" ? "black" : "white";
   const sideToMove = userColor === "black" ? "Black" : "White";
 
+  const rank = rankOf(progress.rating);
+  const goalTarget = rank.next ? rank.next.min : progress.rating;
+  const goalPct = rank.next
+    ? Math.max(0, Math.min(100, Math.round(((progress.rating - rank.current.min) / (goalTarget - rank.current.min)) * 100)))
+    : 100;
+
   return (
     <div className="container section">
       <h2>Puzzles</h2>
       <p className="sub">
-        Tactics trainer — {all.length.toLocaleString("en-IN")} puzzles across {themes.length} themes. Difficulty
-        adapts to your rating as you solve; pick a fixed band to override it. Find the best move; the opponent
-        replies automatically.
+        Tactics trainer — {all.length.toLocaleString("en-IN")} puzzles across {themes.length} themes.
+        Difficulty adapts to your rating as you solve. Find the best move; the opponent replies
+        automatically.
       </p>
 
-      <div className="toolbar">
-        <select value={theme} onChange={(e) => { setTheme(e.target.value); setCur(null); }}>
-          <option value="all">All themes</option>
-          {themes.map((t) => (
-            <option key={t} value={t}>{t.replace(/_/g, " ")}</option>
-          ))}
-        </select>
-        <select value={mode} onChange={(e) => { setMode(e.target.value); setCur(null); }}>
-          <option value={ADAPTIVE}>Adaptive (your rating)</option>
-          {BANDS.map((b) => (
-            <option key={b.label} value={b.label}>Rating band {b.label}</option>
-          ))}
-        </select>
-        <button className="btn" type="button" onClick={skip}>Skip</button>
-        <span className="muted small" style={{ marginLeft: "auto" }}>
-          Solved {progress.solved} · streak {progress.streak} · best {progress.best}
-        </span>
-      </div>
-
-      <div className="two-col">
-        <div>
-          <div className="statusbar">
-            <span className="dot-status" />
-            <span>{msg}</span>
+      {/* ---------- rating + rank ---------- */}
+      <div className="rankcard">
+        <div className="pz-stats">
+          <div>
+            <span className="lbl">Puzzle rating</span>
+            <strong className="big">{progress.rating}</strong>
           </div>
-
-          {fen && (
-            <Board
-              fen={fen}
-              orientation={userColor}
-              interactive={userTurn}
-              onMove={onMove}
-              markers={markers}
-            />
-          )}
-
-          <div className="replay-controls" style={{ marginTop: 12 }}>
-            <button type="button" onClick={() => { setHint(true); setMsg("Hint: move the marked piece."); }} disabled={!userTurn}>
-              Hint
-            </button>
-            <button type="button" onClick={reveal} disabled={!cur || solved}>Solution</button>
-            <button type="button" onClick={() => { if (revealRef.current) { clearInterval(revealRef.current); revealRef.current = null; } setRevealing(false); setStep(0); setSolved(false); setRevealed(false); setWrong(null); setHint(false); setMsg("Find the best move."); }} disabled={!cur}>
-              Restart
-            </button>
-            <button type="button" onClick={next} disabled={!cur}>Next</button>
+          <div>
+            <span className="lbl">Puzzles solved</span>
+            <strong className="big">{progress.solved}</strong>
+          </div>
+          <div>
+            <span className="lbl">Best streak</span>
+            <strong className="big">{progress.best}</strong>
           </div>
         </div>
+        <div className="rank-top" style={{ marginTop: 12 }}>
+          <div>
+            <span className="lbl">Current rank</span>
+            <strong>{rank.current.name}</strong>
+          </div>
+          <div className="right">
+            <span className="lbl">Next rank</span>
+            <strong>{rank.next ? rank.next.name : "Complete"}</strong>
+          </div>
+        </div>
+        <div className="ranktrack">
+          <span className="chev" aria-hidden="true">‹</span>
+          {RANKS.map((r, i) => (
+            <button
+              key={r.name}
+              type="button"
+              className={`node ${i < rank.index ? "done" : i === rank.index ? "cur" : ""}`}
+              title={`${r.name} — from ${r.min}`}
+            >
+              {r.min}
+            </button>
+          ))}
+          <span className="chev" aria-hidden="true">›</span>
+        </div>
+        <div className="lvl-bar">
+          <span style={{ width: `${goalPct}%` }} />
+        </div>
+        <div className="muted small" style={{ marginTop: 8 }}>
+          {rank.next
+            ? `Goal: reach ${rank.next.name} — ${progress.rating}/${goalTarget}`
+            : "Top rank reached — keep the streak alive."}
+        </div>
+      </div>
 
-        <div>
-          <div className="card">
-            <h3 style={{ fontSize: 15 }}>
-              {cur ? `${cur.t.replace(/_/g, " ")} · ${cur.r}` : "—"}
-            </h3>
-            <div className="muted small" style={{ marginTop: 4 }}>
-              {cur ? `${cur.m.length} plies in the solution · you play ${sideToMove}` : "Pick a theme and mode."}
-            </div>
-            {cur && (
-              <div className="phase-row">
-                <span>Step <b>{Math.min(step + 1, cur.m.length)} / {cur.m.length}</b></span>
+      {/* ---------- theme grid ---------- */}
+      {view === "types" ? (
+        <>
+          <div className="sec-head">
+            <h3 style={{ margin: 0, fontSize: 17 }}>Puzzle types</h3>
+            <span className="muted small">
+              {themeCounts && Object.keys(themeCounts).length
+                ? `${Object.values(themeCounts).reduce((a, b) => a + b, 0)} solved by theme`
+                : "Pick a theme to start"}
+            </span>
+          </div>
+          <div className="cards-strip pz-grid">
+            <button type="button" className="op-card" onClick={() => startTheme("all")}>
+              <span className="pz-mixed" aria-hidden="true">♞</span>
+              <span className="op-card-name">Mixed</span>
+              <span className="op-card-meta">all themes</span>
+            </button>
+            {themeCards.map((c) => {
+              const done = themeCounts[c.theme] ?? 0;
+              return (
+                <button
+                  key={c.theme}
+                  type="button"
+                  className="op-card"
+                  title={prettyTheme(c.theme)}
+                  onClick={() => startTheme(c.theme)}
+                >
+                  <MiniBoard fen={c.fen} size={88} />
+                  <span className="op-card-name">{prettyTheme(c.theme)}</span>
+                  <span className="op-card-meta">
+                    {done}/{c.total}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="sec-head">
+            <button className="btn" type="button" onClick={() => { setView("types"); setCur(null); }}>
+              ‹ All types
+            </button>
+            <span className="muted small">
+              {theme === "all" ? "Mixed" : prettyTheme(theme)} · {pool.length.toLocaleString("en-IN")} puzzles
+            </span>
+          </div>
+
+          <div className="toolbar">
+            <select value={theme} onChange={(e) => { setTheme(e.target.value); setCur(null); }}>
+              <option value="all">All themes</option>
+              {themes.map((t) => (
+                <option key={t} value={t}>
+                  {prettyTheme(t)}
+                </option>
+              ))}
+            </select>
+            <select value={mode} onChange={(e) => { setMode(e.target.value); setCur(null); }}>
+              <option value={ADAPTIVE}>Adaptive (my rating)</option>
+              {BANDS.map((b) => (
+                <option key={b.label} value={b.label}>
+                  {b.label}
+                </option>
+              ))}
+            </select>
+            <button className="btn" type="button" onClick={skip}>
+              Skip
+            </button>
+            <span className="muted small" style={{ marginLeft: "auto" }}>
+              streak {progress.streak} · best {progress.best}
+            </span>
+          </div>
+
+          <div className="two-col">
+            <div>
+              <div className="statusbar">
+                <span className="dot-status" />
+                <span>{msg}</span>
               </div>
-            )}
-            <div className="phase-row" style={{ marginTop: 10 }}>
-              <span>Your rating <b>{progress.rating}</b></span>
-              {cur && <span>This puzzle <b>{cur.r}</b></span>}
+
+              {fen && (
+                <Board
+                  fen={fen}
+                  onMove={onMove}
+                  orientation={userColor}
+                  markers={markers}
+                  lastMove={
+                    step > 0 && cur
+                      ? { from: cur.m[step - 1].slice(0, 2), to: cur.m[step - 1].slice(2, 4) }
+                      : null
+                  }
+                />
+              )}
+
+              <div className="replay-controls" style={{ marginTop: 12 }}>
+                <button type="button" onClick={() => { setHint(true); setMsg("Hint: move the marked piece."); }} disabled={!userTurn}>
+                  Hint
+                </button>
+                <button type="button" onClick={reveal} disabled={!cur || solved}>
+                  Solution
+                </button>
+                <button type="button" onClick={() => { if (revealRef.current) { clearInterval(revealRef.current); revealRef.current = null; } setRevealing(false); setStep(0); setSolved(false); setRevealed(false); setWrong(null); setHint(false); setMsg("Find the best move."); }} disabled={!cur}>
+                  Reset
+                </button>
+                <button type="button" onClick={next} disabled={!cur}>
+                  Next
+                </button>
+              </div>
             </div>
-            <div className="phase-row">
-              <span>Solved <b>{progress.solved}</b></span>
-              <span>Streak <b>{progress.streak}</b></span>
-              <span>Best <b>{progress.best}</b></span>
+
+            <div>
+              <div className="card">
+                <h3 style={{ fontSize: 15 }}>
+                  {cur ? prettyTheme(theme === "all" ? cur.t : theme) : "Loading…"}
+                </h3>
+                <div className="muted small" style={{ marginTop: 4 }}>
+                  {cur ? `${sideToMove} to play · rated ${cur.r} · ${cur.m.length} plies` : ""}
+                </div>
+                <div className="phase-row" style={{ marginTop: 10 }}>
+                  <span className="pill">solved {progress.solved}</span>
+                  <span className="pill">streak {progress.streak}</span>
+                  <span className="pill">rating {progress.rating}</span>
+                </div>
+                <p className="small muted" style={{ margin: "12px 0 0" }}>
+                  Find the best move for {sideToMove}. The opponent&apos;s reply is played for you;
+                  keep going until the sequence ends.
+                </p>
+              </div>
             </div>
-            <p className="small muted" style={{ margin: "12px 0 0" }}>
-              Puzzles are loaded from the bundled set. Your rating moves after every puzzle — solve to raise it,
-              reveal to lower it. Progress is saved in your browser.
-            </p>
           </div>
-        </div>
-      </div>
+        </>
+      )}
+
+      {loading && (
+        <p className="muted">
+          <span className="spinner" /> Loading puzzles…
+        </p>
+      )}
     </div>
   );
 }

@@ -885,3 +885,37 @@ html, body { overflow-x: hidden; }
   .cards-strip { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
   .ranktrack .node { height: 30px; }
 }
+
+/* ================= puzzles: rating card + type grid ================= */
+.pz-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pz-stats .lbl {
+  display: block;
+  font-size: 11.5px;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pz-stats .big { font-size: 22px; font-weight: 700; }
+.pz-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+.pz-mixed {
+  width: 88px; height: 88px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 42px;
+  background: linear-gradient(135deg, #e6913d, #b8641f);
+  color: #fff;
+}
+.rankcard .sec-head { margin: 6px 0 12px; }
+@media (max-width: 640px) {
+  .pz-grid { grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); }
+  .pz-stats { grid-template-columns: repeat(3, 1fr); }
+  .pz-stats .big { font-size: 19px; }
+}
+
+/* puzzle types header must wrap on narrow screens instead of clipping */
+.pz-grid + .sec-head, .sec-head { flex-wrap: wrap; }
+@media (max-width: 640px) {
+  .sec-head { gap: 6px; }
+  .sec-head .muted.small { flex-basis: 100%; }
+}
