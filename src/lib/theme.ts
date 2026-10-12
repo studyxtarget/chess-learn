@@ -19,15 +19,15 @@ export const PIECE_SET_KEY = "chesslearn.pieceSet";
 export const SETTINGS_EVENT = "chesslearn:settings";
 
 export const THEMES: BoardTheme[] = [
-  { id: "classic", name: "Classic", light: "#ebecd0", dark: "#739552" },
+  { id: "classic", name: "Green", light: "#ebecd0", dark: "#739552" },
   { id: "blue", name: "Blue", light: "#dee3e6", dark: "#4a7ba6" },
-  { id: "wood", name: "Wood", light: "#f0d9b5", dark: "#b58863" },
+  { id: "wood", name: "Wood", light: "#dcb38c", dark: "#8b5a2b" },
   { id: "grey", name: "Grey", light: "#e9e9e9", dark: "#8d8d8d" },
   { id: "purple", name: "Purple", light: "#e9e2f3", dark: "#8a63c9" },
   { id: "contrast", name: "High contrast", light: "#ffffff", dark: "#2b2b2b" },
 ];
 
-export const DEFAULT_THEME_ID = "classic";
+export const DEFAULT_THEME_ID = "wood";
 
 export type PieceSet = {
   id: string;

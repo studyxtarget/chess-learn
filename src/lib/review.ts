@@ -37,12 +37,12 @@ export const CLASSIFICATIONS: Classification[] = [
 export const CLASS_META: Record<Classification, { label: string; color: string; badge: string }> = {
   book: { label: "Book", color: "#a1795a", badge: "♟" },
   brilliant: { label: "Brilliant", color: "#2fa8a0", badge: "!!" },
-  best: { label: "Best", color: "#6aa84f", badge: "★" },
-  excellent: { label: "Excellent", color: "#8fbf6a", badge: "✓" },
-  good: { label: "Good", color: "#9aa4b2", badge: "·" },
-  inaccuracy: { label: "Inaccuracy", color: "#e0c04d", badge: "?!" },
-  mistake: { label: "Mistake", color: "#e08a3d", badge: "?" },
-  blunder: { label: "Blunder", color: "#e0554d", badge: "??" },
+  best: { label: "Best", color: "#76c74c", badge: "★" },
+  excellent: { label: "Excellent", color: "#9bc96b", badge: "✓" },
+  good: { label: "Good", color: "#a0948f", badge: "·" },
+  inaccuracy: { label: "Inaccuracy", color: "#f5d142", badge: "?!" },
+  mistake: { label: "Mistake", color: "#e6913d", badge: "?" },
+  blunder: { label: "Blunder", color: "#e64545", badge: "??" },
   "missed-win": { label: "Missed win", color: "#c94f9a", badge: "×" },
 };
 
