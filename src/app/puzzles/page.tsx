@@ -3,6 +3,13 @@
 import { Chess } from "chess.js";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Board from "@/components/Board";
+import {
+  DEFAULT_PROGRESS,
+  loadProgress,
+  nextRating,
+  pickPuzzle,
+  type PuzzleProgress,
+} from "@/lib/puzzleRating";
 
 type Puzzle = { t: string; r: number; f: string; m: string[] };
 
@@ -13,6 +20,8 @@ const BANDS: { label: string; lo: number; hi: number }[] = [
 ];
 
 const PROGRESS_KEY = "chesslearn.puzzleProgress";
+/** Dropdown value that selects the adaptive (rating-driven) mode. */
+const ADAPTIVE = "adaptive";
 
 function fenAfter(startFen: string, moves: string[], n: number): string {
   const g = new Chess(startFen);
@@ -31,7 +40,8 @@ export default function PuzzlesPage() {
   const [all, setAll] = useState<Puzzle[]>([]);
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState("all");
-  const [band, setBand] = useState("all");
+  // Default to the adaptive mode; the three bands remain a manual override.
+  const [mode, setMode] = useState<string>(ADAPTIVE);
   const [cur, setCur] = useState<Puzzle | null>(null);
   const [step, setStep] = useState(0);
   const [msg, setMsg] = useState("Find the best move.");
@@ -42,7 +52,7 @@ export default function PuzzlesPage() {
   const [revealed, setRevealed] = useState(false);
   const revealRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const wrongRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [stats, setStats] = useState({ solved: 0, streak: 0, best: 0 });
+  const [progress, setProgress] = useState<PuzzleProgress>({ ...DEFAULT_PROGRESS });
   const [seen, setSeen] = useState<Set<string>>(new Set());
 
   const themes = useMemo(() => Array.from(new Set(all.map((p) => p.t))).sort(), [all]);
@@ -67,16 +77,9 @@ export default function PuzzlesPage() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
+    // Stored JSON is never trusted — loadProgress merges defaults and coerces to Number.
     try {
-      const raw = localStorage.getItem(PROGRESS_KEY);
-      if (raw) {
-        const d = JSON.parse(raw);
-        setStats({
-          solved: Number(d?.solved) || 0,
-          streak: Number(d?.streak) || 0,
-          best: Number(d?.best) || 0,
-        });
-      }
+      setProgress(loadProgress(localStorage.getItem(PROGRESS_KEY)));
     } catch {
       /* ignore */
     }
@@ -86,13 +89,14 @@ export default function PuzzlesPage() {
     () =>
       all.filter((p) => {
         if (theme !== "all" && p.t !== theme) return false;
-        if (band !== "all") {
-          const b = BANDS.find((x) => x.label === band);
+        // In adaptive mode the rating band is ignored — the picker uses the user's rating.
+        if (mode !== ADAPTIVE) {
+          const b = BANDS.find((x) => x.label === mode);
           if (b && (p.r < b.lo || p.r >= b.hi)) return false;
         }
         return true;
       }),
-    [all, theme, band]
+    [all, theme, mode]
   );
 
   const next = useCallback(() => {
@@ -100,8 +104,15 @@ export default function PuzzlesPage() {
     if (wrongRef.current) { clearTimeout(wrongRef.current); wrongRef.current = null; }
     setRevealing(false);
     if (pool.length === 0) return;
-    const unseen = pool.filter((p) => !seen.has(p.f));
-    const pick = (unseen.length ? unseen : pool)[Math.floor(Math.random() * (unseen.length ? unseen.length : pool.length))];
+    let pick: Puzzle | null;
+    if (mode === ADAPTIVE) {
+      // Nearest-to-your-rating draw (preferring unseen puzzles).
+      pick = pickPuzzle(pool, progress.rating, seen) ?? pool[0];
+    } else {
+      const unseen = pool.filter((p) => !seen.has(p.f));
+      const src = unseen.length ? unseen : pool;
+      pick = src[Math.floor(Math.random() * src.length)];
+    }
     setCur(pick);
     setStep(0);
     setSolved(false);
@@ -110,7 +121,7 @@ export default function PuzzlesPage() {
     setRevealing(false);
     setRevealed(false);
     setMsg("Find the best move.");
-  }, [pool, seen]);
+  }, [pool, seen, mode, progress.rating]);
 
   useEffect(() => {
     if (!loading && pool.length > 0 && !cur) next();
@@ -139,15 +150,25 @@ export default function PuzzlesPage() {
     if (!cur) return;
     if (step >= cur.m.length && !solved) {
       setSolved(true);
+      const clean = !revealed;
+      // Elo update + streak bookkeeping, then persist. A reveal (or give-up)
+      // scores 0 and resets the streak; a clean solve scores 1 and extends it.
+      setProgress((prev) => {
+        const streak = clean ? prev.streak + 1 : 0;
+        const nxt: PuzzleProgress = {
+          solved: prev.solved + (clean ? 1 : 0),
+          streak,
+          best: Math.max(prev.best, streak),
+          rating: nextRating(prev.rating, cur.r, clean),
+          attempts: prev.attempts + 1,
+        };
+        try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(nxt)); } catch { /* ignore */ }
+        return nxt;
+      });
       if (revealed) {
         setMsg("Solution shown — try the next one.");
       } else {
         setMsg("Solved! 🎉");
-        setStats((s) => {
-          const ns = { solved: s.solved + 1, streak: s.streak + 1, best: Math.max(s.best, s.streak + 1) };
-          try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(ns)); } catch { /* ignore */ }
-          return ns;
-        });
       }
       setSeen((s) => new Set(s).add(cur.f));
     }
@@ -212,8 +233,9 @@ export default function PuzzlesPage() {
     <div className="container section">
       <h2>Puzzles</h2>
       <p className="sub">
-        Tactics trainer — {all.length.toLocaleString("en-IN")} puzzles across {themes.length} themes and
-        three rating bands. Find the best move; the opponent replies automatically.
+        Tactics trainer — {all.length.toLocaleString("en-IN")} puzzles across {themes.length} themes. Difficulty
+        adapts to your rating as you solve; pick a fixed band to override it. Find the best move; the opponent
+        replies automatically.
       </p>
 
       <div className="toolbar">
@@ -223,15 +245,15 @@ export default function PuzzlesPage() {
             <option key={t} value={t}>{t.replace(/_/g, " ")}</option>
           ))}
         </select>
-        <select value={band} onChange={(e) => { setBand(e.target.value); setCur(null); }}>
-          <option value="all">All ratings</option>
+        <select value={mode} onChange={(e) => { setMode(e.target.value); setCur(null); }}>
+          <option value={ADAPTIVE}>Adaptive (your rating)</option>
           {BANDS.map((b) => (
-            <option key={b.label} value={b.label}>{b.label}</option>
+            <option key={b.label} value={b.label}>Rating band {b.label}</option>
           ))}
         </select>
         <button className="btn" type="button" onClick={skip}>Skip</button>
         <span className="muted small" style={{ marginLeft: "auto" }}>
-          Solved {stats.solved} · streak {stats.streak} · best {stats.best}
+          Solved {progress.solved} · streak {progress.streak} · best {progress.best}
         </span>
       </div>
 
@@ -270,17 +292,25 @@ export default function PuzzlesPage() {
               {cur ? `${cur.t.replace(/_/g, " ")} · ${cur.r}` : "—"}
             </h3>
             <div className="muted small" style={{ marginTop: 4 }}>
-              {cur ? `${cur.m.length} plies in the solution · you play ${sideToMove}` : "Pick a theme and rating."}
+              {cur ? `${cur.m.length} plies in the solution · you play ${sideToMove}` : "Pick a theme and mode."}
             </div>
             {cur && (
               <div className="phase-row">
                 <span>Step <b>{Math.min(step + 1, cur.m.length)} / {cur.m.length}</b></span>
-                <span>Rating <b>{cur.r}</b></span>
               </div>
             )}
+            <div className="phase-row" style={{ marginTop: 10 }}>
+              <span>Your rating <b>{progress.rating}</b></span>
+              {cur && <span>This puzzle <b>{cur.r}</b></span>}
+            </div>
+            <div className="phase-row">
+              <span>Solved <b>{progress.solved}</b></span>
+              <span>Streak <b>{progress.streak}</b></span>
+              <span>Best <b>{progress.best}</b></span>
+            </div>
             <p className="small muted" style={{ margin: "12px 0 0" }}>
-              Puzzles are loaded from the bundled set. Solve to build a streak — progress is saved in
-              your browser.
+              Puzzles are loaded from the bundled set. Your rating moves after every puzzle — solve to raise it,
+              reveal to lower it. Progress is saved in your browser.
             </p>
           </div>
         </div>

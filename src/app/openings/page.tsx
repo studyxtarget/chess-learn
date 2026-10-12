@@ -46,9 +46,10 @@ export default function OpeningsPage() {
       if (q && !o.name.toLowerCase().includes(q) && !o.moves.toLowerCase().includes(q)) return false;
       return true;
     });
-    // Some source rows carry implausible game counts; cap them so they cannot dominate the sort.
-    const cap = (n: number) => Math.min(n, 5_000_000);
-    if (sort === "games") list = [...list].sort((a, b) => cap(b.games) - cap(a.games));
+    // Source rows with implausible counts (up to billions) are treated as unknown and sorted
+    // last, so "Most played" still shows real numbers at the top of the list.
+    const known = (n: number) => (n > 5_000_000 ? -1 : n);
+    if (sort === "games") list = [...list].sort((a, b) => known(b.games) - known(a.games));
     else if (sort === "white") list = [...list].sort((a, b) => b.white - a.white);
     else list = [...list].sort((a, b) => a.name.localeCompare(b.name));
     return list;

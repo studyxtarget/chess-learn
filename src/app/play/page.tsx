@@ -5,6 +5,7 @@ import { Chess } from "chess.js";
 import Board from "@/components/Board";
 import { botMove } from "@/lib/engine";
 import { bots, countryFlag, styleLabel, styleColor, asset, type Bot } from "@/lib/data";
+import { playMoveSound } from "@/lib/sounds";
 
 const START = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
@@ -70,8 +71,10 @@ export default function PlayPage() {
       const m = botMove(g.fen(), g.history() as string[], selectedBot);
       if (cancelled) return;
       if (m) {
+        const fenBefore = g.fen();
         try {
           g.move({ from: m.from, to: m.to, promotion: m.promotion });
+          playMoveSound(fenBefore, { from: m.from, to: m.to, promotion: m.promotion });
         } catch {
           /* ignore */
         }

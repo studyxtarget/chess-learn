@@ -23,6 +23,10 @@ copied.
   and a classification (best / excellent / good / inaccuracy / mistake / blunder), plus a game
   report with per-side accuracy, a counts table and an evaluation graph.
 - **PGN / FEN import & export** on the Analyze page (merged in from the separate *ChessAnalyzer* project).
+- **Adaptive puzzles**: the tactics trainer rates you with a simple Elo and serves puzzles near your
+  level (the fixed rating bands are still available as an override).
+- **Settings** (gear in the header): six board themes, two piece sets, and synthesized move sounds
+  (Web Audio — no audio files are bundled).
 
 - **Real chess logic** via `chess.js`.
 - **Original engine** (`src/lib/engine.ts`): alpha-beta search over material + piece-square
@@ -100,6 +104,8 @@ that visible rather than presenting both as the same quality.
 |---|---|---|
 | Stockfish (WASM) | **GPL-3.0** | licence text ships at `public/stockfish/COPYING.txt`; provenance in `NOTICE.txt` |
 | cburnett piece set | CC BY-SA 3.0 / GPL | by Colin M.L. Burnett |
+| merida piece set | free / public-domain-style | by Armando Hernandez Marroquin |
+| Move sounds | — | synthesized at runtime with the Web Audio API (no audio assets) |
 | App code | — | original code written for this project |
 
 Because the site distributes Stockfish, the combined work must comply with GPL-3.0 — keep the

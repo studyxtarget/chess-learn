@@ -3,6 +3,14 @@
 import { Chess } from "chess.js";
 import { useEffect, useMemo, useState } from "react";
 import { asset } from "@/lib/data";
+import {
+  applyBoardTheme,
+  getStoredPieceSetId,
+  getStoredThemeId,
+  piecePath,
+  subscribeSettings,
+} from "@/lib/theme";
+import { classifyMove, playSound } from "@/lib/sounds";
 
 export type BoardMove = { from: string; to: string; promotion?: string };
 
@@ -40,12 +48,24 @@ export default function Board({
   const game = useMemo(() => new Chess(fen), [fen]);
   const [selected, setSelected] = useState<string | null>(null);
   const [pending, setPending] = useState<BoardMove | null>(null);
+  const [pieceSet, setPieceSet] = useState("cburnett");
 
   // A stale selection must not survive a new position (bot reply, auto-reply, navigation).
   useEffect(() => {
     setSelected(null);
     setPending(null);
   }, [fen]);
+
+  // Apply the saved board theme + piece set on mount, and follow changes made
+  // from the Settings sheet (or another tab).
+  useEffect(() => {
+    applyBoardTheme(getStoredThemeId());
+    setPieceSet(getStoredPieceSetId());
+    return subscribeSettings(() => {
+      applyBoardTheme(getStoredThemeId());
+      setPieceSet(getStoredPieceSetId());
+    });
+  }, []);
 
   const board = game.board();
   const turn = game.turn();
@@ -104,6 +124,7 @@ export default function Board({
         setSelected(null);
         return;
       }
+      playSound(classifyMove(fen, { from: selected, to: sq }));
       onMove?.({ from: selected, to: sq });
       setSelected(null);
       return;
@@ -152,7 +173,7 @@ export default function Board({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     className="piece"
-                    src={asset(`/pieces/cburnett/${piece.color}${piece.type}.svg`)}
+                    src={asset(piecePath(pieceSet, piece.color, piece.type))}
                     alt={`${piece.color === "w" ? "white" : "black"} ${piece.type}`}
                     draggable={false}
                   />
@@ -230,13 +251,14 @@ export default function Board({
                   type="button"
                   aria-label={`Promote to ${PIECE_NAME[pr]}`}
                   onClick={() => {
+                    playSound(classifyMove(fen, { ...pending, promotion: pr }));
                     onMove?.({ ...pending, promotion: pr });
                     setPending(null);
                   }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={asset(`/pieces/cburnett/${turn}${pr}.svg`)}
+                    src={asset(piecePath(pieceSet, turn, pr))}
                     alt={pr}
                     draggable={false}
                   />
