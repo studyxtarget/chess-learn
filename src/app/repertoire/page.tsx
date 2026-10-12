@@ -23,11 +23,12 @@ export default function RepertoirePage() {
 
   function WeightBars({ r }: { r: RepertoireLine }) {
     const total = r.defensive + r.neutral + r.aggressive || 1;
+    // Only one weight is ever non-zero in the source data — render just the real ones.
     const rows = [
       { label: "Defensive", v: r.defensive, c: "#4d90e0" },
       { label: "Neutral", v: r.neutral, c: "#8a8f98" },
       { label: "Aggressive", v: r.aggressive, c: "#e0554d" },
-    ];
+    ].filter((x) => x.v > 0);
     return (
       <div className="weightbars">
         {rows.map((x) => (

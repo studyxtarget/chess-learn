@@ -1,7 +1,7 @@
 "use client";
 
 import { Chess } from "chess.js";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Board from "./Board";
 
 const START = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -42,6 +42,8 @@ export default function TrapTrainer({
   const [wrong, setWrong] = useState<string | null>(null);
   const [msg, setMsg] = useState("Your move.");
   const [done, setDone] = useState(false);
+  const [revealed, setRevealed] = useState(false);
+  const wrongRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const cur = positions[Math.min(ply, positions.length - 1)];
   const turn = useMemo(() => new Chess(cur.fen).turn(), [cur.fen]);
@@ -62,8 +64,12 @@ export default function TrapTrainer({
   useEffect(() => {
     if (finished && !done) {
       setDone(true);
-      setMsg("Trap completed! 🎉");
-      onComplete?.();
+      if (revealed) {
+        setMsg("Solution revealed — replay it to learn it.");
+      } else {
+        setMsg("Trap completed! 🎉");
+        onComplete?.();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [finished]);
@@ -74,7 +80,9 @@ export default function TrapTrainer({
 
   function onMove(m: { from: string; to: string; promotion?: string }) {
     if (!userTurn || !expected) return;
-    if (m.from === expected.from && m.to === expected.to) {
+    const wantsPromo = /=[QRBN]/.test(expected.san);
+    const promoOk = !wantsPromo || (m.promotion ?? "q") === expected.san.slice(-1).toLowerCase();
+    if (m.from === expected.from && m.to === expected.to && promoOk) {
       setWrong(null);
       setHint(false);
       setPly((p) => p + 1);
@@ -82,7 +90,8 @@ export default function TrapTrainer({
     } else {
       setWrong(m.to);
       setMsg("✗ Wrong move — try again");
-      setTimeout(() => setWrong(null), 1100);
+      if (wrongRef.current) clearTimeout(wrongRef.current);
+      wrongRef.current = setTimeout(() => setWrong(null), 1100);
     }
   }
 
@@ -91,12 +100,14 @@ export default function TrapTrainer({
     setHint(false);
     setWrong(null);
     setDone(false);
+    setRevealed(false);
     setMsg(new Chess(startFen).turn() === userSide ? "Your move." : "Watching opponent…");
   }
 
   function reveal() {
     setHint(false);
     setWrong(null);
+    setRevealed(true);
     setPly(positions.length - 1);
     setMsg("Revealed — follow the moves to learn it.");
   }

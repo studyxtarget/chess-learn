@@ -1,12 +1,22 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import BottomNav from "@/components/BottomNav";
 
+export const viewport: Viewport = {
+  themeColor: "#0f1216",
+};
+
 export const metadata: Metadata = {
   title: "Chess Learn",
   description:
-    "A browser chess trainer: play the data-driven bots, explore openings, learn traps, and run a full Stockfish game review.",
+    "A browser chess trainer: play the data-driven bots, solve tactics puzzles, explore openings, learn traps, and run a full Stockfish game review.",
+  icons: { icon: "/icon.svg" },
+  openGraph: {
+    title: "Chess Learn",
+    description: "Play bots, solve puzzles, explore openings and review your games with Stockfish.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

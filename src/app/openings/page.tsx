@@ -7,6 +7,16 @@ import { asset } from "@/lib/data";
 
 const PAGE = 60;
 
+/** Some source rows carry implausible counts (up to billions); show those as unknown. */
+function fmtGames(n: number): string {
+  return n > 5_000_000 ? "—" : n.toLocaleString("en-IN");
+}
+
+/** The name already starts with its ECO code; don't print it twice. */
+function stripEco(name: string): string {
+  return name.replace(/^[A-E]\d{2}:\s*/, "");
+}
+
 export default function OpeningsPage() {
   const [all, setAll] = useState<Opening[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,8 +30,10 @@ export default function OpeningsPage() {
     fetch(asset("/data/openings.json"))
       .then((r) => r.json())
       .then((d: Opening[]) => {
-        setAll(d);
-        setSelected(d[0]);
+        // Drop rows with no games at all — they render as meaningless "0 games · 0%".
+        const clean = d.filter((o) => o.games > 0);
+        setAll(clean);
+        setSelected(clean[0]);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -34,7 +46,9 @@ export default function OpeningsPage() {
       if (q && !o.name.toLowerCase().includes(q) && !o.moves.toLowerCase().includes(q)) return false;
       return true;
     });
-    if (sort === "games") list = [...list].sort((a, b) => b.games - a.games);
+    // Some source rows carry implausible game counts; cap them so they cannot dominate the sort.
+    const cap = (n: number) => Math.min(n, 5_000_000);
+    if (sort === "games") list = [...list].sort((a, b) => cap(b.games) - cap(a.games));
     else if (sort === "white") list = [...list].sort((a, b) => b.white - a.white);
     else list = [...list].sort((a, b) => a.name.localeCompare(b.name));
     return list;
@@ -57,9 +71,9 @@ export default function OpeningsPage() {
           {selected && (
             <>
               <div className="card" style={{ marginBottom: 14 }}>
-                <h3 style={{ fontSize: 15 }}>{selected.name}</h3>
+                <h3 style={{ fontSize: 15 }}>{stripEco(selected.name)}</h3>
                 <div className="muted small" style={{ marginTop: 4 }}>
-                  {selected.eco} · {selected.games.toLocaleString("en-IN")} games · White{" "}
+                  {selected.eco} · {fmtGames(selected.games)} games · White{" "}
                   {selected.white}% / Black {selected.black}% · {selectedSide} to move at the end of
                   the line
                 </div>
@@ -106,9 +120,9 @@ export default function OpeningsPage() {
                     onClick={() => setSelected(o)}
                   >
                     <div className="grow">
-                      <div className="rname">{o.name}</div>
+                      <div className="rname">{stripEco(o.name)}</div>
                       <div className="rmeta">
-                        {o.eco} · {o.games.toLocaleString("en-IN")} games · W {o.white}% / B {o.black}%
+                        {o.eco} · {fmtGames(o.games)} games · W {o.white}% / B {o.black}%
                       </div>
                     </div>
                     <span className="pill">{o.moves.split(/\s+/).length} plies</span>

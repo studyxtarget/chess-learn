@@ -554,7 +554,7 @@
  {
   "id": "bot-kanya-th",
   "file": "bot-kanya-th.svg",
-  "index": null,
+  "index": 11,
   "style": "neutral",
   "name": "Kanya",
   "country": "th",
@@ -567,12 +567,12 @@
    "quick_castle",
    "piece_preserving"
   ],
-  "rating": 3680
+  "rating": 1790
  },
  {
   "id": "bot-minjun-kr",
   "file": "bot-minjun-kr.svg",
-  "index": null,
+  "index": 12,
   "style": "neutral",
   "name": "Minjun",
   "country": "kr",
@@ -584,12 +584,12 @@
    "king_attack",
    "queenside_counterplay"
   ],
-  "rating": 3770
+  "rating": 1880
  },
  {
   "id": "bot-ren-jp",
   "file": "bot-ren-jp.svg",
-  "index": null,
+  "index": 13,
   "style": "neutral",
   "name": "Ren",
   "country": "jp",
@@ -602,6 +602,6 @@
    "king_attack",
    "quick_castle"
   ],
-  "rating": 3860
+  "rating": 1970
  }
 ]

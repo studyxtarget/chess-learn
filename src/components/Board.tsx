@@ -1,7 +1,7 @@
 "use client";
 
 import { Chess } from "chess.js";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { asset } from "@/lib/data";
 
 export type BoardMove = { from: string; to: string; promotion?: string };
@@ -40,6 +40,12 @@ export default function Board({
   const game = useMemo(() => new Chess(fen), [fen]);
   const [selected, setSelected] = useState<string | null>(null);
   const [pending, setPending] = useState<BoardMove | null>(null);
+
+  // A stale selection must not survive a new position (bot reply, auto-reply, navigation).
+  useEffect(() => {
+    setSelected(null);
+    setPending(null);
+  }, [fen]);
 
   const board = game.board();
   const turn = game.turn();
@@ -222,6 +228,7 @@ export default function Board({
                 <button
                   key={pr}
                   type="button"
+                  aria-label={`Promote to ${PIECE_NAME[pr]}`}
                   onClick={() => {
                     onMove?.({ ...pending, promotion: pr });
                     setPending(null);

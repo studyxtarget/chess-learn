@@ -36,6 +36,7 @@ export type EngineEval = {
 export type Evaluator = (fen: string, depth: number, multiPV?: number) => Promise<EngineEval>;
 
 const INIT_TIMEOUT_MS = 45000;
+const GO_TIMEOUT_MS = 60000;
 
 type RawLine = { cp: number | null; mate: number | null; pv: string[]; depth: number };
 
@@ -44,18 +45,25 @@ class StockfishClient {
   private ready: Promise<void>;
   private uciOk = false;
   private chain: Promise<unknown> = Promise.resolve();
+  private initReject: ((e: Error) => void) | null = null;
   private cur: {
     resolve: (v: EngineEval) => void;
+    reject: (e: Error) => void;
     lines: Map<number, RawLine>;
     bestmove: string | null;
     turn: "w" | "b";
+    timer: ReturnType<typeof setTimeout> | null;
   } | null = null;
 
   constructor() {
     this.worker = new Worker(asset("/stockfish/stockfish.js"));
     this.worker.onmessage = (e) => this.onLine(String(e.data));
     this.ready = new Promise<void>((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error("Stockfish init timed out")), INIT_TIMEOUT_MS);
+      this.initReject = reject;
+      const timer = setTimeout(() => {
+        clearInterval(poll);
+        reject(new Error("Stockfish init timed out"));
+      }, INIT_TIMEOUT_MS);
       const poll = setInterval(() => {
         if (this.uciOk) {
           clearTimeout(timer);
@@ -63,13 +71,19 @@ class StockfishClient {
           resolve();
         }
       }, 40);
-      this.worker.onerror = (e) => {
-        clearTimeout(timer);
-        clearInterval(poll);
-        reject(new Error((e as ErrorEvent).message || "Stockfish worker failed to load"));
-      };
       this.worker.postMessage("uci");
     });
+    // A persistent handler: an error after init must also fail the pending search.
+    this.worker.onerror = (e) => {
+      const err = new Error((e as ErrorEvent).message || "Stockfish worker failed");
+      this.initReject?.(err);
+      const c = this.cur;
+      if (c) {
+        this.cur = null;
+        if (c.timer) clearTimeout(c.timer);
+        c.reject(err);
+      }
+    };
   }
 
   private onLine(line: string) {
@@ -97,7 +111,10 @@ class StockfishClient {
         next.cp = parseInt(cp[1], 10);
         next.mate = null;
       } else if (mate) {
-        next.mate = parseInt(mate[1], 10);
+        // UCI prints "mate 0" for a position whose side to move is checkmated
+        // (UCI converts -1 plies to 0). Normalise it so the sign survives.
+        const mv = parseInt(mate[1], 10);
+        next.mate = mv === 0 ? -1 : mv;
         next.cp = null;
       }
       if (pv) next.pv = pv[1].trim().split(/\s+/);
@@ -107,6 +124,7 @@ class StockfishClient {
 
     if (line.startsWith("bestmove")) {
       const bm = line.split(/\s+/)[1] || null;
+      if (c.timer) clearTimeout(c.timer);
       this.cur = null;
       const sign = c.turn === "w" ? 1 : -1;
       const keys = [...c.lines.keys()].sort((a, b) => a - b);
@@ -133,8 +151,15 @@ class StockfishClient {
 
   private go(fen: string, depth: number, multiPV: number): Promise<EngineEval> {
     const turn: "w" | "b" = fen.split(" ")[1] === "b" ? "b" : "w";
-    return new Promise<EngineEval>((resolve) => {
-      this.cur = { resolve, lines: new Map(), bestmove: null, turn };
+    return new Promise<EngineEval>((resolve, reject) => {
+      const timer = setTimeout(() => {
+        if (this.cur && this.cur.timer === timer) {
+          const c = this.cur;
+          this.cur = null;
+          c.reject(new Error("engine search timed out"));
+        }
+      }, GO_TIMEOUT_MS);
+      this.cur = { resolve, reject, lines: new Map(), bestmove: null, turn, timer };
       this.worker.postMessage(`setoption name MultiPV value ${multiPV}`);
       this.worker.postMessage("position fen " + fen);
       this.worker.postMessage("go depth " + depth);

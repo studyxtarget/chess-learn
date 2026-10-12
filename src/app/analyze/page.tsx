@@ -5,7 +5,7 @@ import { Chess } from "chess.js";
 import Board from "@/components/Board";
 import GameReport from "@/components/GameReport";
 import { analyzePosition } from "@/lib/engine";
-import { makeEvaluator, type EngineLine } from "@/lib/stockfish";
+import { makeEvaluator, disposeStockfish, type EngineLine } from "@/lib/stockfish";
 import {
   reviewGame, CLASS_META, CLASSIFICATIONS, norm, getOpeningIndex,
   type GameReview, type Classification,
@@ -42,6 +42,7 @@ function parseInput(text: string): Parsed | null {
   } catch {
     /* fall through */
   }
+  const fenHeader = /\[FEN\s+"([^"]+)"\]/.exec(t)?.[1];
   const body = t
     .replace(/\[[^\]]*\]/g, " ")
     .replace(/\{[^}]*\}/g, " ")
@@ -51,7 +52,12 @@ function parseInput(text: string): Parsed | null {
     .replace(/\d+\.(\.\.)?/g, " ")
     .replace(/(1-0|0-1|1\/2-1\/2|\*)/g, " ");
   const tokens = body.split(/\s+/).filter(Boolean);
-  const g = new Chess();
+  let g: Chess;
+  try {
+    g = fenHeader ? new Chess(fenHeader) : new Chess();
+  } catch {
+    g = new Chess();
+  }
   let parsed = 0;
   let stoppedAt: string | null = null;
   for (const tok of tokens) {
@@ -66,7 +72,7 @@ function parseInput(text: string): Parsed | null {
   if (g.history().length === 0) return null;
   return {
     game: g,
-    startFen: START_FEN,
+    startFen: fenHeader ?? START_FEN,
     warning: stoppedAt
       ? `Only ${parsed} of ${tokens.length} moves could be read — parsing stopped at “${stoppedAt}”. The game may be incomplete.`
       : undefined,
@@ -75,6 +81,7 @@ function parseInput(text: string): Parsed | null {
 
 // Review results are cached per (start position + moves + mode).
 const reviewCache = new Map<string, GameReview>();
+const REVIEW_CACHE_MAX = 6;
 
 function namesFrom(pgn: string): Names {
   const get = (k: string) => new RegExp(`\\[${k} "([^"]*)"\\]`).exec(pgn)?.[1] ?? "";
@@ -126,7 +133,7 @@ export default function AnalyzePage() {
   const [viewPly, setViewPly] = useState(0);
   const [pgnText, setPgnText] = useState("");
   const [status, setStatus] = useState("Paste or upload a PGN, then run a report.");
-  const [analysis, setAnalysis] = useState<{ cp: number; best: string | null; from: string; to: string } | null>(null);
+  const [analysis, setAnalysis] = useState<{ cp: number; best: string | null; from: string; to: string; depth: number } | null>(null);
   const [flipped, setFlipped] = useState(false);
   const [names, setNames] = useState<Names>({ white: "White", black: "Black", whiteElo: "", blackElo: "" });
 
@@ -181,6 +188,9 @@ export default function AnalyzePage() {
     getOpeningIndex().then(setOpenIdx).catch(() => {});
   }, []);
 
+  // Terminate the Stockfish worker when leaving the screen.
+  useEffect(() => () => disposeStockfish(), []);
+
   // auto-scroll the move ribbon to the active move
   useEffect(() => {
     const el = document.querySelector(".mvchip.active");
@@ -224,7 +234,7 @@ export default function AnalyzePage() {
     const fen = cur.fen;
     const t = setTimeout(() => {
       const r = analyzePosition(fen, 3);
-      setAnalysis({ cp: r.cp, best: r.best ? r.best.san : null, from: r.best?.from ?? "", to: r.best?.to ?? "" });
+      setAnalysis({ cp: r.cp, best: r.best ? r.best.san : null, from: r.best?.from ?? "", to: r.best?.to ?? "", depth: 3 });
     }, 120);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -261,6 +271,8 @@ export default function AnalyzePage() {
     if (remember) {
       pushRecent(remember);
       setNames(namesFrom(remember));
+    } else {
+      setNames({ white: "White", black: "Black", whiteElo: "", blackElo: "" });
     }
   }
 
@@ -315,7 +327,7 @@ export default function AnalyzePage() {
     stopRef.current = false;
     const cfg =
       m === "deep" ? { depth: 14, label: "depth 14" } : m === "smart" ? { depth: smartDepth, label: "smart depth" } : { depth: 10, label: "depth 10" };
-    const cacheKey = `${startFen}|${history.join(" ")}|${cfg.label}`;
+    const cacheKey = `${startFen}|${history.join(" ")}|${cfg.label}|${engineKind ?? "?"}`;
     const cached = reviewCache.get(cacheKey);
     if (cached) {
       setReview(cached);
@@ -334,6 +346,10 @@ export default function AnalyzePage() {
       const r = await reviewGame(startFen, history, evaluate, cfg, kind, (d, t) => setProgress({ done: d, total: t }), () => stopRef.current);
       setReview(r);
       reviewCache.set(cacheKey, r);
+      if (reviewCache.size > REVIEW_CACHE_MAX) {
+        const first = reviewCache.keys().next().value;
+        if (first) reviewCache.delete(first);
+      }
       setStatus(`Report ready · ${r.moves.length} moves.`);
       if (open) setShowReport(true);
     } catch (e) {
@@ -375,11 +391,20 @@ export default function AnalyzePage() {
     setPendingFrom(null);
   }
 
-  const cp = review ? review.evalSeries[viewPly] ?? 0 : analysis?.cp ?? 0;
+  const seriesCp = review ? review.evalSeries[viewPly] : undefined;
+  const cpKnown = seriesCp !== undefined || !!analysis;
+  const cp = seriesCp ?? analysis?.cp ?? 0;
   const isMate = Math.abs(cp) >= 9000;
   const whiteFrac = isMate ? (cp > 0 ? 1 : 0) : Math.max(0.03, Math.min(0.97, 0.5 + cp / 1600));
-  const evalLabel = isMate ? "#" : `${cp >= 0 ? "+" : ""}${(cp / 100).toFixed(2)}`;
-  const depthShown = review?.depthLabel ?? (mode === "deep" ? "depth 14" : mode === "smart" ? "smart" : "depth 10");
+  const evalLabel = !cpKnown
+    ? "—"
+    : isMate
+    ? cp > 0
+      ? "+M"
+      : "-M"
+    : `${cp >= 0 ? "+" : ""}${(cp / 100).toFixed(2)}`;
+  // Never claim a depth/engine that did not produce the number on screen.
+  const depthShown = review?.depthLabel ?? "built-in engine · depth 3";
 
   const opening = useMemo(() => {
     if (!openIdx) return null;
@@ -527,8 +552,12 @@ export default function AnalyzePage() {
           </div>
 
           <div className="engine-row">
-            <span className={`engine-badge ${engineKind === "builtin" ? "warn" : engineKind === "stockfish" ? "ok" : ""}`}>
-              {engineKind === "stockfish" ? "Stockfish active" : engineKind === "builtin" ? "Basic engine (fallback)" : "Engine not started"}
+            <span className={`engine-badge ${review ? (review.engine === "stockfish" ? "ok" : "warn") : ""}`}>
+              {review
+                ? review.engine === "stockfish"
+                  ? "Stockfish report"
+                  : "Basic engine report (fallback)"
+                : "On-board read: built-in · depth 3"}
             </span>
             <span className="muted small">{mode === "smart" ? "smart depth" : mode === "deep" ? "depth 14" : "depth 10"}</span>
           </div>
@@ -593,7 +622,7 @@ export default function AnalyzePage() {
                     onClick={() => {
                       setPgnText(r.pgn);
                       const parsed = parseInput(r.pgn);
-                      if (parsed) applyParsed(parsed);
+                      if (parsed) applyParsed(parsed, r.pgn);
                     }}
                   >
                     <div className="grow"><div className="rname">{r.label}</div></div>
@@ -687,7 +716,7 @@ export default function AnalyzePage() {
               <span className="sheet-handle" />
               <button type="button" onClick={() => setMenuOpen(false)} aria-label="Close">✕</button>
             </div>
-            <button type="button" onClick={() => { setMenuOpen(false); setAutoPlay(false); }}>⏱ Play from here</button>
+            <button type="button" onClick={() => { setMenuOpen(false); setAutoPlay(true); }}>▶ Auto-play from here</button>
             <button type="button" onClick={() => { setMenuOpen(false); runReview(mode, true); }}>↻ Analyze again</button>
             <button type="button" onClick={() => { setMenuOpen(false); review ? setShowReport(true) : runReview(mode, true); }}>👁 Show game report</button>
             <button type="button" onClick={() => { setMenuOpen(false); copyText(gameRef.current.pgn(), "PGN"); }}>↗ Copy PGN</button>

@@ -40,6 +40,8 @@ export default function PuzzlesPage() {
   const [hint, setHint] = useState(false);
   const [revealing, setRevealing] = useState(false);
   const [revealed, setRevealed] = useState(false);
+  const revealRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const wrongRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [stats, setStats] = useState({ solved: 0, streak: 0, best: 0 });
   const [seen, setSeen] = useState<Set<string>>(new Set());
 
@@ -49,13 +51,32 @@ export default function PuzzlesPage() {
     fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/data/puzzles.json`)
       .then((r) => r.json())
       .then((d: { items: Puzzle[] }) => {
-        setAll(d.items);
+        // Drop any puzzle whose solution does not replay cleanly (bad FEN rights etc.)
+        const valid = d.items.filter((pz) => {
+          try {
+            const g = new Chess(pz.f);
+            for (const u of pz.m) {
+              g.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] || undefined });
+            }
+            return true;
+          } catch {
+            return false;
+          }
+        });
+        setAll(valid);
         setLoading(false);
       })
       .catch(() => setLoading(false));
     try {
       const raw = localStorage.getItem(PROGRESS_KEY);
-      if (raw) setStats(JSON.parse(raw));
+      if (raw) {
+        const d = JSON.parse(raw);
+        setStats({
+          solved: Number(d?.solved) || 0,
+          streak: Number(d?.streak) || 0,
+          best: Number(d?.best) || 0,
+        });
+      }
     } catch {
       /* ignore */
     }
@@ -75,6 +96,9 @@ export default function PuzzlesPage() {
   );
 
   const next = useCallback(() => {
+    if (revealRef.current) { clearInterval(revealRef.current); revealRef.current = null; }
+    if (wrongRef.current) { clearTimeout(wrongRef.current); wrongRef.current = null; }
+    setRevealing(false);
     if (pool.length === 0) return;
     const unseen = pool.filter((p) => !seen.has(p.f));
     const pick = (unseen.length ? unseen : pool)[Math.floor(Math.random() * (unseen.length ? unseen.length : pool.length))];
@@ -91,7 +115,12 @@ export default function PuzzlesPage() {
   useEffect(() => {
     if (!loading && pool.length > 0 && !cur) next();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, pool.length]);
+  }, [loading, pool.length, cur]);
+
+  useEffect(() => () => {
+    if (revealRef.current) clearInterval(revealRef.current);
+    if (wrongRef.current) clearTimeout(wrongRef.current);
+  }, []);
 
   // auto-play the opponent's replies (odd steps) and finish
   useEffect(() => {
@@ -140,7 +169,8 @@ export default function PuzzlesPage() {
     } else {
       setWrong(mv.to);
       setMsg("✗ Wrong move — try again");
-      setTimeout(() => setWrong(null), 1100);
+      if (wrongRef.current) clearTimeout(wrongRef.current);
+      wrongRef.current = setTimeout(() => setWrong(null), 1100);
     }
   }
 
@@ -152,11 +182,13 @@ export default function PuzzlesPage() {
     setWrong(null);
     setMsg("Solution shown.");
     let i = step;
-    const t = setInterval(() => {
+    if (revealRef.current) clearInterval(revealRef.current);
+    revealRef.current = setInterval(() => {
       i += 1;
       setStep(i);
       if (i >= cur.m.length) {
-        clearInterval(t);
+        if (revealRef.current) clearInterval(revealRef.current);
+        revealRef.current = null;
         setRevealing(false);
       }
     }, 600);
@@ -172,7 +204,9 @@ export default function PuzzlesPage() {
     ...(wrong ? [{ square: wrong, label: "✗", color: "#e0554d" }] : []),
   ];
 
-  const sideToMove = fen ? (fen.split(" ")[1] === "b" ? "Black" : "White") : "White";
+  // The solver is always the side to move in the puzzle's START position.
+  const userColor: "white" | "black" = cur?.f.split(" ")[1] === "b" ? "black" : "white";
+  const sideToMove = userColor === "black" ? "Black" : "White";
 
   return (
     <div className="container section">
@@ -211,7 +245,7 @@ export default function PuzzlesPage() {
           {fen && (
             <Board
               fen={fen}
-              orientation={sideToMove === "Black" ? "black" : "white"}
+              orientation={userColor}
               interactive={userTurn}
               onMove={onMove}
               markers={markers}
@@ -223,7 +257,7 @@ export default function PuzzlesPage() {
               Hint
             </button>
             <button type="button" onClick={reveal} disabled={!cur || solved}>Solution</button>
-            <button type="button" onClick={() => { setStep(0); setSolved(false); setRevealed(false); setWrong(null); setHint(false); setMsg("Find the best move."); }} disabled={!cur}>
+            <button type="button" onClick={() => { if (revealRef.current) { clearInterval(revealRef.current); revealRef.current = null; } setRevealing(false); setStep(0); setSolved(false); setRevealed(false); setWrong(null); setHint(false); setMsg("Find the best move."); }} disabled={!cur}>
               Restart
             </button>
             <button type="button" onClick={next} disabled={!cur}>Next</button>

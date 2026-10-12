@@ -10,6 +10,7 @@ import type { Bot } from "./data";
  * ------------------------------------------------------------------ */
 
 const VAL: Record<string, number> = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 0 };
+const MATE_CP = 10000;
 
 // Tables are written from White's point of view, index 0 = a8 ... 63 = h1.
 const PST: Record<string, number[]> = {
@@ -142,10 +143,11 @@ function personalityTerm(game: Chess, side: "w" | "b", p: Personality): number {
   return term;
 }
 
-function evaluate(game: Chess, side: "w" | "b", p: Personality): number {
+function evaluate(game: Chess, side: "w" | "b", p: Personality, botColor: "w" | "b"): number {
   const white = materialAndPst(game);
   const mine = side === "w" ? white : -white;
-  const pers = personalityTerm(game, side, p);
+  // The personality term belongs to the bot only — never to its opponent.
+  const pers = side === botColor ? personalityTerm(game, side, p) : 0;
   return mine + pers;
 }
 
@@ -163,17 +165,18 @@ function negamax(
   alpha: number,
   beta: number,
   side: "w" | "b",
-  p: Personality
+  p: Personality,
+  botColor: "w" | "b"
 ): number {
   if (game.isCheckmate()) return -100000 + (10 - depth) * 100;
   if (game.isDraw() || game.isStalemate()) return 0;
-  if (depth === 0) return evaluate(game, side, p);
+  if (depth === 0) return evaluate(game, side, p, botColor);
 
   let best = -Infinity;
   const moves = orderMoves(game.moves({ verbose: true }) as any);
   for (const m of moves) {
     game.move(m);
-    const score = -negamax(game, depth - 1, -beta, -alpha, side === "w" ? "b" : "w", p);
+    const score = -negamax(game, depth - 1, -beta, -alpha, side === "w" ? "b" : "w", p, botColor);
     game.undo();
     if (score > best) best = score;
     if (best > alpha) alpha = best;
@@ -249,7 +252,7 @@ export function botMove(fen: string, historySan: string[], bot: Bot): BotMove | 
   const ordered = orderMoves(legal);
   for (const m of ordered) {
     game.move(m);
-    const score = -negamax(game, depth - 1, -Infinity, -alpha, side === "w" ? "b" : "w", p);
+    const score = -negamax(game, depth - 1, -Infinity, -alpha, side === "w" ? "b" : "w", p, side);
     game.undo();
     if (score > bestScore) {
       bestScore = score;
@@ -275,18 +278,22 @@ export type PositionAnalysis = { best: BotMove | null; cp: number };
  */
 export function analyzePosition(fen: string, depth = 3): PositionAnalysis {
   const game = new Chess(fen);
-  if (game.isGameOver()) return { best: null, cp: materialAndPst(game) };
+  if (game.isGameOver()) {
+    // Terminal positions must report mate/draw, never a material score.
+    const cp = game.isCheckmate() ? (game.turn() === "w" ? -MATE_CP : MATE_CP) : 0;
+    return { best: null, cp };
+  }
   const side = game.turn();
   const p: Personality = { agg: 0, def: 0, neu: 1 };
   const legal = game.moves({ verbose: true }) as any[];
-  if (legal.length === 0) return { best: null, cp: materialAndPst(game) };
+  if (legal.length === 0) return { best: null, cp: 0 };
 
   let best: any = null;
   let bestScore = -Infinity;
   let alpha = -Infinity;
   for (const m of orderMoves(legal)) {
     game.move(m);
-    const score = -negamax(game, depth - 1, -Infinity, -alpha, side === "w" ? "b" : "w", p);
+    const score = -negamax(game, depth - 1, -Infinity, -alpha, side === "w" ? "b" : "w", p, side);
     game.undo();
     if (score > bestScore) {
       bestScore = score;
