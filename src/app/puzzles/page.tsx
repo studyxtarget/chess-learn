@@ -291,7 +291,9 @@ export default function PuzzlesPage() {
     <div className="container section">
       <h2>Puzzles</h2>
       <p className="sub">
-        Tactics trainer — {all.length.toLocaleString("en-IN")} puzzles across {themes.length} themes.
+        {all.length
+          ? `Tactics trainer — ${all.length.toLocaleString("en-IN")} puzzles across ${themes.length} themes.`
+          : "Tactics trainer — loading puzzles…"}{" "}
         Difficulty adapts to your rating as you solve. Find the best move; the opponent replies
         automatically.
       </p>
@@ -347,6 +349,12 @@ export default function PuzzlesPage() {
       </div>
 
       {/* ---------- theme grid ---------- */}
+      {loading && (
+        <p className="muted">
+          <span className="spinner" /> Loading puzzles…
+        </p>
+      )}
+
       {view === "types" ? (
         <>
           <div className="sec-head">
@@ -479,11 +487,6 @@ export default function PuzzlesPage() {
         </>
       )}
 
-      {loading && (
-        <p className="muted">
-          <span className="spinner" /> Loading puzzles…
-        </p>
-      )}
     </div>
   );
 }
