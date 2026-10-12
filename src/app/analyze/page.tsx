@@ -16,7 +16,7 @@ const FEN_RE = /^[rnbqkpRNBQKP1-8/]+ [wb] /;
 const RECENT_KEY = "chesslearn.recentGames";
 
 type Ply = { fen: string; san: string; from: string; to: string };
-type Parsed = { game: Chess; startFen: string };
+type Parsed = { game: Chess; startFen: string; warning?: string };
 type Recent = { label: string; pgn: string };
 type AnnArrow = { from: string; to: string; color?: string };
 type AnnCircle = { square: string; label: string; color?: string };
@@ -52,15 +52,29 @@ function parseInput(text: string): Parsed | null {
     .replace(/(1-0|0-1|1\/2-1\/2|\*)/g, " ");
   const tokens = body.split(/\s+/).filter(Boolean);
   const g = new Chess();
+  let parsed = 0;
+  let stoppedAt: string | null = null;
   for (const tok of tokens) {
     try {
       g.move(tok);
+      parsed++;
     } catch {
+      stoppedAt = tok;
       break;
     }
   }
-  return g.history().length > 0 ? { game: g, startFen: START_FEN } : null;
+  if (g.history().length === 0) return null;
+  return {
+    game: g,
+    startFen: START_FEN,
+    warning: stoppedAt
+      ? `Only ${parsed} of ${tokens.length} moves could be read — parsing stopped at “${stoppedAt}”. The game may be incomplete.`
+      : undefined,
+  };
 }
+
+// Review results are cached per (start position + moves + mode).
+const reviewCache = new Map<string, GameReview>();
 
 function namesFrom(pgn: string): Names {
   const get = (k: string) => new RegExp(`\\[${k} "([^"]*)"\\]`).exec(pgn)?.[1] ?? "";
@@ -135,6 +149,8 @@ export default function AnalyzePage() {
   const [pendingFrom, setPendingFrom] = useState<string | null>(null);
 
   const [recent, setRecent] = useState<Recent[]>([]);
+  const [warning, setWarning] = useState<string | null>(null);
+  const [engineKind, setEngineKind] = useState<"stockfish" | "builtin" | null>(null);
 
   const positions: Ply[] = useMemo(() => {
     const g = new Chess(startFen);
@@ -240,7 +256,8 @@ export default function AnalyzePage() {
     setUserCircles([]);
     setPendingFrom(null);
     setShowReport(false);
-    setStatus(`Loaded · ${parsed.game.history().length} plies`);
+    setWarning(parsed.warning ?? null);
+    setStatus(parsed.warning ? "Loaded with a warning — see above." : `Loaded · ${parsed.game.history().length} plies`);
     if (remember) {
       pushRecent(remember);
       setNames(namesFrom(remember));
@@ -298,13 +315,25 @@ export default function AnalyzePage() {
     stopRef.current = false;
     const cfg =
       m === "deep" ? { depth: 14, label: "depth 14" } : m === "smart" ? { depth: smartDepth, label: "smart depth" } : { depth: 10, label: "depth 10" };
+    const cacheKey = `${startFen}|${history.join(" ")}|${cfg.label}`;
+    const cached = reviewCache.get(cacheKey);
+    if (cached) {
+      setReview(cached);
+      setStatus("Report ready (cached).");
+      if (open) setShowReport(true);
+      setReviewing(false);
+      setProgress(null);
+      return;
+    }
     setProgress({ done: 0, total: history.length + 1 });
     setStatus("Booting engine…");
     try {
       const { evaluate, kind } = await makeEvaluator();
-      setStatus(kind === "stockfish" ? "Analysing…" : "Using the built-in engine…");
+      setEngineKind(kind);
+      setStatus(kind === "stockfish" ? "Analysing with Stockfish…" : "Stockfish unavailable — analysing with the basic engine…");
       const r = await reviewGame(startFen, history, evaluate, cfg, kind, (d, t) => setProgress({ done: d, total: t }), () => stopRef.current);
       setReview(r);
+      reviewCache.set(cacheKey, r);
       setStatus(`Report ready · ${r.moves.length} moves.`);
       if (open) setShowReport(true);
     } catch (e) {
@@ -318,7 +347,8 @@ export default function AnalyzePage() {
   async function showLines() {
     setLinesLoading(true);
     try {
-      const { evaluate } = await makeEvaluator();
+      const { evaluate, kind } = await makeEvaluator();
+      setEngineKind(kind);
       const depth = mode === "deep" ? 14 : mode === "smart" ? smartDepth(cur.fen) : 10;
       const r = await evaluate(cur.fen, depth, 3);
       setLines(r.lines);
@@ -415,6 +445,15 @@ export default function AnalyzePage() {
         <button type="button" className="ribbon-add" onClick={() => fileRef.current?.click()} title="Load a PGN">＋</button>
       </div>
 
+      {warning && (
+        <div className="container" style={{ paddingTop: 12 }}>
+          <div className="warn-banner">
+            <b>Import warning:</b> {warning}
+            <button type="button" onClick={() => setWarning(null)} aria-label="Dismiss">✕</button>
+          </div>
+        </div>
+      )}
+
       <div className="container an-grid">
         {/* ---------- board column ---------- */}
         <div className="an-boardcol">
@@ -485,6 +524,13 @@ export default function AnalyzePage() {
             >
               ⚙
             </button>
+          </div>
+
+          <div className="engine-row">
+            <span className={`engine-badge ${engineKind === "builtin" ? "warn" : engineKind === "stockfish" ? "ok" : ""}`}>
+              {engineKind === "stockfish" ? "Stockfish active" : engineKind === "builtin" ? "Basic engine (fallback)" : "Engine not started"}
+            </span>
+            <span className="muted small">{mode === "smart" ? "smart depth" : mode === "deep" ? "depth 14" : "depth 10"}</span>
           </div>
 
           {progress && (
@@ -593,6 +639,7 @@ export default function AnalyzePage() {
                   <tr><td className="muted">Best move</td><td style={{ textAlign: "right", fontWeight: 600 }}>{selectedReview.bestSan ?? "—"}</td></tr>
                   <tr><td className="muted">Lost</td><td style={{ textAlign: "right" }}>{(selectedReview.cpLoss / 100).toFixed(2)} pawns</td></tr>
                   <tr><td className="muted">Move accuracy</td><td style={{ textAlign: "right" }}>{selectedReview.accuracy.toFixed(0)}%</td></tr>
+                  <tr><td className="muted">Phase</td><td style={{ textAlign: "right" }}>{selectedReview.phase}</td></tr>
                 </tbody>
               </table>
               <p className="why">
@@ -627,7 +674,7 @@ export default function AnalyzePage() {
             <button type="button" onClick={() => setShowReport(false)} aria-label="Close">✕</button>
           </div>
           <div className="report-body">
-            <GameReport review={review} onSelectPly={(p) => { setViewPly(p); setShowReport(false); }} />
+            <GameReport review={review} currentPly={viewPly} onSelectPly={(p) => { setViewPly(p); setShowReport(false); }} />
           </div>
         </div>
       )}

@@ -22,6 +22,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               Chess Learn — an original web implementation. Opening,
               trap, bot and piece data are derived from the app&apos;s bundled assets.
             </p>
+            <p className="small" style={{ margin: "6px 0 0", opacity: 0.8 }}>
+              Analysis uses Stockfish (GPL-3.0) and the cburnett piece set; their licences ship with
+              the project. Verify third-party data reuse rights before publishing.
+            </p>
           </div>
         </footer>
       </body>

@@ -293,8 +293,11 @@ export async function reviewGame(
     const isMissedWin = winPct(beforeMover) >= 80 && winPct(afterMover) < 65;
 
     // Brilliant: a sacrifice (piece can be taken by something cheaper) that still holds.
+    // "Brilliant" is a *heuristic* flag, deliberately conservative: the move must
+    // still be the engine's choice (or near it), must leave the mover fine, and
+    // must genuinely give up material. Anything less certain is not labelled.
     let isBrilliant = false;
-    if (!isBook && !isMissedWin && (isBest || winDrop < 5) && i + 1 < fens.length) {
+    if (!isBook && !isMissedWin && (isBest || winDrop < 3) && winPct(afterMover) >= 45 && i + 1 < fens.length) {
       try {
         const after = new Chess(fens[i + 1]);
         const caps = (after.moves({ verbose: true }) as any[]).filter(

@@ -81,21 +81,37 @@ public/
   bots/*.svg
 ```
 
-## Engine & licensing
+## Engine, licences & third-party notices
 
 The bots use the original in-repo engine (`src/lib/engine.ts`). The Analyze page uses
 **Stockfish 19 (lite, single-threaded WASM)**, vendored under `public/stockfish/` and driven
 from a Web Worker via UCI (`src/lib/stockfish.ts`). The single-threaded build is deliberate:
 it needs no `SharedArrayBuffer`, so no COOP/COEP headers are required and it runs on plain
-GitHub Pages. If the worker fails to load, the review silently falls back to the built-in
-engine.
+GitHub Pages.
 
-**Stockfish is GPL-3.0.** Its licence text ships with the binary at
-`public/stockfish/COPYING.txt`, with provenance in `public/stockfish/NOTICE.txt`. Because the
-site distributes Stockfish, the combined work must comply with GPL-3.0 — keep that licence and
-attribution in place if you publish this.
+The app always tells you which engine produced a report: the Analyze screen and the Game
+Report show a **“Stockfish active”** or **“Basic engine (fallback)”** badge. If the WASM worker
+cannot start, the built-in engine is used and the numbers are less reliable — the badge makes
+that visible rather than presenting both as the same quality.
 
-The *cburnett* piece set is by Colin M.L. Burnett (CC BY-SA 3.0 / GPL).
+### Licences
+
+| Component | Licence | Notes |
+|---|---|---|
+| Stockfish (WASM) | **GPL-3.0** | licence text ships at `public/stockfish/COPYING.txt`; provenance in `NOTICE.txt` |
+| cburnett piece set | CC BY-SA 3.0 / GPL | by Colin M.L. Burnett |
+| App code | — | original code written for this project |
+
+Because the site distributes Stockfish, the combined work must comply with GPL-3.0 — keep the
+licence and attribution in place if you publish this.
+
+### Data reuse — please verify
+
+The opening dataset, the trap list, the bot opening repertoire and the bot avatars are derived
+from the bundled assets of the original Android chess app (`bot_opening_repertoire.txt`,
+`openings_with_fens.txt`, `opening_traps_with_fens.txt`, `assets/bots/`). Including a licence
+file does **not** by itself grant permission to redistribute someone else's dataset — check the
+reuse rights before publishing this publicly.
 
 ## Data provenance
 

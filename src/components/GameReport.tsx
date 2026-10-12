@@ -4,6 +4,7 @@ import { CLASSIFICATIONS, CLASS_META, type Classification, type GameReview, type
 type Props = {
   review: GameReview;
   onSelectPly: (ply: number) => void;
+  currentPly?: number;
 };
 
 const CLEAN: Classification[] = ["book", "brilliant", "best", "excellent", "good"];
@@ -63,7 +64,7 @@ function SideCard({ label, icon, report }: { label: string; icon: string; report
         {report.accuracy.toFixed(1)}%
       </div>
       <div className="muted small" style={{ marginTop: 3 }}>
-        accuracy · est. rating {report.estRating} · avg {(report.avgCpl / 100).toFixed(2)} CPL
+        accuracy · est. rating ~{report.estRating}* · avg {(report.avgCpl / 100).toFixed(2)} CPL
       </div>
       <div className="phase-row">
         <span>Opening <b>{pct(report.phases.opening)}</b></span>
@@ -74,7 +75,7 @@ function SideCard({ label, icon, report }: { label: string; icon: string; report
   );
 }
 
-export default function GameReport({ review, onSelectPly }: Props) {
+export default function GameReport({ review, onSelectPly, currentPly }: Props) {
   const { white, black, moves } = review;
   const used = CLASSIFICATIONS.filter(
     (c) => white.counts[c] > 0 || black.counts[c] > 0 || c === "best" || c === "blunder"
@@ -82,10 +83,14 @@ export default function GameReport({ review, onSelectPly }: Props) {
 
   return (
     <div className="card" style={{ marginBottom: 16 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10 }}>
         <h3 style={{ fontSize: 15, margin: 0 }}>Game report</h3>
-        <span className="muted small">
-          {review.engine === "stockfish" ? "Stockfish" : "Built-in engine"} · {review.depthLabel}
+        <span className={`engine-badge ${review.engine === "stockfish" ? "ok" : "warn"}`} title={
+          review.engine === "stockfish"
+            ? "Analysed with Stockfish (WASM)"
+            : "Stockfish could not load — these numbers come from the basic built-in engine and are less reliable"
+        }>
+          {review.engine === "stockfish" ? "Stockfish" : "Basic engine (fallback)"} · {review.depthLabel}
         </span>
       </div>
 
@@ -99,11 +104,20 @@ export default function GameReport({ review, onSelectPly }: Props) {
         <SideCard label="White" icon="♔" report={white} />
         <SideCard label="Black" icon="♚" report={black} />
       </div>
+      <p className="small muted" style={{ margin: "8px 0 0" }}>
+        * Estimated rating is a rough figure derived from accuracy — it is <b>not</b> a real FIDE or
+        Chess.com rating. Accuracy and average centipawn loss are the meaningful numbers.
+      </p>
 
       <div style={{ display: "flex", gap: 20, justifyContent: "center", marginTop: 16 }}>
         <Donut counts={white.counts} title="White" />
         <Donut counts={black.counts} title="Black" />
       </div>
+
+      <p className="small muted" style={{ margin: "14px 0 0" }}>
+        Move labels are a heuristic: they come from the engine&apos;s evaluation drop, the opening book
+        and simple material checks. “Brilliant” is flagged conservatively, not proven.
+      </p>
 
       <table className="quality-table">
         <thead>
@@ -128,8 +142,10 @@ export default function GameReport({ review, onSelectPly }: Props) {
       </table>
 
       <div style={{ marginTop: 16 }}>
-        <div className="muted small" style={{ marginBottom: 6 }}>Evaluation graph (White&apos;s view)</div>
-        <EvalGraph series={review.evalSeries} />
+        <div className="muted small" style={{ marginBottom: 6 }}>
+          Evaluation graph (White&apos;s view) — click to jump to a move
+        </div>
+        <EvalGraph series={review.evalSeries} current={currentPly} onPick={onSelectPly} />
       </div>
 
       <div style={{ marginTop: 16 }}>
