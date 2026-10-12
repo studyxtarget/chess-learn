@@ -119,12 +119,15 @@ export default function OpeningsPage() {
   }, [all, learned]);
 
   const currentLevel: Level = useMemo(() => {
+    // Before the data arrives there is nothing learned, so start at level 1
+    // rather than falling through to the last level (which read as "Master").
+    if (!all.length) return LEVELS[0];
     for (const l of LEVELS) {
       const t = totals[l.n];
       if (t && t.done < t.total) return l;
     }
     return LEVELS[LEVELS.length - 1];
-  }, [totals]);
+  }, [all.length, totals]);
 
   const nextLevel: Level | null = useMemo(() => {
     const i = LEVELS.findIndex((l) => l.n === currentLevel.n);
@@ -232,8 +235,11 @@ export default function OpeningsPage() {
           <span style={{ width: `${overall.pct}%` }} />
         </div>
         <div className="muted small" style={{ marginTop: 8 }}>
-          {overall.done.toLocaleString("en-IN")} of {overall.total.toLocaleString("en-IN")} lines
-          learned · {overall.pct}%
+          {all.length
+            ? `${overall.done.toLocaleString("en-IN")} of ${overall.total.toLocaleString(
+                "en-IN",
+              )} lines learned · ${overall.pct}%`
+            : "Loading your progress…"}
         </div>
       </div>
 
