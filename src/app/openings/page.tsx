@@ -79,7 +79,7 @@ export default function OpeningsPage() {
         // Drop rows with no games at all — they render as meaningless "0 games · 0%".
         const clean = d.filter((o) => o.games > 0);
         setAll(clean);
-        setSelected(clean[0] ?? null);
+        setSelected(null);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -309,9 +309,18 @@ export default function OpeningsPage() {
         </select>
       </div>
 
-      <div className="two-col">
+      <div className="two-col two-col-listfirst">
         {/* ---------- detail ---------- */}
         <div ref={detailRef}>
+          {!selected && (
+            <div className="card">
+              <h3 style={{ fontSize: 15 }}>Pick a line to study</h3>
+              <p className="muted small" style={{ marginTop: 6 }}>
+                Choose a card from a level on the right (or below on a phone) and the position will
+                appear here, with the moves to step through.
+              </p>
+            </div>
+          )}
           {selected && (
             <>
               <div className="card" style={{ marginBottom: 14 }}>

@@ -1050,3 +1050,9 @@ html, body { overflow-x: hidden; }
   .hcard { width: 118px; }
   .home .home-sec { padding: 14px 0; }
 }
+
+/* Openings on a phone: the level course comes first, the board follows the tap. */
+@media (max-width: 900px) {
+  .two-col-listfirst > div:first-child { order: 2; }
+  .two-col-listfirst > div:last-child { order: 1; }
+}
