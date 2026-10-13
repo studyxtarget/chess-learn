@@ -3,15 +3,18 @@ import "./globals.css";
 import Nav from "@/components/Nav";
 import BottomNav from "@/components/BottomNav";
 
+/** The site is served from a sub-path on GitHub Pages, so the icon needs the prefix too. */
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 export const viewport: Viewport = {
-  themeColor: "#0f1216",
+  themeColor: "#080f16",
 };
 
 export const metadata: Metadata = {
   title: "Chess Learn",
   description:
     "A browser chess trainer: play the data-driven bots, solve tactics puzzles, explore openings, learn traps, and run a full Stockfish game review.",
-  icons: { icon: "/icon.svg" },
+  icons: { icon: `${BASE_PATH}/icon.svg` },
   openGraph: {
     title: "Chess Learn",
     description: "Play bots, solve puzzles, explore openings and review your games with Stockfish.",

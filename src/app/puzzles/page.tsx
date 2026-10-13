@@ -442,6 +442,7 @@ export default function PuzzlesPage() {
               {fen && (
                 <Board
                   fen={fen}
+                  interactive={userTurn}
                   onMove={onMove}
                   orientation={userColor}
                   markers={markers}

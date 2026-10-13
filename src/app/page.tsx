@@ -24,7 +24,10 @@ const PROGRESS_KEY = "chesslearn.puzzleProgress";
 const DAILY_GOAL = { discover: 3, master: 2, puzzles: 3 };
 
 function today(): string {
-  return new Date().toISOString().slice(0, 10);
+  // Local calendar date — toISOString() is UTC, which rolled the day over at 5:30am IST.
+  const d = new Date();
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
 function stripEco(name: string): string {
